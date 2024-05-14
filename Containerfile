@@ -29,7 +29,6 @@ RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-
 
 RUN chmod a+r /usr/etc/udev/rules.d/51-android.rules && \
     chmod +x /usr/libexec/flatpak-manager && \
-    chmod +x /usr/libexec/dotfile-manager && \
     systemctl enable dconf-update.service && \
     systemctl enable flatpak-manager.service
 
