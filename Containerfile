@@ -9,6 +9,7 @@ ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
 COPY files/ /
 COPY scripts/ /tmp/scripts
+ADD certs/private_key.priv /etc/pki/akmods/private/private_key.priv
 
 RUN useradd -mG wheel temp && passwd -d temp
 
@@ -23,7 +24,7 @@ RUN echo "install_weak_deps=False" >> /etc/dnf/dnf.conf
 
 RUN dnf install -y neovim adw-gtk3-theme gnome-tweaks nautilus-python \
     pinentry-gnome3 evince-thumbnailer evince-previewer totem-video-thumbnailer \
-    firefox geoclue2 unzip
+    firefox geoclue2 unzip distrobox
 
 RUN dnf install -y @printing
 
@@ -32,7 +33,8 @@ RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-
 RUN chmod +x /tmp/scripts/* && \
     if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
         /tmp/scripts/drivers.sh; else \
-        /tmp/scripts/nvidia.sh; fi
+        /tmp/scripts/nvidia.sh; fi && \
+    rm -rf /etc/pki/akmods/private/private_key.priv
     
 RUN /tmp/scripts/non-repo.sh
 

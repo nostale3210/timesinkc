@@ -38,6 +38,11 @@ systemctl enable dconf-update.service
 systemctl enable flatpak-manager.service
 systemctl disable bootc-fetch-apply-updates.timer
 
+#hide applications
+sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.Terminal.desktop
+sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.Tour.desktop
+sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/nvim.desktop
+
 #fonts
 mkdir -p /usr/share/fonts/Lilex
 curl -OL https://github.com/mishamyrt/Lilex/releases/latest/download/Lilex.zip
