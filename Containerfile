@@ -12,7 +12,9 @@ COPY scripts/ /tmp/scripts
 
 RUN useradd -mG wheel temp && passwd -d temp
 
-RUN dnf install -y fedora-release-silverblue
+RUN dnf install -y fedora-release fedora-release-ostree-desktop fedora-release-silverblue \
+    xorg-x11-server-Xwayland xdg-desktop-portal xdg-desktop-portal-gtk langpacks-en \
+    flatpak
 
 RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
     dnf install -y ${gnome_pkgs[*]}
