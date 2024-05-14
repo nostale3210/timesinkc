@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ ! -d ~/.nix/var/nix ] || [ ! -d ~/.local/bin ]; then
+	mkdir -p ~/.nix/var/nix
+	mkdir -p ~/.local/bin
+fi
+proot -b ~/.nix:/nix nix "$@"
+nix-index

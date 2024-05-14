@@ -105,7 +105,6 @@ jobs:
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ steps.generate-tags.outputs.TAGS }}
           build-args: |
-            IMAGE_NAME=${{ matrix.image_name }}
             SOURCE_ORG=${{ env.SOURCE_ORG }}
             SOURCE_IMAGE=${{ env.SOURCE_IMAGE }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
