@@ -1,0 +1,5 @@
+[install.filesystem.root]
+type = "btrfs"
+
+[install]
+kargs = ["rd.luks.options=discard,tpm2-device=auto"]

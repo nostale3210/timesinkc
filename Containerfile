@@ -7,4 +7,6 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION}
 
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
+COPY files/ /
+
 RUN dnf install -y neovim
