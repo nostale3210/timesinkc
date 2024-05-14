@@ -14,7 +14,7 @@ RUN useradd -mG wheel temp && passwd -d temp
 
 RUN dnf install -y fedora-release fedora-release-ostree-desktop fedora-release-silverblue \
     xorg-x11-server-Xwayland xdg-desktop-portal xdg-desktop-portal-gtk langpacks-en \
-    flatpak rootfiles
+    flatpak
 
 RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
     dnf install -y ${gnome_pkgs[*]}
@@ -33,5 +33,7 @@ RUN chmod a+r /usr/etc/udev/rules.d/51-android.rules && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     systemctl enable dconf-update.service && \
     systemctl enable flatpak-manager.service
+
+RUN rm -rf /root && dnf install -y rootfiles
 
 RUN dracut --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
