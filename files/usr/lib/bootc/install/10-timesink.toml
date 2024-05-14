@@ -2,4 +2,4 @@
 type = "btrfs"
 
 [install]
-kargs = ["rd.luks.options=discard,tpm2-device=auto"]
+kargs = ["rd.luks.options=discard,tpm2-device=auto", "quiet", "splash"]
