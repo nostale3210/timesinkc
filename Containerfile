@@ -14,7 +14,7 @@ RUN useradd -mG wheel temp && passwd -d temp
 
 RUN dnf install -y fedora-release fedora-release-ostree-desktop fedora-release-silverblue \
     xorg-x11-server-Xwayland xdg-desktop-portal xdg-desktop-portal-gtk langpacks-en \
-    flatpak
+    flatpak rootfiles
 
 RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
     dnf install -y ${gnome_pkgs[*]}
@@ -29,6 +29,8 @@ RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-
 
 RUN chmod a+r /usr/etc/udev/rules.d/51-android.rules && \
     chmod +x /usr/libexec/flatpak-manager && \
+    mkdir -p /usr/etc/flatpak/remotes.d && \
+    wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     systemctl enable dconf-update.service && \
     systemctl enable flatpak-manager.service
 
