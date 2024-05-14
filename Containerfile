@@ -21,7 +21,7 @@ RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
 
 RUN echo "install_weak_deps=False" >> /etc/dnf/dnf.conf
 
-RUN dnf install -y neovim adw-gtk3 gnome-tweaks nautilus-python \
+RUN dnf install -y neovim adw-gtk3-theme gnome-tweaks nautilus-python \
     pinentry-gnome3 evince-thumbnailer evince-previewer totem-video-thumbnailer \
     firefox
 
