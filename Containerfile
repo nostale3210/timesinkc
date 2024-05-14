@@ -12,7 +12,7 @@ COPY scripts/ /tmp/scripts
 
 RUN useradd -mG wheel temp && passwd -d temp
 
-RUN dnf install -y fedora-release-silverblue
+RUN dnf install -y fedora-release-silverblue dnf-plugins-core
 
 RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
     dnf install -y ${gnome_pkgs[*]}
