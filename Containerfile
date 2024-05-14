@@ -9,4 +9,6 @@ ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
 COPY files/ /
 
+RUN useradd -mG wheel temp && passwd -d temp
+
 RUN dnf install -y neovim
