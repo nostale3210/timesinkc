@@ -14,7 +14,7 @@ RUN useradd -mG wheel temp && passwd -d temp
 
 RUN dnf install -y fedora-release fedora-release-ostree-desktop fedora-release-silverblue \
     xorg-x11-server-Xwayland xdg-desktop-portal xdg-desktop-portal-gtk langpacks-en \
-    flatpak wget
+    glibc-all-langpacks flatpak wget
 
 RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
     dnf install -y ${gnome_pkgs[*]}
@@ -23,18 +23,20 @@ RUN echo "install_weak_deps=False" >> /etc/dnf/dnf.conf
 
 RUN dnf install -y neovim adw-gtk3-theme gnome-tweaks nautilus-python \
     pinentry-gnome3 evince-thumbnailer evince-previewer totem-video-thumbnailer \
-    firefox
+    firefox geoclue2 unzip
+
+RUN dnf install -y @printing
 
 RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-defaults
 
-RUN chmod a+r /usr/etc/udev/rules.d/51-android.rules && \
-    chmod +x /usr/libexec/flatpak-manager && \
-    mkdir -p /usr/etc/flatpak/remotes.d && \
-    wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
-    systemctl enable dconf-update.service && \
-    systemctl enable flatpak-manager.service && \
-    systemctl disable bootc-fetch-apply-updates.timer
+RUN chmod +x /tmp/scripts/* && \
+    if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
+        /tmp/scripts/drivers.sh; else \
+        /tmp/scripts/nvidia.sh; fi
+    
+RUN /tmp/scripts/non-repo.sh
 
 RUN rm -rf /root && dnf install -y rootfiles
 
-RUN dracut --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
+RUN plymouth-set-default-theme bgrt && \
+    dracut --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
