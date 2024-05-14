@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+VER=20
+VER_FILE=/etc/timesink/ver
+VER_RAN=$(cat $VER_FILE)
+
+if [[ -f $VER_FILE && $VER = $VER_RAN ]]; then
+    echo "Flatpak manager v$VER has already ran. Exiting..."
+    exit 0
+fi
+
+if grep -qz 'fedora' <<< "$(flatpak remotes)"; then
+  /usr/bin/gnome-software --quit
+  /usr/lib/fedora-third-party/fedora-third-party-opt-out
+  /usr/bin/fedora-third-party disable
+  flatpak remote-delete fedora --force
+  flatpak remote-delete fedora-testing --force
+
+  # Remove flatpak apps from origin fedora
+  FEDORA_FLATPAKS=$(flatpak list --app --columns=application,origin | grep -w 'fedora' | awk '{print $1}')
+  flatpak remove --system --noninteractive ${FEDORA_FLATPAKS[@]}
+
+  # Remove flatpak runtimes from origin fedora
+  FEDORA_FLATPAKS=$(flatpak list --runtime --columns=application,arch,branch,origin | grep -w 'fedora' | awk '{print $1"/"$2"/"$3}')
+  flatpak remove --system --noninteractive ${FEDORA_FLATPAKS[@]}
+fi
+
+flatpak remote-add --if-not-exists --system flathub /usr/etc/flatpak/remotes.d/flathub.flatpakrepo
+flatpak remote-modify --system --enable flathub
+
+INSTALL_LIST_FILE="/usr/share/timesink/flatpak/install"
+REMOVE_LIST_FILE="/usr/share/timesink/flatpak/remove"
+
+if [[ -f $INSTALL_LIST_FILE ]]; then
+  if [[ -n $FLATPAK_LIST ]]; then
+    INSTALL_LIST=$(echo $FLATPAK_LIST | grep -vf - $INSTALL_LIST_FILE)
+  else
+    INSTALL_LIST=$(cat $INSTALL_LIST_FILE)
+  fi
+  if [[ -n $INSTALL_LIST ]]; then
+    if ! flatpak install --system --noninteractive flathub ${INSTALL_LIST[@]}; then
+      # exit on error
+      exit 1
+    fi
+  fi
+fi
+
+if [[ ! -f $VER_FILE && -f $REMOVE_LIST_FILE ]]; then
+  REMOVE_LIST=$(echo $FLATPAK_LIST | grep -f - $REMOVE_LIST_FILE)
+  if [[ -n $REMOVE_LIST ]]; then
+    flatpak remove --system --noninteractive ${REMOVE_LIST[@]}
+  fi
+fi
+
+echo $VER > $VER_FILE

@@ -1,5 +1,5 @@
 [install.filesystem.root]
-type = "xfs"
+type = "btrfs"
 
 [install]
 kargs = ["rd.luks.options=discard,tpm2-device=auto"]

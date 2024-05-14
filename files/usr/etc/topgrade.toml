@@ -1,0 +1,19 @@
+[misc]
+no_self_update = true
+disable = ["self_update", "toolbx", "nix"]
+ignore_failures = ["distrobox", "flatpak", "brew_cask", "brew_formula", "pip3", "helm", "home_manager", "firmware", "containers"]
+assume_yes = true
+no_retry = false
+cleanup = true
+
+[commands]
+"Static Nix" = "nx profile upgrade --all"
+
+[linux]
+rpm_ostree = true
+
+[flatpak]
+use_sudo = false
+
+[distrobox]
+use_root = false
