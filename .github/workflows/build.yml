@@ -1,0 +1,158 @@
+name: build-bootc-image
+on:
+  pull_request:
+  schedule:
+    - cron: '00 9 * * *'
+  push:
+      branches:
+        - "main"
+  workflow_dispatch:
+
+env:
+    IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  build-and-push:
+    name: Build and push image
+    runs-on: ubuntu-latest
+    permissions: 
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        major_version: [40]
+        build_target: [main]
+        include:
+          - major_version: 40
+            is_latest_version: true
+            is_stable_version: true
+            is_oldstable_version: false
+
+    steps: 
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Gather environment variables
+        shell: bash
+        run: |
+          echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
+          echo "SOURCE_IMAGE=fedora-bootc" >> $GITHUB_ENV
+
+          if [[ "${{ matrix.build_target }}" == "nvidia" ]]; then
+            export IMAGE_FLAVOR=nvidia
+          else
+            export IMAGE_FLAVOR=main
+          fi
+          echo "IMAGE_NAME=timesinkc-${IMAGE_FLAVOR}" >> $GITHUB_ENV
+
+      - name: Image Metadata
+        uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: |
+            ${{ env.IMAGE_NAME }}
+          labels: |
+            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.description=${{ env.IMAGE_NAME }}
+
+      - name: Generate tags
+        id: generate-tags
+        shell: bash
+        run: |
+          FVER="${{ matrix.major_version }}"
+          TAGS=()
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            TAGS+=("pr-${{ github.event.number }}")
+          else
+            TAGS+=("${FVER}")
+            TAGS+=("${FVER}-$(date +%Y%m%d)")
+            if [[ "${{ matrix.is_latest_version }}" == "true" ]]; then
+              TAGS+=("latest")
+            fi
+            if [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+              TAGS+=("stable")
+            fi
+            if [[ "${{ matrix.is_oldstable_version }}" == "true" ]]; then
+              TAGS+=("oldstable")
+            fi
+          fi
+          echo "Publishing with the following tags: "
+          echo "${TAGS[*]}"
+          
+          echo "TAGS=${TAGS[*]}" >> $GITHUB_OUTPUT
+
+      - name: Pull base image
+        uses: Wandalen/wretry.action@v3.4.0
+        with:
+          attempt_limit: 3
+          attempt_delay: 15000
+          command: |
+            podman pull quay.io/${{ env.SOURCE_ORG }}/${{ env.SOURCE_IMAGE }}:${{ matrix.major_version }}
+
+      - name: Retrieve akmods signing keys
+        run: |
+          mkdir certs
+          echo "${{ secrets.AKMOD_PRIVKEY }}" > certs/private_key.priv
+
+      - name: Build Image
+        id: build_image
+        uses: redhat-actions/buildah-build@v2.13
+        with:
+          containerfiles: |
+            ./Containerfile
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ steps.generate-tags.outputs.TAGS }}
+          build-args: |
+            IMAGE_NAME=${{ matrix.image_name }}
+            SOURCE_ORG=${{ env.SOURCE_ORG }}
+            SOURCE_IMAGE=${{ env.SOURCE_IMAGE }}
+            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
+            IMAGE_FLAVOR=${{ matrix.build_target }}
+          labels: ${{ steps.meta.outputs.labels }}
+          layers: true
+          oci: true
+
+      - name: Lowercase Registry
+        id: registry_case
+        uses: ASzc/change-string-case-action@v6
+        with:
+          string: ${{ env.IMAGE_REGISTRY }}
+
+      - name: Push To GHCR
+        uses: Wandalen/wretry.action@v3.4.0
+        id: push
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
+        with:
+          action: redhat-actions/push-to-registry@v2.8
+          attempt_limit: 3
+          attempt_delay: 15000
+          with: |
+            image: ${{ steps.build_image.outputs.image }}
+            tags: ${{ steps.build_image.outputs.tags }}
+            registry: ${{ steps.registry_case.outputs.lowercase }}
+            username: ${{ env.REGISTRY_USER }}
+            password: ${{ env.REGISTRY_PASSWORD }}
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: sigstore/cosign-installer@v3.5.0
+        if: github.event_name != 'pull_request' # signing disabled for PRs because PRs from outside repos wont have access to your signing secret
+
+      - name: Sign container image
+        if: github.event_name != 'pull_request' # signing disabled for PRs because PRs from outside repos wont have access to your signing secret
+        env:
+          TAGS: ${{ steps.push.outputs.outputs && fromJSON(steps.push.outputs.outputs).digest }} # hash of the new image, to make sure we sign the right one
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+        run: |
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
