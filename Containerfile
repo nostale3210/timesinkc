@@ -9,7 +9,7 @@ ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
 COPY files/ /
 COPY scripts/ /tmp/scripts
-ADD certs/private_key.priv /etc/pki/akmods/private/private_key.priv
+ADD certs/private_key.priv /tmp/certs/private_key.priv
 
 RUN dnf install -y cryptsetup tpm2-tools tpm2-tss
 
