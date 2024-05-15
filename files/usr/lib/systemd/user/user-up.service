@@ -1,0 +1,9 @@
+[Unit]
+Description=Update System
+ConditionACPower=true
+ConditionMemoryPressure=50%
+ConditionCPUPressure=30%
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/user-up
