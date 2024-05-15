@@ -26,17 +26,19 @@ RUN dnf install -y neovim adw-gtk3-theme gnome-tweaks nautilus-python \
     pinentry-gnome3 evince-thumbnailer evince-previewer totem-video-thumbnailer \
     firefox geoclue2 unzip distrobox
 
-RUN dnf install -y @printing
+RUN mkdir -p /var/lib/alternatives && \
+    dnf install -y @printing
 
 RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-defaults
 
 RUN chmod +x /tmp/scripts/* && \
-    mkdir -p /var/lib/alternatives && \
     if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
         /tmp/scripts/drivers.sh && \
         rm -rf /etc/pki/akmods/private/private_key.priv; else \
         /tmp/scripts/nvidia.sh; fi
     
+RUN /tmp/scripts/copr.sh
+
 RUN /tmp/scripts/non-repo.sh
 
 RUN rm -rf /root && dnf install -y rootfiles

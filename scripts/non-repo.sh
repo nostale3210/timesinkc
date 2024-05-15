@@ -43,12 +43,6 @@ sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/appl
 sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.Tour.desktop
 sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/nvim.desktop
 
-#themes
-mkdir -p /var/tmp/rootfs/usr/share/icons
-curl -OL https://github.com/ful1e5/Bibata_Cursor/releases/latest/download/Bibata-Modern-Classic.tar.xz
-tar -xf Bibata-Modern-Classic.tar.xz --directory /var/tmp/rootfs/usr/share/icons/
-rm -rf Bibata-Modern-Classic.tar.xz
-
 #fonts
 mkdir -p /usr/share/fonts/Lilex
 curl -OL https://github.com/mishamyrt/Lilex/releases/latest/download/Lilex.zip
