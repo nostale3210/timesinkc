@@ -3,6 +3,7 @@
 set -oue pipefail
 
 install -Dm644 /tmp/certs/private_key.priv /etc/pki/akmods/private/private_key.priv
+install -Dm644 /usr/etc/pki/akmods/certs/public_key.der /etc/pki/akmods/certs/public_key.der
 
 dnf install -y \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
