@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -oue pipefail
+
+notify-send "System Upgrade" "Deploying latest timesinkc image."
+
+# update flatpaks
+flatpak update -y
+flatpak uninstall --unused -y
+
+# update nix packages
+nx profile upgrade --all
+
+# update distrobox containers
+distrobox upgrade -a
