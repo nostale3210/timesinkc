@@ -32,13 +32,16 @@ RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-
 
 RUN chmod +x /tmp/scripts/* && \
     if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
-        /tmp/scripts/drivers.sh; else \
+        /tmp/scripts/drivers.sh && \
+        rm -rf /etc/pki/akmods/private/private_key.priv; else \
         /tmp/scripts/nvidia.sh; fi && \
-    rm -rf /etc/pki/akmods/private/private_key.priv
     
 RUN /tmp/scripts/non-repo.sh
 
 RUN rm -rf /root && dnf install -y rootfiles
+
+COPY files/usr/share/pixmaps/ /usr/share/pixmaps/
+COPY files/usr/share/plymouth/ /usr/share/plymouth/
 
 RUN plymouth-set-default-theme bgrt && \
     dracut --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
