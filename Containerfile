@@ -29,7 +29,8 @@ RUN dnf install -y neovim adw-gtk3-theme gnome-tweaks nautilus-python \
 RUN mkdir -p /var/lib/alternatives && \
     dnf install -y @printing
 
-RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-defaults
+RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-defaults \
+    papirus-icon-theme
 
 RUN chmod +x /tmp/scripts/* && \
     if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
