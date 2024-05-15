@@ -8,8 +8,8 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION}
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
 COPY files/ /
-COPY scripts/ /tmp/scripts
-ADD certs/private_key.priv /tmp/certs/private_key.priv
+COPY scripts /tmp/scripts
+COPY certs /tmp/certs
 
 RUN dnf install -y cryptsetup tpm2-tools tpm2-tss
 
