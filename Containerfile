@@ -34,8 +34,7 @@ RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-
 RUN chmod +x /tmp/scripts/* && \
     if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
         /tmp/scripts/drivers.sh; else \
-        /tmp/scripts/nvidia.sh; fi && \
-    rm -rf /etc/pki/akmods/private/private_key.priv
+        /tmp/scripts/nvidia.sh; fi
 
 RUN /tmp/scripts/copr.sh
 
