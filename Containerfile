@@ -15,7 +15,7 @@ RUN dnf install -y cryptsetup tpm2-tools tpm2-tss
 
 RUN dnf install -y fedora-release fedora-release-ostree-desktop fedora-release-silverblue \
     xorg-x11-server-Xwayland xdg-desktop-portal xdg-desktop-portal-gtk langpacks-en \
-    glibc-all-langpacks flatpak wget
+    glibc-all-langpacks flatpak wget git-core
 
 RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
     dnf install -y ${gnome_pkgs[*]}
@@ -33,9 +33,9 @@ RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-
 
 RUN chmod +x /tmp/scripts/* && \
     if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
-        /tmp/scripts/drivers.sh && \
-        rm -rf /etc/pki/akmods/private/private_key.priv; else \
-        /tmp/scripts/nvidia.sh; fi
+        /tmp/scripts/drivers.sh; else \
+        /tmp/scripts/nvidia.sh; fi && \
+    rm -rf /etc/pki/akmods/private/private_key.priv
 
 RUN /tmp/scripts/copr.sh
 
