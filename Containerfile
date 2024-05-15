@@ -13,6 +13,8 @@ ADD certs/private_key.priv /etc/pki/akmods/private/private_key.priv
 
 RUN useradd -mG wheel temp && passwd -d temp
 
+RUN dnf install -y cryptsetup tpm2-tools tpm2-tss
+
 RUN dnf install -y fedora-release fedora-release-ostree-desktop fedora-release-silverblue \
     xorg-x11-server-Xwayland xdg-desktop-portal xdg-desktop-portal-gtk langpacks-en \
     glibc-all-langpacks flatpak wget
