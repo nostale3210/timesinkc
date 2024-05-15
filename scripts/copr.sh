@@ -2,6 +2,8 @@
 
 set -oue pipefail
 
+dnf install -y dnf-plugins-core
+
 dnf copr enable -y peterwu/rendezvous
 dnf copr enable -y che/nerd-fonts
 dnf copr enable -y kylegospo/system76-scheduler
