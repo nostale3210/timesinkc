@@ -21,3 +21,5 @@ dnf groupupdate -y multimedia --setopt="install_weak_deps=False" \
 dnf groupupdate -y sound-and-video
 
 systemctl enable nvidia-{suspend,resume,hibernate}
+
+rm -rf /etc/pki/akmods/private/private_key.priv
