@@ -43,5 +43,4 @@ RUN rm -rf /root && dnf install -y rootfiles
 COPY files/usr/share/pixmaps/ /usr/share/pixmaps/
 COPY files/usr/share/plymouth/ /usr/share/plymouth/
 
-RUN plymouth-set-default-theme bgrt && \
-    dracut -f --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
+RUN plymouth-set-default-theme bgrt
