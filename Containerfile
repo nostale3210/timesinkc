@@ -46,5 +46,4 @@ COPY files/usr/share/plymouth/ /usr/share/plymouth/
 RUN plymouth-set-default-theme bgrt && \
     dracut -f --no-hostonly \
     --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" --reproducible -v \
-    -I "/usr/lib/kbd/consolefonts/eurlatgr.psfu.gz /usr/lib/kbd/keymaps/xkb/de.map.gz /etc/vconsole.conf /usr/bin/setfont /usr/bin/loadkeys /usr/bin/gzip /usr/lib/kbd/keymaps/pine/en.map.gz" \
-    -a "kernel-modules dracut-systemd systemd-initrd base ostree virtiofs overlayfs tpm2-tss lvm crypt plymouth"
+    -a "kernel-modules dracut-systemd systemd-initrd base ostree virtiofs overlayfs tpm2-tss lvm crypt i18n plymouth"
