@@ -14,3 +14,8 @@ dnf install -y bibata-cursor-themes nerd-fonts system76-scheduler \
 
 systemctl enable com.system76.Scheduler.service
 systemctl enable tailscaled.service
+
+dnf copr disable -y peterwu/rendezvous
+dnf copr disable -y che/nerd-fonts
+dnf copr disable -y kylegospo/system76-scheduler
+dnf config-manager -y --disable tailscale-stable

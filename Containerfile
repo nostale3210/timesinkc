@@ -11,8 +11,6 @@ COPY files/ /
 COPY scripts /tmp/scripts
 COPY certs /tmp/certs
 
-RUN dnf install -y cryptsetup tpm2-tools tpm2-tss
-
 RUN dnf install -y fedora-release fedora-release-ostree-desktop fedora-release-silverblue \
     xorg-x11-server-Xwayland xdg-desktop-portal xdg-desktop-portal-gtk langpacks-en \
     glibc-all-langpacks flatpak wget git-core
@@ -20,11 +18,11 @@ RUN dnf install -y fedora-release fedora-release-ostree-desktop fedora-release-s
 RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
     dnf install -y ${gnome_pkgs[*]}
 
-RUN echo "install_weak_deps=False" >> /etc/dnf/dnf.conf
-
 RUN dnf install -y neovim adw-gtk3-theme gnome-tweaks nautilus-python \
     pinentry-gnome3 evince-thumbnailer evince-previewer totem-video-thumbnailer \
     firefox geoclue2 unzip distrobox
+
+RUN dnf install -y zsh zsh-autosuggestions zsh-syntax-highlighting
 
 RUN mkdir -p /var/lib/alternatives && \
     dnf install -y @printing

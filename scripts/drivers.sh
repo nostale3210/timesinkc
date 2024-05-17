@@ -14,3 +14,6 @@ dnf groupupdate -y multimedia --setopt="install_weak_deps=False" \
     --exclude=PackageKit-gstreamer-plugin
 dnf groupupdate -y sound-and-video
 dnf install -y steam-devices
+
+dnf config-manager -y --disable rpmfusion-free rpmfusion-free-updates \
+    rpmfusion-nonfree rpmfusion-nonfree-updates
