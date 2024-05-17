@@ -44,6 +44,7 @@ COPY files/usr/share/pixmaps/ /usr/share/pixmaps/
 COPY files/usr/share/plymouth/ /usr/share/plymouth/
 
 RUN plymouth-set-default-theme bgrt && \
+    mkdir -p /tmp/dracut && \
     dracut -f --no-hostonly \
     --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" --reproducible -v \
     --add "ostree i18n plymouth" --tmpdir "/tmp/dracut"
