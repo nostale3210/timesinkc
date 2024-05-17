@@ -30,14 +30,13 @@ RUN mkdir -p /var/lib/alternatives && \
 RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-defaults \
     papirus-icon-theme
 
-RUN /tmp/scripts/copr.sh
+RUN bash /tmp/scripts/copr.sh
 
-RUN chmod +x /tmp/scripts/* && \
-    if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
-        /tmp/scripts/drivers.sh; else \
-        /tmp/scripts/nvidia.sh; fi
+RUN if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
+        bash /tmp/scripts/drivers.sh; else \
+        bash /tmp/scripts/nvidia.sh; fi
 
-RUN /tmp/scripts/non-repo.sh
+RUN bash /tmp/scripts/non-repo.sh
 
 RUN rm -rf /root && dnf install -y rootfiles
 
