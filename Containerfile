@@ -13,7 +13,7 @@ COPY certs /tmp/certs
 
 RUN dnf install -y fedora-release fedora-release-ostree-desktop fedora-release-silverblue \
     xorg-x11-server-Xwayland xdg-desktop-portal xdg-desktop-portal-gtk langpacks-en \
-    glibc-all-langpacks flatpak wget git-core
+    langpacks-de glibc-all-langpacks flatpak wget git-core
 
 RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
     dnf install -y ${gnome_pkgs[*]}
@@ -43,4 +43,8 @@ RUN rm -rf /root && dnf install -y rootfiles
 COPY files/usr/share/pixmaps/ /usr/share/pixmaps/
 COPY files/usr/share/plymouth/ /usr/share/plymouth/
 
-RUN plymouth-set-default-theme bgrt
+RUN plymouth-set-default-theme bgrt && \
+    /usr/libexec/rpm-ostree/wrapped/dracut --no-hostonly \
+    --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" --reproducible -v \
+    -I /usr/lib/kbd/consolefonts/eurlatgr.psfu.gz /usr/lib/kbd/keymaps/xkb/de.map.gz /etc/vconsole.conf /usr/bin/setfont /usr/bin/loadkeys /usr/bin/gzip /usr/lib/kbd/keymaps/pine/en.map.gz \
+    -a plymouth
