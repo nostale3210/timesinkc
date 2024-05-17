@@ -28,7 +28,8 @@ RUN mkdir -p /var/lib/alternatives && \
     dnf install -y @printing
 
 RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-defaults \
-    papirus-icon-theme
+    papirus-icon-theme && \
+    plymouth-set-default-theme bgrt
 
 RUN bash /tmp/scripts/copr.sh
 
@@ -42,9 +43,3 @@ RUN rm -rf /root && dnf install -y rootfiles
 
 COPY files/usr/share/pixmaps/ /usr/share/pixmaps/
 COPY files/usr/share/plymouth/ /usr/share/plymouth/
-
-RUN plymouth-set-default-theme bgrt && \
-    mkdir -p /tmp/dracut && \
-    dracut -f --no-hostonly \
-    --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" --reproducible -v \
-    --add "ostree i18n plymouth" --tmpdir "/tmp/dracut"
