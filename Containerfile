@@ -46,4 +46,4 @@ COPY files/usr/share/plymouth/ /usr/share/plymouth/
 RUN plymouth-set-default-theme bgrt && \
     dracut -f --no-hostonly \
     --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" --reproducible -v \
-    -a "kernel-modules dracut-systemd systemd-initrd base ostree virtiofs overlayfs tpm2-tss lvm crypt i18n plymouth"
+    --add "ostree i18n plymouth" --tmpdir "/tmp/dracut"
