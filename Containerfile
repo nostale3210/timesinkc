@@ -44,7 +44,7 @@ COPY files/usr/share/pixmaps/ /usr/share/pixmaps/
 COPY files/usr/share/plymouth/ /usr/share/plymouth/
 
 RUN plymouth-set-default-theme bgrt && \
-    KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
+    KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
     rpm-ostree initramfs --enable --arg="--no-hostonly" \
     --arg="--kver $KVER --reproducible -v" \
     --arg="-I /usr/lib/kbd/consolefonts/eurlatgr.psfu.gz /usr/lib/kbd/keymaps/xkb/de.map.gz /etc/vconsole.conf /usr/bin/setfont /usr/bin/loadkeys /usr/bin/gzip /usr/lib/kbd/keymaps/pine/en.map.gz" \
