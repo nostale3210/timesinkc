@@ -14,7 +14,9 @@ rpm-ostree override remove \
     libpostproc-free \
     libswresample-free \
     libswscale-free \
-    --install ffmpeg
+    --install ffmpeg \
+    --install ffmpeg-libs \
+    --install ffmpeg-thumbnailer
 rpm-ostree install \
     gstreamer1-{plugin-libav,plugins-bad-free-extras,plugins-ugly,vaapi} \
     steam-devices
