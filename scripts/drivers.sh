@@ -2,7 +2,10 @@
 
 set -oue pipefail
 
+mkdir -p /var/lib/alternatives
+
 rpm-ostree install intel-media-driver libva-intel-driver
+
 rpm-ostree override remove \
     mesa-va-drivers \
     --install mesa-va-drivers-freeworld \
