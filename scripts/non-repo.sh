@@ -39,11 +39,8 @@ chmod +x /usr/libexec/user-up
 systemctl enable dconf-update.service
 systemctl enable flatpak-manager.service
 systemctl enable sys-up.timer
-systemctl disable bootc-fetch-apply-updates.timer
 
 systemctl --global enable user-up.timer
-
-rm -rf /usr/lib/systemd/system/systemd-remount-fs.service
 
 #hide applications
 sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.Terminal.desktop
