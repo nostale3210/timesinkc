@@ -39,9 +39,5 @@ RUN if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
 
 RUN bash /tmp/scripts/non-repo.sh
 
-RUN rm -rf /root && dnf install -y rootfiles
-
 COPY files/usr/share/pixmaps/ /usr/share/pixmaps/
 COPY files/usr/share/plymouth/ /usr/share/plymouth/
-
-RUN dracut -f --kver "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
