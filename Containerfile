@@ -11,8 +11,6 @@ COPY files/ /
 COPY scripts /tmp/scripts
 COPY certs /tmp/certs
 
-RUN rpm-ostree upgrade
-
 RUN rpm-ostree install bootc neovim adw-gtk3-theme gnome-tweaks nautilus-python \
     pinentry-gnome3 evince-thumbnailer evince-previewer totem-video-thumbnailer \
     firefox geoclue2 unzip distrobox
