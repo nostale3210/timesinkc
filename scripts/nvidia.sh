@@ -9,12 +9,20 @@ dnf install -y \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
+KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
+
 dnf install -y akmod-nvidia
 dnf install -y xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-libs \
     xorg-x11-drv-nvidia-power nvidia-vaapi-driver libva-utils vdpauinfo
+
+NVIDIA_AKMOD_VERSION="$(basename "$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEASE}')" ".fc${RELEASE%%.*}")"
+
 akmods --force \
-    --kernels "$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" \
+    --kernels "${KVER}" \
     --kmod nvidia
+
+modinfo /usr/lib/modules/${KVER}/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko.xz > /dev/null || \
+(cat /var/cache/akmods/nvidia/${NVIDIA_AKMOD_VERSION}-for-${KVER}.failed.log && exit 1)
 
 dnf swap -y ffmpeg-free ffmpeg --allowerasing
 dnf groupupdate -y multimedia --setopt="install_weak_deps=False" \

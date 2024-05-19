@@ -14,6 +14,7 @@ chmod +x /usr/bin/nix-index
 curl -L https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz > zellij.tar.gz
 tar -xf zellij.tar.gz --directory /usr/bin/
 chmod +x /usr/bin/zellij
+rm -rf zellij.tar.gz
 
 #proot
 curl -L https://proot.gitlab.io/proot/bin/proot > /usr/bin/proot
