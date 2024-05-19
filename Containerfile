@@ -20,7 +20,7 @@ RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
 
 RUN dnf install -y neovim adw-gtk3-theme gnome-tweaks nautilus-python \
     pinentry-gnome3 evince-thumbnailer evince-previewer totem-video-thumbnailer \
-    firefox geoclue2 unzip distrobox wl-clipboard
+    firefox geoclue2 unzip distrobox wl-clipboard python3-pip
 
 RUN dnf install -y google-noto-fonts-common google-noto-cjk-fonts google-noto-emoji-fonts \
     google-noto-color-emoji-fonts

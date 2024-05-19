@@ -24,6 +24,9 @@ chmod +x /usr/bin/proot
 curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net |sh
 chmod +x tectonic && mv tectonic /usr/bin/tectonic
 
+pip install --prefix=/usr nautilus-open-any-terminal
+pip install --prefix=/usr pynvim
+
 #flathub remote
 mkdir -p /usr/etc/flatpak/remotes.d
 wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d
@@ -58,3 +61,5 @@ unzip -j Lilex.zip ttf/* -d /usr/share/fonts/Lilex/
 rm -rf Lilex.zip
 
 fc-cache -f -v
+
+glib-compile-schemas /usr/share/glib-2.0/schemas
