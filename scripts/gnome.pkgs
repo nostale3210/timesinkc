@@ -46,9 +46,9 @@ gvfs-mtp
 gvfs-smb
 ipp-usb
 iw
+iwlax2xx-firmware
 librsvg2
 libsane-hpaio
-linux-firmware
 low-memory-monitor
 malcontent-control
 malcontent-ui-libs
