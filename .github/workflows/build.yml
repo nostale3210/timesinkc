@@ -84,7 +84,7 @@ jobs:
           echo "TAGS=${TAGS[*]}" >> $GITHUB_OUTPUT
 
       - name: Pull base image
-        uses: Wandalen/wretry.action@v3.4.0
+        uses: Wandalen/wretry.action@v3.5.0
         with:
           attempt_limit: 3
           attempt_delay: 15000
@@ -121,7 +121,7 @@ jobs:
           string: ${{ env.IMAGE_REGISTRY }}
 
       - name: Push To GHCR
-        uses: Wandalen/wretry.action@v3.4.0
+        uses: Wandalen/wretry.action@v3.5.0
         id: push
         env:
           REGISTRY_USER: ${{ github.actor }}
