@@ -46,7 +46,7 @@ gvfs-mtp
 gvfs-smb
 ipp-usb
 iw
-iwlwifi-dvm-firmware
+iwlax2xx-firmware
 librsvg2
 libsane-hpaio
 low-memory-monitor
