@@ -47,6 +47,7 @@ ipp-usb
 iw
 librsvg2
 libsane-hpaio
+linux-firmware
 low-memory-monitor
 malcontent-control
 malcontent-ui-libs
