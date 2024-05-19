@@ -48,4 +48,5 @@ COPY files/usr/share/plymouth/ /usr/share/plymouth/
 RUN KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
     dracut --no-hostonly --kver "$KVER" \
     --reproducible -v --add "ostree plymouth i18n" \
-    -f "/lib/modules/$KVER/initramfs.img"
+    -f "/lib/modules/$KVER/initramfs.img" && \
+    ostree container commit
