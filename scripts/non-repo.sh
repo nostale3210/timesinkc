@@ -40,6 +40,7 @@ systemctl enable dconf-update.service
 systemctl enable flatpak-manager.service
 systemctl enable sys-up.timer
 systemctl disable bootc-fetch-apply-updates.timer
+systemctl mask bootc-fetch-apply-updates.timer
 
 systemctl --global enable user-up.timer
 
