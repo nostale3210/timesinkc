@@ -9,6 +9,7 @@ NetworkManager-vpnc-gnome
 NetworkManager-wifi
 NetworkManager-wwan
 adobe-source-code-pro-fonts
+alsa-sof-firmware
 apr-util-openssl
 avif-pixbuf-loader
 avahi
@@ -45,9 +46,9 @@ gvfs-mtp
 gvfs-smb
 ipp-usb
 iw
+iwlwifi-dvm-firmware
 librsvg2
 libsane-hpaio
-linux-firmware
 low-memory-monitor
 malcontent-control
 malcontent-ui-libs
