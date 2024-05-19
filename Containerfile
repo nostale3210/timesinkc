@@ -20,7 +20,10 @@ RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
 
 RUN dnf install -y neovim adw-gtk3-theme gnome-tweaks nautilus-python \
     pinentry-gnome3 evince-thumbnailer evince-previewer totem-video-thumbnailer \
-    firefox geoclue2 unzip distrobox
+    firefox geoclue2 unzip distrobox wl-clipboard
+
+RUN dnf install -y google-noto-fonts-common google-noto-cjk-fonts google-noto-emoji-fonts \
+    google-noto-color-emoji-fonts
 
 RUN dnf install -y zsh zsh-autosuggestions zsh-syntax-highlighting
 
@@ -41,3 +44,8 @@ RUN bash /tmp/scripts/non-repo.sh
 
 COPY files/usr/share/pixmaps/ /usr/share/pixmaps/
 COPY files/usr/share/plymouth/ /usr/share/plymouth/
+
+RUN KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
+    dracut --no-hostonly --kver "$KVER" \
+    --reproducible -v --add "ostree plymouth i18n" \
+    -f "/lib/modules/$KVER/initramfs.img"
