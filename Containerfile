@@ -9,7 +9,6 @@ ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
 COPY files/ /
 COPY scripts /usr/share/timesink/scripts
-COPY certs /usr/share/timesink/certs
 
 RUN readarray basic_pkgs < /usr/share/timesink/scripts/basics.pkgs && \
     dnf install -y ${basic_pkgs[*]} && \
@@ -49,6 +48,8 @@ RUN dnf install -y @printing && \
 
 RUN bash /usr/share/timesink/scripts/copr.sh && \
     ostree container commit
+
+COPY certs /tmp/certs
 
 RUN if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
         bash /usr/share/timesink/scripts/drivers.sh; else \
