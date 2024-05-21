@@ -18,6 +18,10 @@ RUN readarray lang_pkgs < /usr/share/timesink/scripts/lang.pkgs && \
     dnf install -y ${lang_pkgs[*]} && \
     ostree container commit
 
+RUN readarray network_pkgs < /usr/share/timesink/scripts/network.pkgs && \
+    dnf install -y ${network_pkgs[*]} && \
+    ostree container commit
+
 RUN readarray gnome_pkgs < /usr/share/timesink/scripts/gnome.pkgs && \
     dnf install -y ${gnome_pkgs[*]} && \
     ostree container commit
