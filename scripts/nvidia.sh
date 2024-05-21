@@ -2,7 +2,9 @@
 
 set -oue pipefail
 
-install -Dm644 /tmp/certs/private_key.priv /etc/pki/akmods/private/private_key.priv
+mkdir -p /var/lib/alternatives
+
+install -Dm644 /usr/share/timesink/certs/private_key.priv /etc/pki/akmods/private/private_key.priv
 install -Dm644 /usr/etc/pki/akmods/certs/public_key.der /etc/pki/akmods/certs/public_key.der
 
 dnf install -y \
@@ -32,4 +34,5 @@ dnf install -y steam-devices
 
 systemctl enable nvidia-{suspend,resume,hibernate}
 
+rm -rf /usr/share/timesink/certs/private_key.priv
 rm -rf /etc/pki/akmods/private/private_key.priv
