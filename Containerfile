@@ -8,39 +8,56 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION}
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
 COPY files/ /
-COPY scripts /tmp/scripts
+COPY scripts /usr/share/timesink/scripts
+
+RUN readarray basic_pkgs < /usr/share/timesink/scripts/basics.pkgs && \
+    dnf install -y ${basic_pkgs[*]} && \
+    ostree container commit
+
+RUN readarray lang_pkgs < /usr/share/timesink/scripts/lang.pkgs && \
+    dnf install -y ${lang_pkgs[*]} && \
+    ostree container commit
+
+RUN readarray gnome_pkgs < /usr/share/timesink/scripts/gnome.pkgs && \
+    dnf install -y ${gnome_pkgs[*]} && \
+    ostree container commit
+
+RUN readarray fedora_release_pkgs < /usr/share/timesink/scripts/fedora-release.pkgs && \
+    dnf install -y ${fedora_release_pkgs[*]} && \
+    plymouth-set-default-theme bgrt && \
+    ostree container commit
+
+RUN readarray drivers_pkgs < /usr/share/timesink/scripts/drivers.pkgs && \
+    dnf install -y ${drivers_pkgs[*]} && \
+    ostree container commit
+
+RUN readarray firmware_pkgs < /usr/share/timesink/scripts/firmware.pkgs && \
+    dnf install -y ${firmware_pkgs[*]} && \
+    ostree container commit
+
+RUN readarray extra_pkgs < /usr/share/timesink/scripts/extras.pkgs && \
+    dnf install -y ${extra_pkgs[*]} && \
+    ostree container commit
+
+RUN readarray fonts_pkgs < /usr/share/timesink/scripts/fonts.pkgs && \
+    dnf install -y ${fonts_pkgs[*]} && \
+    ostree container commit
+
+RUN dnf install -y @printing && \
+    ostree container commit
+
+RUN bash /usr/share/timesink/scripts/copr.sh && \
+    ostree container commit
+
 COPY certs /tmp/certs
 
-RUN dnf install -y fedora-release fedora-release-ostree-desktop fedora-release-silverblue \
-    xorg-x11-server-Xwayland xdg-desktop-portal xdg-desktop-portal-gtk langpacks-en \
-    langpacks-de glibc-all-langpacks flatpak wget git-core
-
-RUN readarray gnome_pkgs < /tmp/scripts/gnome.pkgs && \
-    dnf install -y ${gnome_pkgs[*]}
-
-RUN dnf install -y neovim adw-gtk3-theme gnome-tweaks nautilus-python \
-    pinentry-gnome3 evince-thumbnailer evince-previewer totem-video-thumbnailer \
-    firefox geoclue2 unzip distrobox wl-clipboard python3-pip
-
-RUN dnf install -y google-noto-fonts-common google-noto-cjk-fonts google-noto-emoji-fonts \
-    google-noto-color-emoji-fonts
-
-RUN dnf install -y zsh zsh-autosuggestions zsh-syntax-highlighting
-
-RUN mkdir -p /var/lib/alternatives && \
-    dnf install -y @printing
-
-RUN dnf install -y plymouth plymouth-system-theme usb_modeswitch zram-generator-defaults \
-    papirus-icon-theme && \
-    plymouth-set-default-theme bgrt
-
-RUN bash /tmp/scripts/copr.sh
-
 RUN if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
-        bash /tmp/scripts/drivers.sh; else \
-        bash /tmp/scripts/nvidia.sh; fi
+        bash /usr/share/timesink/scripts/drivers.sh; else \
+        bash /usr/share/timesink/scripts/nvidia.sh; fi && \
+    ostree container commit
 
-RUN bash /tmp/scripts/non-repo.sh
+RUN bash /usr/share/timesink/scripts/non-repo.sh && \
+    ostree container commit
 
 COPY files/usr/share/pixmaps/ /usr/share/pixmaps/
 COPY files/usr/share/plymouth/ /usr/share/plymouth/

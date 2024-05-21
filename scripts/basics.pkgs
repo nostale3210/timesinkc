@@ -1,0 +1,11 @@
+flatpak
+geoclue2
+git-core
+unzip
+wget
+xdg-desktop-portal
+xdg-desktop-portal-gtk
+xorg-x11-server-Xwayland
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
