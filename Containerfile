@@ -66,7 +66,7 @@ RUN bash /usr/share/timesink/scripts/non-repo.sh && \
 COPY files/usr/share/pixmaps/ /usr/share/pixmaps/
 COPY files/usr/share/plymouth/ /usr/share/plymouth/
 
-RUN KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
+RUN KVER="$(rpm -qa kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" | tail -n 1 && \
     dracut --no-hostonly --kver "$KVER" \
     --reproducible -v --add "ostree plymouth i18n" \
     -f "/lib/modules/$KVER/initramfs.img" && \
