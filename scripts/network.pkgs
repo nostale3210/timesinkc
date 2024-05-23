@@ -11,8 +11,6 @@ NetworkManager-vpnc-gnome
 NetworkManager-wifi
 NetworkManager-wwan
 avahi
-geocode-glib
-geocode-glib2
 glib-networking
 firewalld
 iw
