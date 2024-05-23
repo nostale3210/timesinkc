@@ -35,8 +35,6 @@ libertas-usb8388-olpc-firmware
 linux-firmware
 linux-firmware-whence
 liquidio-firmware
-mlxsw_spectrum-firmware
-mrvlprestera-firmware
 mt7xxx-firmware
 nvidia-gpu-firmware
 nxpwireless-firmware
