@@ -14,7 +14,7 @@ dnf install -y \
 KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 
 dnf install -y fedora-repos-archive
-dnf install -y akmod-nvidia kernel-devel-${KVER}}
+dnf install -y akmod-nvidia kernel-devel-${KVER}
 dnf install -y xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-libs \
     xorg-x11-drv-nvidia-power nvidia-vaapi-driver libva-utils vdpauinfo
 
