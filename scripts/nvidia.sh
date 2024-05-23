@@ -16,7 +16,10 @@ dnf install -y akmod-nvidia kernel
 dnf install -y xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-libs \
     xorg-x11-drv-nvidia-power nvidia-vaapi-driver libva-utils vdpauinfo
 
-KVER="$(rpm -qa kernel-core --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}' | tail -n 1 | cut -c 8-12 --complement)"
+rpm -qa kernel
+rpm -qa kernel-core
+
+KVER="$(rpm -qa kernel-core --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}' | head -n 1 | cut -c 8-12 --complement)"
 NVIDIA_AKMOD_VERSION="$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEASE}')"
 
 akmods --force \
