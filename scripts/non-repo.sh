@@ -36,6 +36,7 @@ chmod a+r /usr/etc/udev/rules.d/51-android.rules
 
 #binaries for services
 chmod +x /usr/libexec/flatpak-manager
+chmod +x /usr/libexec/dotfile-manager
 chmod +x /usr/libexec/sys-up
 chmod +x /usr/libexec/user-up
 
@@ -47,6 +48,7 @@ systemctl disable bootc-fetch-apply-updates.timer
 systemctl mask bootc-fetch-apply-updates.timer
 
 systemctl --global enable user-up.timer
+systemctl --global enable dotfile-manager.service
 
 rm -rf /usr/lib/systemd/system/systemd-remount-fs.service
 
