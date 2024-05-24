@@ -1,3 +1,2 @@
 [com/github/stunkymonkey/nautilus-open-any-terminal]
-flatpak='system'
-terminal='wezterm'
+terminal='kitty'

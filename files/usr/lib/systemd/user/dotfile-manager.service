@@ -1,0 +1,9 @@
+[Unit]
+Description=Manage default dotfiles
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/dotfile-manager
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+VER=9
+VER_FILE=~/.config/ver-dot
+
+if [[ ! -f $VER_FILE ]]; then
+    touch $VER_FILE
+fi
+
+VER_RAN=$(cat $VER_FILE)
+
+if [[ $VER = $VER_RAN ]]; then
+    echo "Dotfile manager v$VER has already ran. Exiting..."
+    exit 0
+fi
+
+echo "Placing config files"
+cp -rf /usr/share/timesink/config/* ~/.config/
+
+echo $VER > $VER_FILE
