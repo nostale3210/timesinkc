@@ -95,12 +95,6 @@ jobs:
           command: |
             docker pull quay.io/${{ env.SOURCE_ORG }}/${{ env.SOURCE_IMAGE }}:${{ matrix.major_version }}
 
-      - name: Retrieve akmods signing keys
-        run: |
-          mkdir -p certs
-          echo "${{ secrets.AKMOD_PRIVKEY }}" > certs/private_key.priv
-          wc -c certs/private_key.priv
-
       - name: Login to GHCR
         uses: docker/login-action@v3
         if: github.event_name != 'pull_request'
@@ -124,6 +118,8 @@ jobs:
             IMAGE_FLAVOR=${{ matrix.build_target }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          secrets: |
+            "AKMOD_PRIVKEY=${{ secrets.AKMOD_PRIVKEY }}"
 
       - name: Lowercase Registry
         id: registry_case
