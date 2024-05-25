@@ -65,7 +65,7 @@ jobs:
         shell: bash
         run: |
           FVER="${{ matrix.major_version }}"
-          SRC="ghcr.io/nostale3210/${{ env.IMAGE_NAME }}"
+          SRC="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}"
           TAGS=""
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             TAGS+="${SRC}:pr-${{ github.event.number }}"
@@ -123,4 +123,4 @@ jobs:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
         run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}@${TAGS}
