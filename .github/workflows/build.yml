@@ -34,6 +34,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Gather environment variables
         shell: bash
         run: |
@@ -89,53 +92,13 @@ jobs:
           attempt_limit: 3
           attempt_delay: 15000
           command: |
-            podman pull quay.io/${{ env.SOURCE_ORG }}/${{ env.SOURCE_IMAGE }}:${{ matrix.major_version }}
+            docker pull quay.io/${{ env.SOURCE_ORG }}/${{ env.SOURCE_IMAGE }}:${{ matrix.major_version }}
 
       - name: Retrieve akmods signing keys
         run: |
           mkdir -p certs
           echo "${{ secrets.AKMOD_PRIVKEY }}" > certs/private_key.priv
           wc -c certs/private_key.priv
-
-      - name: Build Image
-        id: build_image
-        uses: redhat-actions/buildah-build@v2.13
-        with:
-          containerfiles: |
-            ./Containerfile
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ steps.generate-tags.outputs.TAGS }}
-          build-args: |
-            SOURCE_ORG=${{ env.SOURCE_ORG }}
-            SOURCE_IMAGE=${{ env.SOURCE_IMAGE }}
-            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
-            IMAGE_FLAVOR=${{ matrix.build_target }}
-          labels: ${{ steps.meta.outputs.labels }}
-          layers: true
-          oci: true
-
-      - name: Lowercase Registry
-        id: registry_case
-        uses: ASzc/change-string-case-action@v6
-        with:
-          string: ${{ env.IMAGE_REGISTRY }}
-
-      - name: Push To GHCR
-        uses: Wandalen/wretry.action@v3.5.0
-        id: push
-        env:
-          REGISTRY_USER: ${{ github.actor }}
-          REGISTRY_PASSWORD: ${{ github.token }}
-        with:
-          action: redhat-actions/push-to-registry@v2.8
-          attempt_limit: 3
-          attempt_delay: 15000
-          with: |
-            image: ${{ steps.build_image.outputs.image }}
-            tags: ${{ steps.build_image.outputs.tags }}
-            registry: ${{ steps.registry_case.outputs.lowercase }}
-            username: ${{ env.REGISTRY_USER }}
-            password: ${{ env.REGISTRY_PASSWORD }}
 
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -144,6 +107,28 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Image
+        id: build_image
+        uses: docker/build-push-action@v5
+        with:
+          file: ./Containerfile
+          push: true
+          tags: ${{ steps.generate-tags.outputs.TAGS }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            SOURCE_ORG=${{ env.SOURCE_ORG }}
+            SOURCE_IMAGE=${{ env.SOURCE_IMAGE }}
+            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
+            IMAGE_FLAVOR=${{ matrix.build_target }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Lowercase Registry
+        id: registry_case
+        uses: ASzc/change-string-case-action@v6
+        with:
+          string: ${{ env.IMAGE_REGISTRY }}
 
       - uses: sigstore/cosign-installer@v3.5.0
         if: github.event_name != 'pull_request' # signing disabled for PRs because PRs from outside repos wont have access to your signing secret
