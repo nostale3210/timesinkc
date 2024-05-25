@@ -65,7 +65,7 @@ jobs:
         shell: bash
         run: |
           FVER="${{ matrix.major_version }}"
-          SRC="nostale3210/${{ env.IMAGE_NAME }}"
+          SRC="ghcr.io/nostale3210/${{ env.IMAGE_NAME }}"
           TAGS=""
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             TAGS+="${SRC}:pr-${{ github.event.number }}"
