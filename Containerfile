@@ -9,7 +9,8 @@ ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
 COPY files/ /
 COPY scripts /usr/share/timesink/scripts
-COPY certs /usr/share/timesink/certs
+
+RUN --mount=type=secret,id=AKMOD_PRIVKEY
 
 RUN readarray basic_pkgs < /usr/share/timesink/scripts/basics.pkgs && \
     dnf install -y ${basic_pkgs[*]} && \

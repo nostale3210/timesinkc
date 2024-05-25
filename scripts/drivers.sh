@@ -17,5 +17,3 @@ dnf install -y steam-devices
 
 dnf config-manager -y --disable rpmfusion-free rpmfusion-free-updates \
     rpmfusion-nonfree rpmfusion-nonfree-updates
-
-rm -rf /usr/share/timesink/certs
