@@ -10,6 +10,7 @@ ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 COPY files/ /
 COPY scripts /usr/share/timesink/scripts
 
+
 RUN readarray basic_pkgs < /usr/share/timesink/scripts/basics.pkgs && \
     dnf install -y ${basic_pkgs[*]} && \
     ostree container commit
@@ -53,9 +54,8 @@ RUN dnf install -y @printing && \
 RUN bash /usr/share/timesink/scripts/copr.sh && \
     ostree container commit
 
-RUN --mount=type=secret,id=AKMOD_PRIVKEY
-
-RUN if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
+RUN --mount=type=secret,id=AKMOD_PRIVKEY,dst=/tmp/certs/private_key.priv \
+    if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
         bash /usr/share/timesink/scripts/drivers.sh; else \
         bash /usr/share/timesink/scripts/nvidia.sh; fi && \
     ostree container commit
