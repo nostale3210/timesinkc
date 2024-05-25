@@ -72,6 +72,7 @@ jobs:
           else
             TAGS+="${SRC}:${FVER}"
             TAGS+=",${SRC}:${FVER}-$(date +%Y%m%d)"
+            TAGS+=",${SRC}:${{ github.run_id }}"
             if [[ "${{ matrix.is_latest_version }}" == "true" ]]; then
               TAGS+=",${SRC}:latest"
             fi
@@ -114,13 +115,12 @@ jobs:
             "AKMOD_PRIVKEY=${{ secrets.AKMOD_PRIVKEY }}"
 
       - uses: sigstore/cosign-installer@v3.5.0
-        if: github.event_name != 'pull_request' # signing disabled for PRs because PRs from outside repos wont have access to your signing secret
+        if: github.event_name != 'pull_request'
 
       - name: Sign container image
-        if: github.event_name != 'pull_request' # signing disabled for PRs because PRs from outside repos wont have access to your signing secret
+        if: github.event_name != 'pull_request'
         env:
-          TAGS: ${{ steps.build_image.outputs.digest }} }} # hash of the new image, to make sure we sign the right one
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
         run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}@${TAGS}
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_id }}
