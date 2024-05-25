@@ -72,7 +72,6 @@ jobs:
           else
             TAGS+="${SRC}:${FVER}"
             TAGS+=",${SRC}:${FVER}-$(date +%Y%m%d)"
-            TAGS+=",${SRC}:${{ github.run_id }}"
             if [[ "${{ matrix.is_latest_version }}" == "true" ]]; then
               TAGS+=",${SRC}:latest"
             fi
