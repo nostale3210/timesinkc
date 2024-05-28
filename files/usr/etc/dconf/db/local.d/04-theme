@@ -1,0 +1,7 @@
+[org/gnome/desktop/interface]
+color-scheme='prefer-dark'
+gtk-theme='adw-gtk3-dark'
+enable-hot-corners=true
+document-font-name='Noto Serif 11'
+font-name='Noto Sans 11'
+monospace-font-name='Lilex 11'
