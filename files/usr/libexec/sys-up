@@ -14,9 +14,9 @@ bootc upgrade ||
     log_failure
 
 COMPONENT="fwupd"
-fwupdmgr refresh &&
-    fwupdmgr get-updates &&
-    fwupdmgr update ||
+fwupdmgr -y refresh &&
+    fwupdmgr -y get-updates &&
+    fwupdmgr -y update ||
     log_failure
 
 if [[ "${FAILED_COMPONENTS[*]}" =~ "bootc" ]]; then
