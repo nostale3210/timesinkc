@@ -4,12 +4,30 @@ set -oue pipefail
 
 notify-send "System Upgrade" "Deploying latest timesinkc image."
 
-# update flatpaks
-flatpak update -y
-flatpak uninstall --unused -y
+FAILED_COMPONENTS=()
 
-# update nix packages
-nx profile upgrade --all
+log_failure () {
+    echo "$COMPONENT upgrade failed" 
+    FAILED_COMPONENTS+=( "$COMPONENT" )
+}
 
-# update distrobox containers
-distrobox upgrade -a
+COMPONENT="flatpak"
+flatpak update -y &&
+    flatpak uninstall --unused -y ||
+    log_failure
+
+COMPONENT="nix"
+nx profile upgrade --all ||
+    log_failure
+
+COMPONENT="distrobox"
+distrobox upgrade -a ||
+    log_failure
+
+if [[ ! -z ${FAILED_COMPONENTS[*]} ]]; then
+    echo "Service has failed upgrading the components: ${FAILED_COMPONENTS[*]}"
+    exit 1
+else
+    echo "All upgrades applied successfully"
+    exit 0
+fi

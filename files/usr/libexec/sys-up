@@ -2,4 +2,30 @@
 
 set -oue pipefail
 
-bootc upgrade
+FAILED_COMPONENTS=()
+
+log_failure () {
+    echo "$COMPONENT upgrade failed" 
+    FAILED_COMPONENTS+=( "$COMPONENT" )
+}
+
+COMPONENT="bootc"
+bootc upgrade ||
+    log_failure
+
+COMPONENT="fwupd"
+fwupdmgr refresh &&
+    fwupdmgr get-updates &&
+    fwupdmgr update ||
+    log_failure
+
+if [[ "${FAILED_COMPONENTS[*]}" =~ "bootc" ]]; then
+    echo "Service has failed upgrading the components: ${FAILED_COMPONENTS[*]}"
+    exit 1
+elif [[ ! -z ${FAILED_COMPONENTS[*]} ]]; then
+    echo "Service has failed upgrading the components: ${FAILED_COMPONENTS[*]}"
+    exit 0   
+else
+    echo "All upgrades applied successfully"
+    exit 0
+fi
