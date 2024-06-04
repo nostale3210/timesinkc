@@ -5,3 +5,5 @@ enable-hot-corners=true
 document-font-name='Noto Serif 11'
 font-name='Noto Sans 11'
 monospace-font-name='Lilex 11'
+cursor-theme='phinger-cursors-dark'
+icon-theme='Papirus'
