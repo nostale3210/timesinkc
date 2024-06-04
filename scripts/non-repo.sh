@@ -56,6 +56,10 @@ rm -rf /usr/lib/systemd/system/systemd-remount-fs.service
 sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.Terminal.desktop
 sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/nvim.desktop
 
+#themes
+wget -cO- https://github.com/phisch/phinger-cursors/releases/latest/download/phinger-cursors-variants.tar.bz2 |
+    tar xfj - -C /usr/share/icons
+
 #fonts
 mkdir -p /usr/share/fonts/Lilex
 curl -OL https://github.com/mishamyrt/Lilex/releases/latest/download/Lilex.zip
