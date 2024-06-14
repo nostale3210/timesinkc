@@ -9,16 +9,33 @@ log_failure () {
     FAILED_COMPONENTS+=( "$COMPONENT" )
 }
 
+draw_sep () {
+    cols=( $(stty size) )
+    col=${cols[1]}
+    start=$((printf "\u2500%.0s" $(seq 1 10) && printf " Updating $COMPONENT ") | wc -c)
+    start=$(($start + 1))
+    printf "\u2500%.0s" $(seq 1 10) && printf " Updating $COMPONENT " && \
+        printf "\u2500%.0s" $(seq $start $col) && printf "\n"
+}
+
 COMPONENT="bootc"
+draw_sep
 bootc upgrade ||
     log_failure
 
 COMPONENT="flatpak"
+draw_sep
 flatpak update -y &&
     flatpak uninstall --unused -y ||
     log_failure
 
+COMPONENT="podman"
+draw_sep
+/usr/libexec/pod-up ||
+    log_failure
+
 COMPONENT="fwupd"
+draw_sep
 fwupdmgr -y refresh &&
     fwupdmgr -y get-updates &&
     fwupdmgr -y update ||
