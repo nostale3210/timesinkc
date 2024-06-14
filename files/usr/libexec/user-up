@@ -11,11 +11,6 @@ log_failure () {
     FAILED_COMPONENTS+=( "$COMPONENT" )
 }
 
-COMPONENT="flatpak"
-flatpak update -y &&
-    flatpak uninstall --unused -y ||
-    log_failure
-
 COMPONENT="nix"
 nx profile upgrade --all ||
     log_failure

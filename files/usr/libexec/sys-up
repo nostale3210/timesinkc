@@ -13,18 +13,23 @@ COMPONENT="bootc"
 bootc upgrade ||
     log_failure
 
+COMPONENT="flatpak"
+flatpak update -y &&
+    flatpak uninstall --unused -y ||
+    log_failure
+
 COMPONENT="fwupd"
 fwupdmgr -y refresh &&
     fwupdmgr -y get-updates &&
     fwupdmgr -y update ||
     log_failure
 
-if [[ "${FAILED_COMPONENTS[*]}" =~ "bootc" ]]; then
+if [[ "${FAILED_COMPONENTS[*]}" = "fwupd" ]]; then
     echo "Service has failed upgrading the components: ${FAILED_COMPONENTS[*]}"
-    exit 1
+    exit 0
 elif [[ ! -z ${FAILED_COMPONENTS[*]} ]]; then
     echo "Service has failed upgrading the components: ${FAILED_COMPONENTS[*]}"
-    exit 0   
+    exit 1   
 else
     echo "All upgrades applied successfully"
     exit 0

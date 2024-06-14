@@ -69,5 +69,3 @@ rm -rf Lilex.zip
 fc-cache -f -v
 
 glib-compile-schemas /usr/share/glib-2.0/schemas
-
-restorecon -v /usr/libexec/flatpak-system-helper
