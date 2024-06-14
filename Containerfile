@@ -54,9 +54,11 @@ RUN dnf install -y @printing && \
 RUN bash /usr/share/timesink/scripts/copr.sh && \
     ostree container commit
 
+RUN bash /usr/share/timesink/scripts/drivers.sh && \
+    ostree container commit
+
 RUN --mount=type=secret,id=AKMOD_PRIVKEY,dst=/tmp/certs/private_key.priv \
-    if [[ "$IMAGE_FLAVOR" = "main" ]]; then \
-        bash /usr/share/timesink/scripts/drivers.sh; else \
+    if [[ "$IMAGE_FLAVOR" = "nvidia" ]]; then \
         bash /usr/share/timesink/scripts/nvidia.sh; fi && \
     ostree container commit
 
