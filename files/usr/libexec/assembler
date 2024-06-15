@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
+set -oue pipefail
+
 if [[ ! -d ~/.config/boxes ]]; then
     mkdir -p ~/.config/boxes
 fi
 
-cur_dir=$pwd
 cd ~/.config/boxes
 for box in *; do
     name=$(cat $box | head -n 1 | cut -d "[" -f 2 | cut -d "]" -f 1)
@@ -12,4 +13,3 @@ for box in *; do
     distrobox enter $name -- uname -a
     rm ~/.local/share/applications/$name.desktop
 done
-cd $cur_dir

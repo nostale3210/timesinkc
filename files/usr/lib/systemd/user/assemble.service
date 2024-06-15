@@ -2,10 +2,15 @@
 Description=Rebuild all distroboxes with replace=true on system start
 After=network-online.target
 Wants=network-online.target
+StartLimitIntervalSec=100
+StartLimitBurst=3
 
 [Service]
 Type=oneshot
+ExecStartPre=/usr/bin/bash -c 'until ping -c1 9.9.9.9; do sleep 1; done'
 ExecStart=/usr/libexec/assembler
+RestartSec=20
+Restart=on-failure
 
 [Install]
 WantedBy=default.target
