@@ -6,8 +6,12 @@ if [[ ! -d ~/.config/boxes ]]; then
     mkdir -p ~/.config/boxes
 fi
 
+if [[ ! -d ~/.bin ]]; then
+    mkdir -p ~/.bin
+fi
+
 cd ~/.config/boxes
-for box in *; do
+for box in *.ini; do
     name=$(cat $box | head -n 1 | cut -d "[" -f 2 | cut -d "]" -f 1)
     distrobox assemble create --file $box
     distrobox enter $name -- uname -a
