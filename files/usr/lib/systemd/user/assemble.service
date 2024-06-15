@@ -11,6 +11,7 @@ ExecStartPre=/usr/bin/bash -c 'until ping -c1 9.9.9.9; do sleep 1; done'
 ExecStart=/usr/libexec/assembler
 RestartSec=20
 Restart=on-failure
+RemainAfterExit=true
 
 [Install]
 WantedBy=default.target
