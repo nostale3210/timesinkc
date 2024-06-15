@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+if [[ ! -d ~/.config/boxes ]]; then
+    mkdir -p ~/.config/boxes
+fi
+
+cur_dir=$pwd
+cd ~/.config/boxes
+for box in *; do
+    distrobox assemble create --file $box
+done
+cd $cur_dir
