@@ -15,7 +15,7 @@ draw_sep () {
     col=${cols[1]}
     start=$((printf "\u2500%.0s" $(seq 1 10) && printf " Updating $COMPONENT ") | wc -c)
     start=$(($start + 1))
-    printf "\u2500%.0s" $(seq 1 10) && printf " Updating $COMPONENT " && \
+    printf "\n" && printf "\u2500%.0s" $(seq 1 10) && printf " Updating $COMPONENT " && \
         printf "\u2500%.0s" $(seq $start $col) && printf "\n"
 }
 
