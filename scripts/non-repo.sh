@@ -50,7 +50,7 @@ systemctl enable sys-up.timer
 systemctl disable bootc-fetch-apply-updates.timer
 systemctl mask bootc-fetch-apply-updates.timer
 
-systemctl --global enable assembler.service
+systemctl --global enable assemble.service
 systemctl --global enable dotfile-manager.service
 systemctl --global enable user-up.timer
 
