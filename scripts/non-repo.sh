@@ -39,7 +39,7 @@ chmod +x /usr/libexec/flatpak-manager
 chmod +x /usr/libexec/dotfile-manager
 chmod +x /usr/libexec/sys-up
 chmod +x /usr/libexec/user-up
-chomd +x /usr/libexec/pod-up
+chmod +x /usr/libexec/pod-up
 
 #services
 systemctl enable dconf-update.service
