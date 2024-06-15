@@ -35,21 +35,24 @@ wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remo
 chmod a+r /usr/etc/udev/rules.d/51-android.rules
 
 #binaries for services
-chmod +x /usr/libexec/flatpak-manager
+chmod +x /usr/libexec/assembler
 chmod +x /usr/libexec/dotfile-manager
+chmod +x /usr/libexec/flatpak-manager
+chmod +x /usr/libexec/pod-up
 chmod +x /usr/libexec/sys-up
 chmod +x /usr/libexec/user-up
-chmod +x /usr/libexec/pod-up
 
 #services
 systemctl enable dconf-update.service
 systemctl enable flatpak-manager.service
 systemctl enable sys-up.timer
+
 systemctl disable bootc-fetch-apply-updates.timer
 systemctl mask bootc-fetch-apply-updates.timer
 
-systemctl --global enable user-up.timer
+systemctl --global enable assembler.service
 systemctl --global enable dotfile-manager.service
+systemctl --global enable user-up.timer
 
 rm -rf /usr/lib/systemd/system/systemd-remount-fs.service
 
