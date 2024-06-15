@@ -7,6 +7,9 @@ fi
 cur_dir=$pwd
 cd ~/.config/boxes
 for box in *; do
+    name=$(cat $box | head -n 1 | cut -d "[" -f 2 | cut -d "]" -f 1)
     distrobox assemble create --file $box
+    distrobox enter $name -- uname -a
+    rm ~/.local/share/applications/$name.desktop
 done
 cd $cur_dir

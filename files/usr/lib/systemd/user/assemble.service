@@ -1,5 +1,7 @@
 [Unit]
 Description=Rebuild all distroboxes with replace=true on system start
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=oneshot
