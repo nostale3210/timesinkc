@@ -14,7 +14,13 @@ if [[ $VER = $VER_RAN ]]; then
     exit 0
 fi
 
+echo "Installing shell enhancements"
+nx profile install nixpkgs#atuin
+nx profile install nixpkgs#starship
+nx profile install nixpkgs#zoxide
+
 echo "Placing config files"
+cp -rf /usr/share/timesink/zshrc ~/.zshrc
 cp -rf /usr/share/timesink/config/* ~/.config/
 
 echo $VER > $VER_FILE

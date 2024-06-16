@@ -1,0 +1,77 @@
+autoload -Uz compinit && compinit
+
+# Prompt style, when the hostname is set to toolbox it will load a custom promp style,
+# this is useful to quickly visually identify containerized shell instances
+if [[ -z "$CONTAINER_ID" ]]; then
+	PS1='%(?..[%F{136}%?%f] )%n%f@%F{136}%m%f %1~ %#> '
+else
+    PS1="⬢ ($CONTAINER_ID)%(?..[%F{136}%?%f] )%n%f@%F{35}%m%f %1~ %#> "
+fi
+
+path+=("$HOME/.local/bin")
+path+=("$HOME/.bin")
+export PATH
+
+# Zsh history location and settings
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000
+SAVEHIST=10000
+
+# ctrl + left/right word forwards/backwards
+bindkey '^[[1;5C' forward-word
+bindkey '^[[1;5D' backward-word
+
+# shift + tab for reverse tab-completion
+bindkey '^[[Z' reverse-menu-complete
+
+bindkey -v
+
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
+bindkey '^[[3~' delete-char
+bindkey '^?' backward-delete-char
+
+# Show selection on tab completion
+zstyle ':completion:*' menu select
+
+# Custom chars which define beginning or end of words
+WORDCHARS=${WORDCHARS/\/}
+
+# Zsh autosuggestions and syntax highlighting plugins
+if [[ -z "$CONTAINER_ID" ]]; then
+    [[ -f '/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' ]] &&
+        source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    [[ -f '/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh' ]] &&
+        source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+else
+    [[ -f '/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' ]] &&
+        source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    [[ -f '/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh' ]] &&
+        source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
+# Use colors for ls
+alias ls='ls --color=auto'
+alias diff='diff --color=auto'
+
+if [[ -z "$CONTAINER_ID" ]]; then
+    alias clir='distrobox enter cli --'
+    xbcli () {
+        distrobox enter cli -- distrobox-export --bin /usr/bin/$1 --export-path ~/.bin
+    }
+    xacli () {
+        distrobox enter cli -- distrobox-export --app $1 --export-path ~/.bin
+    }
+
+    eval "$(atuin init zsh)"
+    eval "$(starship init zsh)"
+    eval "$(zoxide init zsh)"
+elif [[ "$CONTAINER_ID" = "cli" ]]; then
+    alias atuin="/usr/bin/atuin"
+    alias zoxide="/usr/bin/zoxide"
+    eval "$(atuin init zsh)"
+    eval "$(zoxide init zsh)"
+else
+    :
+fi
+

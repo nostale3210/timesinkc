@@ -52,4 +52,9 @@ if [[ ! -f $VER_FILE && -f $REMOVE_LIST_FILE ]]; then
   fi
 fi
 
+users=( $(getent passwd {1000..1500} | awk -F: '{print $1}') )
+for user in ${users[*]}; do
+    chsh -s /usr/bin/zsh $user
+done
+
 echo $VER > $VER_FILE
