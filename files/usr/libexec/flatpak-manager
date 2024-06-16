@@ -52,9 +52,13 @@ if [[ ! -f $VER_FILE && -f $REMOVE_LIST_FILE ]]; then
   fi
 fi
 
+# change shell to zsh (because service runs privileged)
 users=( $(getent passwd {1000..1500} | awk -F: '{print $1}') )
 for user in ${users[*]}; do
     chsh -s /usr/bin/zsh $user
 done
+
+# fix logrotate.service failure (because service runs privileged)
+restorecon -r -v /var/log
 
 echo $VER > $VER_FILE
