@@ -38,6 +38,7 @@ jobs:
         shell: bash
         run: |
           cd ./base
+          git submodule update --init --recursive
           podman build --security-opt=label=disable --cap-add=all --device /dev/fuse -t localhost/fedora-bootc .
           cd ..
 
