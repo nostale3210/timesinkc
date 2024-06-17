@@ -34,6 +34,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build base image
         shell: bash
         run: |
@@ -41,10 +44,7 @@ jobs:
           git submodule update --init --recursive
           podman build --security-opt=label=disable --cap-add=all --device /dev/fuse -t fedora-bootc-base .
           cd ..
-
-
-      - name: Setup buildx
-        uses: docker/setup-buildx-action@v3
+          skopeo copy containers-storage:fedora-bootc-base docker-daemon:fedora-bootc-base
 
       - name: Gather environment variables
         shell: bash
