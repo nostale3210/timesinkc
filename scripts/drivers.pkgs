@@ -1,3 +1,4 @@
+kernel-modules-extra
 mesa-dri-drivers
 mesa-libEGL
 mesa-vulkan-drivers
