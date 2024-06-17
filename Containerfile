@@ -3,7 +3,7 @@ ARG SOURCE_ORG="${SOURCE_ORG:-fedora}"
 ARG BASE_IMAGE="quay.io/${SOURCE_ORG}/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
 
-FROM fedora-bootc-base
+FROM localhost/fedora-bootc
 
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
