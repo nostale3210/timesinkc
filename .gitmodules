@@ -1,0 +1,4 @@
+[submodule "base"]
+	path = 40
+	url = https://gitlab.com/fedora/bootc/base-images
+	branch = f40
