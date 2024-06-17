@@ -1,0 +1,12 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>platform-engineering-org/.github"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["quay.io/fedora/fedora"],
+      "allowedVersions": "=40"
+    }
+  ]
+}
