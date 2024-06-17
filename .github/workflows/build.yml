@@ -34,6 +34,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Build base image
+        shell: bash
+        run: |
+          cd ./base
+          podman build --security-opt=label=disable --cap-add=all --device /dev/fuse -t localhost/fedora-bootc .
+          cd ..
+
+
       - name: Setup buildx
         uses: docker/setup-buildx-action@v3
 
