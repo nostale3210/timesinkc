@@ -1,4 +1,4 @@
-[submodule "base"]
+[submodule "40"]
 	path = 40
-	url = https://gitlab.com/fedora/bootc/base-images
+	url = https://github.com/nostale3210/bootc-base.git
 	branch = f40
