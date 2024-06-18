@@ -5,9 +5,11 @@ set -oue pipefail
 images=( $(podman images --format "table {{.Repository}}:{{.Tag}}" --noheading) )
 
 for image in ${images[*]}; do
-    podman pull "$image"
-    printf "\u2500%.0s" $(seq 1 3) && printf " Pulled $image " && \
-        printf "\u2500%.0s" $(seq 1 3) && printf "\n"
+    if [[ "$image" != "<none>:<none>" ]]; then
+        podman pull "$image"
+        printf "\u2500%.0s" $(seq 1 3) && printf " Pulled $image " && \
+            printf "\u2500%.0s" $(seq 1 3) && printf "\n"
+    fi
 done
 
 podman image prune -f
