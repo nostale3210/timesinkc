@@ -22,6 +22,12 @@ draw_sep
 nx profile upgrade --all ||
     log_failure
 
+COMPONENT="flatpak(user)"
+draw_sep
+flatpak --user update -y &&
+    flatpak --user uninstall --unused -y ||
+    log_failure
+
 COMPONENT="podman"
 draw_sep
 /usr/libexec/pod-up ||
