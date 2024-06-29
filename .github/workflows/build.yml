@@ -109,7 +109,9 @@ jobs:
           layers: true
           oci: false
           extra-args: |
+            --target ${{ env.IMAGE_FLAVOR }}
             --secret id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY
+            --compress zstd:chunked
 
       - name: Lowercase Registry
         id: registry_case
