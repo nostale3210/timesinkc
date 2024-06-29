@@ -109,9 +109,9 @@ jobs:
           layers: true
           oci: false
           extra-args: |
-            --target ${{ matrix.build_target }}
-            --secret id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY
-            --compress zstd:chunked
+            --target=${{ matrix.build_target }}
+            --secret=id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY
+            --compress=zstd:chunked
 
       - name: Lowercase Registry
         id: registry_case
