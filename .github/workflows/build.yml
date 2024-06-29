@@ -111,7 +111,6 @@ jobs:
           extra-args: |
             --target=${{ matrix.build_target }}
             --secret=id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY
-            --compress=zstd:chunked
 
       - name: Lowercase Registry
         id: registry_case
@@ -135,6 +134,8 @@ jobs:
             registry: ${{ steps.registry_case.outputs.lowercase }} # pulls in lowercased image registry string from previous step
             username: ${{ env.REGISTRY_USER }}
             password: ${{ env.REGISTRY_PASSWORD }}
+            extra-args: |
+              --compression-format=zstd:chunked
 
       - name: Login to GHCR
         uses: docker/login-action@v3
