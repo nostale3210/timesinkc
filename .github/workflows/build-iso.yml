@@ -44,7 +44,7 @@ jobs:
           enable_cache_skopeo: "false"
 
       - name: Upload ISO + Checksum
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ steps.build.outputs.iso_name }}
           path: |
