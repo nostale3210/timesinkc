@@ -11,6 +11,7 @@ COPY files/ /
 COPY scripts /usr/share/timesink/scripts
 
 RUN readarray basic_pkgs < /usr/share/timesink/scripts/basics.pkgs && \
+    rpm-ostree install dnf5 dnf5-plugins bootc && \
     dnf install -y ${basic_pkgs[*]} && \
     ostree container commit
 
