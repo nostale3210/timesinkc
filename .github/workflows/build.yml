@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         major_version: [40]
-        desktop: [kinoite]
+        desktop: [silverblue]
         build_target: [main, nvidia]
         include:
           - major_version: 40
