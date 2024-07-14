@@ -22,7 +22,7 @@ akmods --force \
     --kmod nvidia
 
 modinfo /usr/lib/modules/${KVER}/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko.xz > /dev/null || \
-(cat /var/cache/akmods/nvidia/${NVIDIA_AKMOD_VERSION}-for-${KVER}.failed.log && exit 1)
+(cat /var/cache/akmods/nvidia/${NVIDIA_AKMOD_VERSION::-5}-for-${KVER}.failed.log && exit 1)
 
 systemctl enable nvidia-{suspend,resume,hibernate}
 
