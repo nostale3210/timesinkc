@@ -3,6 +3,9 @@
 set -oue pipefail
 
 mkdir -p /var/lib/alternatives
+mkdir -p /tmp
+mkdir -p /var/tmp
+chmod 1777 /tmp /var/tmp
 
 install -Dm644 /tmp/certs/private_key.priv /etc/pki/akmods/private/private_key.priv
 install -Dm644 /usr/etc/pki/akmods/certs/public_key.der /etc/pki/akmods/certs/public_key.der
@@ -10,7 +13,7 @@ install -Dm644 /usr/etc/pki/akmods/certs/public_key.der /etc/pki/akmods/certs/pu
 dnf5 config-manager -y setopt rpmfusion-free.enabled=1 rpmfusion-free-updates.enabled=1 \
     rpmfusion-nonfree.enabled=1 rpmfusion-nonfree-updates.enabled=1
 
-dnf5 install -y akmod-nvidia mock
+dnf5 install -y akmod-nvidia akmods mock
 dnf5 install -y xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-libs \
     xorg-x11-drv-nvidia-power nvidia-vaapi-driver libva-utils vdpauinfo
 
@@ -19,7 +22,7 @@ NVIDIA_AKMOD_VERSION="$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEAS
 
 akmods --force \
     --kernels "${KVER}" \
-    --kmod nvidia
+    --kmod "nvidia"
 
 modinfo /usr/lib/modules/${KVER}/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko.xz > /dev/null || \
 (cat /var/cache/akmods/nvidia/${NVIDIA_AKMOD_VERSION::-5}-for-${KVER}.failed.log && exit 1)
