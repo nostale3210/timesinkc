@@ -94,26 +94,6 @@ jobs:
 
       - name: Build Image
         id: build_image
-        uses: redhat-actions/buildah-build@v2.13
-        with:
-          containerfiles: |
-            ./Containerfile
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ steps.generate-tags.outputs.TAGS }}
-          build-args: |
-            SOURCE_ORG=${{ env.SOURCE_ORG }}
-            SOURCE_IMAGE=${{ env.SOURCE_IMAGE }}
-            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
-            IMAGE_FLAVOR=${{ matrix.build_target }}
-          labels: ${{ steps.meta.outputs.labels }}
-          layers: true
-          oci: false
-          extra-args: |
-            --target=${{ matrix.build_target }}
-            --secret=id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY
-
-      - name: Build Image
-        id: build_image
         uses: docker/build-push-action@v5
         with:
           file: ./Containerfile
