@@ -10,10 +10,10 @@ dnf5 install -y intel-media-driver libva-intel-driver
 dnf5 swap -y mesa-va-drivers mesa-va-drivers-freeworld
 dnf5 swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 dnf5 swap -y ffmpeg-free ffmpeg --allowerasing
-dnf5 groupupdate -y multimedia --setopt="install_weak_deps=False" \
+dnf5 group upgrade -y multimedia --setopt="install_weak_deps=False" \
     --exclude=PackageKit-gstreamer-plugin
-dnf5 groupupdate -y sound-and-video
+dnf5 group upgrade -y sound-and-video
 dnf5 install -y steam-devices
 
-dnf5 config-manager -y --disable rpmfusion-free rpmfusion-free-updates \
-    rpmfusion-nonfree rpmfusion-nonfree-updates
+dnf5 config-manager -y setopt rpmfusion-free.enabled=0 rpmfusion-free-updates.enabled=0 \
+    rpmfusion-nonfree.enabled=0 rpmfusion-nonfree-updates.enabled=0
