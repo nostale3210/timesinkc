@@ -48,7 +48,7 @@ jobs:
           else
             export IMAGE_FLAVOR=main
           fi
-          echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=timesinkc-${IMAGE_FLAVOR}" >> $GITHUB_ENV
 
       - name: Image Metadata
         uses: docker/metadata-action@v5
