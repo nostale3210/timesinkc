@@ -7,8 +7,8 @@ mkdir -p /var/lib/alternatives
 install -Dm644 /tmp/certs/private_key.priv /etc/pki/akmods/private/private_key.priv
 install -Dm644 /usr/etc/pki/akmods/certs/public_key.der /etc/pki/akmods/certs/public_key.der
 
-dnf5 config-manager -y --enable rpmfusion-free rpmfusion-free-updates \
-    rpmfusion-nonfree rpmfusion-nonfree-updates
+dnf5 config-manager -y setopt rpmfusion-free.enabled=1 rpmfusion-free-updates.enabled=1 \
+    rpmfusion-nonfree.enabled=1 rpmfusion-nonfree-updates.enabled=1
 
 dnf5 install -y akmod-nvidia
 dnf5 install -y xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-libs \
@@ -28,5 +28,5 @@ systemctl enable nvidia-{suspend,resume,hibernate}
 
 rm -rf /etc/pki/akmods/private/private_key.priv
 
-dnf5 config-manager -y --disable rpmfusion-free rpmfusion-free-updates \
-    rpmfusion-nonfree rpmfusion-nonfree-updates
+dnf5 config-manager -y setopt rpmfusion-free.enabled=0 rpmfusion-free-updates.enabled=0 \
+    rpmfusion-nonfree.enabled=0 rpmfusion-nonfree-updates.enabled=0
