@@ -10,7 +10,7 @@ install -Dm644 /usr/etc/pki/akmods/certs/public_key.der /etc/pki/akmods/certs/pu
 dnf5 config-manager -y setopt rpmfusion-free.enabled=1 rpmfusion-free-updates.enabled=1 \
     rpmfusion-nonfree.enabled=1 rpmfusion-nonfree-updates.enabled=1
 
-dnf5 install -y akmod-nvidia
+dnf5 install -y akmod-nvidia mock
 dnf5 install -y xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-libs \
     xorg-x11-drv-nvidia-power nvidia-vaapi-driver libva-utils vdpauinfo
 
