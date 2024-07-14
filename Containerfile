@@ -26,6 +26,6 @@ RUN bash /usr/share/timesink/scripts/non-repo.sh && \
 
 FROM main AS nvidia
 
-RUN --mount=type=secret,id=AKMOD_PRIVKEY,dst=/tmp/certs/private_key.priv \
+RUN --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
         bash /usr/share/timesink/scripts/nvidia.sh
 
