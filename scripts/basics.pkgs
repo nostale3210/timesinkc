@@ -1,7 +1,9 @@
+distrobox
+firefox
 git-core
-tar
-unzip
-wget
+neovim
+python3-pip
+wl-clipboard
 zsh
 zsh-autosuggestions
 zsh-syntax-highlighting
