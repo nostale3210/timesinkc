@@ -17,14 +17,14 @@ HISTFILE="$HOME/.zsh_history"
 HISTSIZE=10000
 SAVEHIST=10000
 
+bindkey -v
+
 # ctrl + left/right word forwards/backwards
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
 
 # shift + tab for reverse tab-completion
 bindkey '^[[Z' reverse-menu-complete
-
-bindkey -v
 
 bindkey '^[[H' beginning-of-line
 bindkey '^[[F' end-of-line
