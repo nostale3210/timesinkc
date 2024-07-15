@@ -10,6 +10,11 @@ ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 COPY files/ /
 COPY scripts /usr/share/timesink/scripts
 
+RUN KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
+    dracut --no-hostonly --kver "$KVER" --reproducible -v --add "ostree tpm2-tss systemd-pcrphase" -f "/lib/modules/$KVER/initramfs.img" && \
+    chmod 0600 /lib/modules/$KVER/initramfs.img && \
+    ostree container commit
+
 RUN readarray basic_pkgs < /usr/share/timesink/scripts/basics.pkgs && \
     rpm-ostree install dnf5 dnf5-plugins bootc bootupd && \
     dnf5 install -y ${basic_pkgs[*]} && \
@@ -28,4 +33,3 @@ FROM main AS nvidia
 
 RUN --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
         bash /usr/share/timesink/scripts/nvidia.sh
-
