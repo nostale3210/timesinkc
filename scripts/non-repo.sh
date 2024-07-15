@@ -73,3 +73,5 @@ rm -rf Lilex.zip
 fc-cache -f -v
 
 glib-compile-schemas /usr/share/glib-2.0/schemas
+
+bootupctl backend generate-update-metadata
