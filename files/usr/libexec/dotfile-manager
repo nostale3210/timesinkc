@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -oue pipefail
+
 VER=9
 VER_FILE=~/.config/ver-dot
 
