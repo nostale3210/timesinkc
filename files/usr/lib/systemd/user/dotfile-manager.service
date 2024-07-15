@@ -1,9 +1,15 @@
 [Unit]
 Description=Manage default dotfiles
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=100
+StartLimitBurst=3
 
 [Service]
 Type=oneshot
 ExecStart=/usr/libexec/dotfile-manager
+RestartSec=20
+Restart=on-failure
 
 [Install]
 WantedBy=default.target
