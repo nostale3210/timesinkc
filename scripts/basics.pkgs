@@ -8,6 +8,8 @@ neovim
 papirus-icon-theme
 python3-pip
 wl-clipboard
+zathura
+zathura-pdf-mupdf
 zsh
 zsh-autosuggestions
 zsh-syntax-highlighting
