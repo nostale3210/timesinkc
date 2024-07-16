@@ -59,6 +59,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.description=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.version=${{ matrix.build_target }}
 
       - name: Generate tags
         id: generate-tags
