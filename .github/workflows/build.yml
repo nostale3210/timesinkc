@@ -101,7 +101,7 @@ jobs:
           tags: ${{ steps.generate-tags.outputs.TAGS }}
           labels: ${{ steps.meta.outputs.labels }}
           target: ${{ matrix.build_target }}
-          outputs: type=image,compression=zstd,compression-level=11,force-compression=true
+          outputs: type=image,compression=zstd,compression-level=19,force-compression=true
           build-args: |
             SOURCE_ORG=${{ env.SOURCE_ORG }}
             SOURCE_IMAGE=${{ env.SOURCE_IMAGE }}
