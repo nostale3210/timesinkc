@@ -10,7 +10,7 @@ dnf5 install -y intel-media-driver libva-intel-driver
 dnf5 swap -y mesa-va-drivers mesa-va-drivers-freeworld
 dnf5 swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 dnf5 swap -y ffmpeg-free ffmpeg --allowerasing
-dnf5 install -y steam-devices
+dnf5 install -y steam-devices gamescope
 
 dnf5 config-manager -y setopt rpmfusion-free.enabled=0 rpmfusion-free-updates.enabled=0 \
     rpmfusion-nonfree.enabled=0 rpmfusion-nonfree-updates.enabled=0
