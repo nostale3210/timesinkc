@@ -40,8 +40,8 @@ jobs:
       - name: Gather environment variables
         shell: bash
         run: |
-          echo "SOURCE_ORG=fedora-ostree-desktops" >> $GITHUB_ENV
-          echo "SOURCE_IMAGE=${{ matrix.desktop }}" >> $GITHUB_ENV
+          echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
+          echo "SOURCE_IMAGE=fedora-${{ matrix.desktop }}" >> $GITHUB_ENV
 
           if [[ "${{ matrix.build_target }}" == "nvidia" ]]; then
             export IMAGE_FLAVOR=nvidia
