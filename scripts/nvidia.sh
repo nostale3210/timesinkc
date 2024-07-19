@@ -12,7 +12,7 @@ dnf5 config-manager -y setopt rpmfusion-free.enabled=1 rpmfusion-free-updates.en
 
 dnf5 install -y dnf
 
-dnf install -y akmod-nvidia akmods mock
+dnf install -y akmod-nvidia
 dnf install -y xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-libs \
     xorg-x11-drv-nvidia-power nvidia-vaapi-driver libva-utils vdpauinfo
 
@@ -29,6 +29,8 @@ modinfo /usr/lib/modules/${KVER}/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uv
 systemctl enable nvidia-{suspend,resume,hibernate}
 
 rm -rf /etc/pki/akmods/private/private_key.priv
+
+dnf5 remove -y dnf
 
 dnf5 config-manager -y setopt rpmfusion-free.enabled=0 rpmfusion-free-updates.enabled=0 \
     rpmfusion-nonfree.enabled=0 rpmfusion-nonfree-updates.enabled=0
