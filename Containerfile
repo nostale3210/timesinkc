@@ -15,6 +15,7 @@ RUN KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
     ostree container commit
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
+    mkdir -p /var/lib/alternatives &&\
     readarray basic_pkgs < /scripts/basics.pkgs && \
     rpm-ostree install dnf5 dnf5-plugins bootc bootupd && \
     dnf5 install -y ${basic_pkgs[*]} && \
