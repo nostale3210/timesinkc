@@ -12,7 +12,18 @@ dnf5 config-manager -y setopt rpmfusion-free.enabled=1 rpmfusion-free-updates.en
 
 dnf5 install -y dnf
 
-dnf install -y akmod-nvidia
+KERNEL_VERSION="$(rpm -q kernel --queryformat '%{VERSION}')"
+KERNEL_RELEASE="$(rpm -q kernel --queryformat '%{RELEASE}')"
+KERNEL_ARCH="$(rpm -q kernel --queryformat '%{ARCH}')"
+KVER_SHORT="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}')"
+KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
+KURL="https://kojipkgs.fedoraproject.org//packages/kernel/${KERNEL_VERSION}/${KERNEL_RELEASE}/${KERNEL_ARCH}"
+
+dnf install -y akmod-nvidia kernel-devel-${KVER_SHORT} \
+    kernel-devel-matched-${KVER_SHORT} ||
+    dnf install -y akmod-nvidia \
+    ${KURL}/kernel-devel-${KVER}.rpm \
+    ${KURL}/kernel-devel-matched-${KVER}.rpm
 dnf install -y xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-libs \
     xorg-x11-drv-nvidia-power nvidia-vaapi-driver libva-utils vdpauinfo
 
