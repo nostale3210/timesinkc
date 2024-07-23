@@ -22,9 +22,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        major_version: [40]
-        desktop: [silverblue]
-        build_target: [main, nvidia]
+        major_version:
+          - 40
+        desktop:
+          - silverblue
+          - cosmic
+        build_target:
+          - main
+          - nvidia
         include:
           - major_version: 40
             is_latest_version: true
@@ -40,15 +45,19 @@ jobs:
       - name: Gather environment variables
         shell: bash
         run: |
-          echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
-          echo "SOURCE_IMAGE=fedora-${{ matrix.desktop }}" >> $GITHUB_ENV
+          if [[ "${{ matrix.desktop }}" == "silverblue" ]]; then
+            echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
+            echo "SOURCE_IMAGE=fedora-${{ matrix.desktop }}" >> $GITHUB_ENV
 
-          if [[ "${{ matrix.build_target }}" == "nvidia" ]]; then
-            export IMAGE_FLAVOR=nvidia
+            export IMAGE_FLAVOR="${{ matrix.build_target }}"
+            echo "IMAGE_NAME=timesinkc-${IMAGE_FLAVOR}" >> $GITHUB_ENV
           else
-            export IMAGE_FLAVOR=main
+            echo "SOURCE_ORG=fedora-ostree-desktops" >> $GITHUB_ENV
+            echo "SOURCE_IMAGE=base" >> $GITHUB_ENV
+
+            export IMAGE_FLAVOR="${{ matrix.build_target }}"
+            echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}" >> $GITHUB_ENV
           fi
-          echo "IMAGE_NAME=timesinkc-${IMAGE_FLAVOR}" >> $GITHUB_ENV
 
       - name: Image Metadata
         uses: docker/metadata-action@v5
@@ -101,7 +110,7 @@ jobs:
           push: true
           tags: ${{ steps.generate-tags.outputs.TAGS }}
           labels: ${{ steps.meta.outputs.labels }}
-          target: ${{ matrix.build_target }}
+          target: ${{ matrix.desktop }}-${{ matrix.build_target }}
           outputs: type=image,compression=zstd,compression-level=19,force-compression=true
           build-args: |
             SOURCE_ORG=${{ env.SOURCE_ORG }}

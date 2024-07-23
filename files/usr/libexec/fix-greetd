@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -oue pipefail
+
+cp -f /usr/bin/greetd /usr/local/bin/greetd
+mount --bind /usr/local/bin/greetd /usr/bin/greetd
+semanage fcontext -a -t xdm_exec_t "/usr/bin/greetd"
+restorecon /usr/bin/greetd
