@@ -3,6 +3,7 @@ apr-util-openssl
 avif-pixbuf-loader
 bolt
 dconf
+default-fonts
 flatpak
 fprintd-pam
 geoclue2-libs
