@@ -1,7 +1,80 @@
-#!/bin/bash
-if [ ! -d ~/.nix/var/nix ] || [ ! -d ~/.local/bin ]; then
-	mkdir -p ~/.nix/var/nix
-	mkdir -p ~/.local/bin
+#!/usr/bin/env bash
+set -oue pipefail
+
+if [ ! -d ~/.nix/var/nix || ! -d ~/.local/nix-bin ]; then
+    mkdir -p ~/.nix/var/nix
+    mkdir -p ~/.local/nix-bin
 fi
-proot -b ~/.nix:/nix nix "$@"
-nix-index
+
+sandbox () {
+    bwrap --unshare-user --uid "$(id -u)" --gid "$(id -g)" \
+        --ro-bind /etc /etc \
+        --ro-bind /run /run \
+        --ro-bind /usr /usr \
+        --symlink usr/bin /bin \
+        --symlink usr/lib /lib \
+        --symlink usr/lib64 /lib64 \
+        --proc /proc \
+        --dev /dev \
+        --tmpfs /tmp \
+        --bind /var /var \
+        --bind "$HOME" "$HOME" \
+        --bind "$HOME/.nix" /nix \
+        "$@"
+}
+
+nexec () {
+    cmd=$1
+    shift
+    sandbox "$HOME/.nix-profile/bin/$cmd" "$@"
+}
+
+nindex () {
+    bins=()
+    for file in $(sandbox ls ~/.nix-profile/bin);
+    do
+        local_bin="$HOME/.local/nix-bin/$file"
+        touch "$local_bin"
+        echo "#!/bin/bash
+        nx exe $file "'"$@"' > "$local_bin"
+        chmod +x "$local_bin"
+        bins+=( "$file" )
+    done
+    cd ~/.local/nix-bin
+    apps=()
+    for file in * ;
+    do
+        apps+=( "$file" )
+    done
+
+    diff="$(echo "${apps[@]}" "${bins[@]}" | tr ' ' '\n' | sort | uniq -u)"
+    for app in $diff
+    do
+        rm -rf "$HOME/.local/nix-bin/$app"
+    done
+}
+
+nx () {
+    sandbox nix "$@"
+    nindex
+}
+
+case "$1" in
+    con)
+        shift
+        sandbox "$@"
+        ;;
+
+    exe)
+        shift
+        nexec "$@"
+        ;;
+
+    appindex)
+        nindex
+        ;;
+
+    *)
+        nx "$@"
+        ;;
+esac

@@ -2,7 +2,7 @@
 
 set -oue pipefail
 
-VER=9
+VER=11
 VER_FILE=~/.config/ver-dot
 
 if [[ ! -f $VER_FILE ]]; then
@@ -22,6 +22,11 @@ cp -rf /usr/share/timesink/config/* ~/.config/
 
 echo "Installing shell enhancements"
 nx profile install nixpkgs#atuin
+nx profile install nixpkgs#bat
+nx profile install nixpkgs#fzf
+nx profile install nixpkgs#fd
+nx profile install nixpkgs#lsd
+nx profile install nixpkgs#ripgrep
 nx profile install nixpkgs#starship
 nx profile install nixpkgs#zoxide
 

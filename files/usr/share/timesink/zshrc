@@ -9,6 +9,7 @@ else
 fi
 
 path+=("$HOME/.local/bin")
+path+=("$HOME/.local/nix-bin")
 path+=("$HOME/.bin")
 export PATH
 

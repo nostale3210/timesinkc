@@ -6,23 +6,6 @@ set -oue pipefail
 curl -L https://hydra.nixos.org/job/nix/master/buildStatic.x86_64-linux/latest/download-by-type/file/binary-dist > /usr/bin/nix
 chmod +x /usr/bin/nix
 chmod +x /usr/bin/nx
-chmod +x /usr/bin/ne
-chmod +x /usr/bin/nenv
-chmod +x /usr/bin/nix-index
-
-#zellij
-curl -L https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz > zellij.tar.gz
-tar -xf zellij.tar.gz --directory /usr/bin/
-chmod +x /usr/bin/zellij
-rm -rf zellij.tar.gz
-
-#proot
-curl -L https://proot.gitlab.io/proot/bin/proot > /usr/bin/proot
-chmod +x /usr/bin/proot
-
-#tectonic
-curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net |sh
-chmod +x tectonic && mv tectonic /usr/bin/tectonic
 
 pip install --prefix=/usr pynvim
 

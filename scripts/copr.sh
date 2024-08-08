@@ -14,3 +14,5 @@ systemctl enable tailscaled.service
 dnf5 copr disable -y che/nerd-fonts
 dnf5 copr disable -y kylegospo/system76-scheduler
 dnf5 config-manager -y setopt tailscale-stable.enabled=0
+
+dnf5 remove -y toolbox
