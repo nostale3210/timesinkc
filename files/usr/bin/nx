@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -oue pipefail
 
-if [ ! -d ~/.nix/var/nix || ! -d ~/.local/nix-bin ]; then
+if [[ ! -d ~/.nix/var/nix ]] || [[ ! -d ~/.local/nix-bin ]]; then
     mkdir -p ~/.nix/var/nix
     mkdir -p ~/.local/nix-bin
 fi
@@ -35,8 +35,7 @@ nindex () {
     do
         local_bin="$HOME/.local/nix-bin/$file"
         touch "$local_bin"
-        echo "#!/bin/bash
-        nx exe $file "'"$@"' > "$local_bin"
+        printf "#!/usr/bin/env bash\nnx exe $file "'"$@"' > "$local_bin"
         chmod +x "$local_bin"
         bins+=( "$file" )
     done
