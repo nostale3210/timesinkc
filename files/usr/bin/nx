@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -oue pipefail
 
-if [ ! -d ~/.nix/var/nix || ! -d ~/.local/nix-bin ]; then
+if [[ ! -d ~/.nix/var/nix ]] || [[ ! -d ~/.local/nix-bin ]]; then
     mkdir -p ~/.nix/var/nix
     mkdir -p ~/.local/nix-bin
 fi
