@@ -19,11 +19,11 @@ KVER_SHORT="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}')"
 KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 KURL="https://kojipkgs.fedoraproject.org//packages/kernel/${KERNEL_VERSION}/${KERNEL_RELEASE}/${KERNEL_ARCH}"
 
-dnf install -y akmod-nvidia kernel-devel-${KVER_SHORT} \
-    kernel-devel-matched-${KVER_SHORT} ||
+dnf install -y akmod-nvidia kernel-devel-"${KVER_SHORT}" \
+    kernel-devel-matched-"${KVER_SHORT}" ||
     dnf install -y akmod-nvidia \
-    ${KURL}/kernel-devel-${KVER}.rpm \
-    ${KURL}/kernel-devel-matched-${KVER}.rpm
+    "${KURL}"/kernel-devel-"${KVER}".rpm \
+    "${KURL}"/kernel-devel-matched-"${KVER}".rpm
 dnf install -y xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-libs \
     xorg-x11-drv-nvidia-power nvidia-vaapi-driver libva-utils vdpauinfo
 
@@ -34,8 +34,8 @@ akmods --force \
     --kernels "${KVER}" \
     --kmod "nvidia"
 
-modinfo /usr/lib/modules/${KVER}/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko.xz > /dev/null || \
-(cat /var/cache/akmods/nvidia/${NVIDIA_AKMOD_VERSION::-5}-for-${KVER}.failed.log && exit 1)
+modinfo /usr/lib/modules/"${KVER}"/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko.xz > /dev/null || \
+(cat /var/cache/akmods/nvidia/"${NVIDIA_AKMOD_VERSION::-5}"-for-"${KVER}".failed.log && exit 1)
 
 systemctl enable nvidia-{suspend,resume,hibernate}
 

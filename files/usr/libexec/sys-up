@@ -10,9 +10,9 @@ log_failure () {
 }
 
 draw_sep () {
-    start=$((printf "\u2500%.0s" $(seq 1 10) && printf " Updating $COMPONENT ") | wc -c)
-    start=$(($start + 1))
-    printf "\n" && printf "\u2500%.0s" $(seq 1 10) && printf " Updating $COMPONENT " && \
+    start=$( (printf "\u2500%.0s" $(seq 1 10) && printf " Updating %s " "$COMPONENT") | wc -c)
+    start=$((start + 1))
+    printf "\n" && printf "\u2500%.0s" $(seq 1 10) && printf " Updating %s " "$COMPONENT" && \
         printf "\u2500%.0s" $(seq $start 80) && printf "\n"
 }
 
@@ -23,8 +23,8 @@ bootc upgrade ||
 
 COMPONENT="flatpak"
 draw_sep
-flatpak update -y &&
-    flatpak uninstall --unused -y ||
+(flatpak update -y &&
+    flatpak uninstall --unused -y) ||
     log_failure
 
 COMPONENT="podman"
@@ -34,15 +34,15 @@ draw_sep
 
 COMPONENT="fwupd"
 draw_sep
-fwupdmgr -y refresh &&
+(fwupdmgr -y refresh &&
     fwupdmgr -y get-updates &&
-    fwupdmgr -y update ||
+    fwupdmgr -y update) ||
     log_failure
 
 if [[ "${FAILED_COMPONENTS[*]}" = "fwupd" ]]; then
     echo "Service has failed upgrading the components: ${FAILED_COMPONENTS[*]}"
     exit 0
-elif [[ ! -z ${FAILED_COMPONENTS[*]} ]]; then
+elif [[ -n ${FAILED_COMPONENTS[*]} ]]; then
     echo "Service has failed upgrading the components: ${FAILED_COMPONENTS[*]}"
     exit 1   
 else

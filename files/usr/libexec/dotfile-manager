@@ -11,7 +11,7 @@ fi
 
 VER_RAN=$(cat $VER_FILE)
 
-if [[ $VER = $VER_RAN ]]; then
+if [[ $VER = "$VER_RAN" ]]; then
     echo "Dotfile manager v$VER has already ran. Exiting..."
     exit 0
 fi

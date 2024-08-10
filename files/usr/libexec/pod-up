@@ -2,12 +2,12 @@
 
 set -oue pipefail
 
-images=( $(podman images --format "table {{.Repository}}:{{.Tag}}" --noheading) )
+read -ra images <<< "$(podman images --format "table {{.Repository}}:{{.Tag}}" --noheading | tr "\n" " ")"
 
-for image in ${images[*]}; do
+for image in "${images[@]}"; do
     if [[ "$image" != "<none>:<none>" ]]; then
         podman pull "$image"
-        printf "\u2500%.0s" $(seq 1 3) && printf " Pulled $image " && \
+        printf "\u2500%.0s" $(seq 1 3) && printf " Pulled %s " "$image" && \
             printf "\u2500%.0s" $(seq 1 3) && printf "\n"
     fi
 done

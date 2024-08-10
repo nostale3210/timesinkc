@@ -11,9 +11,9 @@ log_failure () {
 }
 
 draw_sep () {
-    start=$((printf "\u2500%.0s" $(seq 1 10) && printf " Updating $COMPONENT ") | wc -c)
-    start=$(($start + 1))
-    printf "\n" && printf "\u2500%.0s" $(seq 1 10) && printf " Updating $COMPONENT " && \
+    start=$( (printf "\u2500%.0s" $(seq 1 10) && printf " Updating %s " "$COMPONENT") | wc -c)
+    start=$((start + 1))
+    printf "\n" && printf "\u2500%.0s" $(seq 1 10) && printf " Updating %s " "$COMPONENT" && \
         printf "\u2500%.0s" $(seq $start 80) && printf "\n"
 }
 
@@ -24,14 +24,14 @@ nx profile upgrade --all ||
 
 COMPONENT="flatpak"
 draw_sep
-flatpak update -y &&
-    flatpak uninstall --unused -y ||
+(flatpak update -y &&
+    flatpak uninstall --unused -y) ||
     log_failure
 
 COMPONENT="flatpak(user)"
 draw_sep
-flatpak --user update -y &&
-    flatpak --user uninstall --unused -y ||
+(flatpak --user update -y &&
+    flatpak --user uninstall --unused -y) ||
     log_failure
 
 COMPONENT="podman"
@@ -44,7 +44,7 @@ draw_sep
 distrobox upgrade -a ||
     log_failure
 
-if [[ ! -z ${FAILED_COMPONENTS[*]} ]]; then
+if [[ -n ${FAILED_COMPONENTS[*]} ]]; then
     echo "Service has failed upgrading the components: ${FAILED_COMPONENTS[*]}"
     exit 1
 else

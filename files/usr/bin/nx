@@ -30,26 +30,17 @@ nexec () {
 }
 
 nindex () {
-    bins=()
-    for file in $(sandbox ls ~/.nix-profile/bin);
-    do
+    read -ra bins <<< "$(sandbox find ~/.nix-profile/bin -type l -printf "%f ")"
+    for file in "${bins[@]}"; do
         local_bin="$HOME/.local/nix-bin/$file"
-        touch "$local_bin"
-        printf "#!/usr/bin/env bash\nnx exe $file "'"$@"' > "$local_bin"
+        printf "#!/usr/bin/env bash\nnx exe %s "'"$@"' "$file" > "$local_bin"
         chmod +x "$local_bin"
-        bins+=( "$file" )
-    done
-    cd ~/.local/nix-bin
-    apps=()
-    for file in * ;
-    do
-        apps+=( "$file" )
     done
 
-    diff="$(echo "${apps[@]}" "${bins[@]}" | tr ' ' '\n' | sort | uniq -u)"
-    for app in $diff
-    do
-        rm -rf "$HOME/.local/nix-bin/$app"
+    read -ra fcontent <<< "$(find ~/.local/nix-bin -type f -printf "%f ")"
+    read -ra difference <<< "$(echo "${fcontent[@]}" "${bins[@]}" | tr " " "\n" | sort | uniq -u | tr "\n" " ")"
+    for file in "${difference[@]}"; do
+        rm -rf "$HOME/.local/nix-bin/$file"
     done
 }
 

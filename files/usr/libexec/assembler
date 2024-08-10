@@ -10,12 +10,12 @@ if [[ ! -d ~/.bin ]]; then
     mkdir -p ~/.bin
 fi
 
-cd ~/.config/boxes
-for box in *.ini; do
-    name=$(cat $box | head -n 1 | cut -d "[" -f 2 | cut -d "]" -f 1)
-    distrobox assemble create --file $box
-    distrobox enter $name -- uname -a
-    if [[ -f ~/.local/share/applications/$name.desktop ]]; then
-        rm ~/.local/share/applications/$name.desktop
+read -ra boxes <<< "$(find ~/.config/boxes -name "*.ini" -print0 | xargs -0 echo)"
+for box in "${boxes[@]}"; do
+    name="$(head -n 1 "$box" | cut -d "[" -f 2 | cut -d "]" -f 1)"
+    distrobox assemble create --file "$box"
+    distrobox enter "$name" -- uname -a
+    if [[ -f "$HOME/.local/share/applications/$name.desktop" ]]; then
+        rm "$HOME/.local/share/applications/$name.desktop"
     fi
 done
