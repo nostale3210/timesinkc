@@ -7,7 +7,7 @@ StartLimitBurst=3
 
 [Service]
 Type=oneshot
-ExecStartPre=/usr/bin/bash -c 'until ping -c1 9.9.9.9; do sleep 1; done'
+ExecStartPre=/usr/bin/bash -c 'until [[ $(id -u) -ge 1000 ]] && ping -c1 9.9.9.9; do sleep 1; done'
 ExecStart=/usr/libexec/dotfile-manager
 RestartSec=20
 Restart=on-failure
