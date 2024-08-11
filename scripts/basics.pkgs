@@ -1,10 +1,14 @@
 adw-gtk3-theme
+btrfsmaintenance
 distrobox
+duperemove
 firefox
 gcc
 neovim
 python3-pip
 wl-clipboard
+xfsprogs-xfs_scrub
+xfsdump
 zathura
 zathura-pdf-mupdf
 zsh
