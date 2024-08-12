@@ -1,0 +1,10 @@
+[Unit]
+Description=Deduplicate common wine prefixes weekly
+
+[Timer]
+OnCalendar=Wed *-*-* 02:30:00
+RandomizedDelaySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

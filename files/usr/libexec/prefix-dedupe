@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -oue pipefail
+
+read -ra steamdirs <<< "$(find / -name "compatdata" -type d 2>/dev/null | grep -v sysroot | tr "\n" " ")"
+read -ra heroicdirs <<< "$(find / -path "*Prefixes/default" -type d 2>/dev/null | tr "\n" " ")"
+read -ra bottlesdirs <<< "$(find / -type f -name "bottle.yml" 2>/dev/null | sed -r "s|/[^/]+$||" | sort | uniq | tr "\n" " ")"
+
+read -ra prefixes <<< "${steamdirs[*]} ${heroicdirs[*]} ${bottlesdirs[*]}"
+
+if [[ -n "${prefixes[*]}" ]]; then
+    duperemove -dhr --hashfile="$HOME/.config/dupehash" "${prefixes[@]}"
+    printf "\nDeduplicated dirs:\n"
+    for dir in "${prefixes[@]}"; do
+        printf "%s\n" "$dir"
+    done
+else
+    echo "Found no wine prefixes, exiting..."
+fi

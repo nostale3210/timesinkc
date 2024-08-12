@@ -1,0 +1,7 @@
+[Unit]
+Description=Deduplicate common wine prefixes weekly
+ConditionACPower=true
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/prefix-dedupe

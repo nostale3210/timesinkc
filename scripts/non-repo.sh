@@ -21,6 +21,7 @@ chmod +x /usr/libexec/assembler
 chmod +x /usr/libexec/dotfile-manager
 chmod +x /usr/libexec/flatpak-manager
 chmod +x /usr/libexec/pod-up
+chmod +x /usr/libexec/prefix-dedupe
 chmod +x /usr/libexec/sys-up
 chmod +x /usr/libexec/user-up
 
@@ -34,6 +35,7 @@ systemctl mask bootc-fetch-apply-updates.timer
 
 systemctl --global enable assemble.service
 systemctl --global enable dotfile-manager.service
+systemctl --global enable prefix-dedupe.timer
 systemctl --global enable user-up.timer
 
 #hide applications
