@@ -2,16 +2,37 @@
 set -oue pipefail
 
 read -ra steamdirs <<< "$(find / -name "compatdata" -type d 2>/dev/null | grep -v sysroot | tr "\n" " ")"
-read -ra heroicdirs <<< "$(find / -path "*Prefixes/default" -type d 2>/dev/null | tr "\n" " ")"
-read -ra bottlesdirs <<< "$(find / -type f -name "bottle.yml" 2>/dev/null | sed -r "s|/[^/]+$||" | sort | uniq | tr "\n" " ")"
+read -ra heroicdirs <<< "$(find / -path "*Prefixes/default" -type d 2>/dev/null | grep -v sysroot | tr "\n" " ")"
+read -ra bottlesdirs <<< "$(find / -type f -name "bottle.yml" 2>/dev/null | grep -v sysroot | sed -r "s|/[^/]+$||" | sort | uniq | tr "\n" " ")"
 
 read -ra prefixes <<< "${steamdirs[*]} ${heroicdirs[*]} ${bottlesdirs[*]}"
 
 if [[ -n "${prefixes[*]}" ]]; then
-    duperemove -dhr --hashfile="$HOME/.config/dupehash" "${prefixes[@]}"
     printf "\nDeduplicated dirs:\n"
+    # Group all directories by the drive they are on to avoid errors
+    declare -A by_dev
     for dir in "${prefixes[@]}"; do
-        printf "%s\n" "$dir"
+        stordev="$(df --output=source "$dir" | tail -n1)"
+        if [[ "${by_dev[$stordev]+_}" ]]; then
+            by_dev["$stordev"]+=" $dir"
+        else
+            by_dev["$stordev"]="$dir"
+        fi
+    done
+
+    # Duplicate each set of directories depending on the drive they are on
+    for dirstr in "${by_dev[@]}"; do
+        read -ra dirlist <<< "$dirstr"
+        # Determine where hashfile for each drive should be
+        mountpoint="$(df --output=source ${dirlist[0]} | tail -n1)"
+        if [[ "$(findmnt -n -o SOURCE /)" =~ "$mountpoint" ]]; then
+            if [[ ! -d "/etc/timesink" ]]; then mkdir -p /etc/timesink; fi
+            hashfile="/etc/timesink/dupehash"
+        else
+            hashfile="$(df --output=target "${dirlist[0]}" | tail -n1)/.dupehash"
+        fi
+        printf "\n" && printf "%s " "${dirlist[@]}" && printf "\n"
+        duperemove -dhr --hashfile="$hashfile" "${dirlist[@]}"
     done
 else
     echo "Found no wine prefixes, exiting..."

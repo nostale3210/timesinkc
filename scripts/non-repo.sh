@@ -28,6 +28,7 @@ chmod +x /usr/libexec/user-up
 #services
 systemctl enable dconf-update.service
 systemctl enable flatpak-manager.service
+systemctl enable prefix-dedupe.timer
 systemctl enable sys-up.timer
 
 systemctl disable bootc-fetch-apply-updates.timer
@@ -35,7 +36,6 @@ systemctl mask bootc-fetch-apply-updates.timer
 
 systemctl --global enable assemble.service
 systemctl --global enable dotfile-manager.service
-systemctl --global enable prefix-dedupe.timer
 systemctl --global enable user-up.timer
 
 #hide applications
