@@ -27,6 +27,7 @@ jobs:
         desktop:
           - silverblue
           - cosmic
+          - container-only
         build_target:
           - main
           - nvidia
@@ -51,12 +52,18 @@ jobs:
 
             export IMAGE_FLAVOR="${{ matrix.build_target }}"
             echo "IMAGE_NAME=timesinkc-${IMAGE_FLAVOR}" >> $GITHUB_ENV
-          else
+          elif [[ "${{ matrix.desktop }}" == "cosmic" ]]; then
             echo "SOURCE_ORG=fedora-ostree-desktops" >> $GITHUB_ENV
             echo "SOURCE_IMAGE=base" >> $GITHUB_ENV
 
             export IMAGE_FLAVOR="${{ matrix.build_target }}"
             echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}" >> $GITHUB_ENV
+          else
+            echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
+            echo "SOURCE_IMAGE=fedora" >> $GITHUB_ENV
+
+            export IMAGE_FLAVOR="${{ matrix.build_target }}"
+            echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}" >> $GITHUB_ENV 
           fi
 
       - name: Image Metadata

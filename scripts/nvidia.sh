@@ -19,7 +19,7 @@ KVER_SHORT="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}')"
 KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 KURL="https://kojipkgs.fedoraproject.org//packages/kernel/${KERNEL_VERSION}/${KERNEL_RELEASE}/${KERNEL_ARCH}"
 
-dnf install -y akmod-nvidia kernel-devel-"${KVER_SHORT}" \
+dnf install -y akmod-nvidia mock kernel-devel-"${KVER_SHORT}" \
     kernel-devel-matched-"${KVER_SHORT}" ||
     dnf install -y akmod-nvidia \
     "${KURL}"/kernel-devel-"${KVER}".rpm \
