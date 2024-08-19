@@ -71,8 +71,6 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 
 FROM "quay.io/${BASE_IMAGE}:${FEDORA_MAJOR_VERSION}" AS container-only-main
 
-COPY files/ /
-
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     mkdir -p /var/lib/alternatives &&\
     readarray basic_pkgs < /scripts/basics.pkgs && \
@@ -95,6 +93,8 @@ RUN dnf install -y --allowerasing fedora-release xorg-x11-server-Xwayland xdg-de
     polkit-gnome fedora-release-common fedora-release-identity-workstation
 
 RUN dnf install -y podman distrobox langpacks-en add-determinism fuse-overlayfs crun
+
+COPY files/ /
 
 RUN KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
     dracut --no-hostonly --kver "$KVER" --reproducible -v --add "tpm2-tss systemd-pcrphase" -f "/lib/modules/$KVER/initramfs.img" && \
