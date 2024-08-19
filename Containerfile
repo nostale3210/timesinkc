@@ -89,8 +89,25 @@ RUN dnf5 install -y kernel kernel-modules kernel-modules-extra systemd dracut gi
     zram-generator-defaults mcelog microcode_ctl virtualbox-guest-additions open-vm-tools-desktop \
     tpm2-tools tpm2-tss
 
+RUN dnf5 install -y ModemManager ModemManager NetworkManager-adsl NetworkManager-bluetooth \
+    NetworkManager-config-connectivity-fedora NetworkManager-openconnect-gnome NetworkManager-openvpn-gnome \
+    NetworkManager-ppp NetworkManager-pptp-gnome NetworkManager-ssh-gnome NetworkManager-vpnc-gnome \
+    NetworkManager-wifi NetworkManager-wwan avahi glib-networking firewalld iw libloc nm-connection-editor \
+    wireless-regdb wpa_supplicant
+
+RUN dnf5 install -y amd-gpu-firmware amd-ucode-firmware atheros-firmware brcmfmac-firmware \
+    cirrus-audio-firmware dvb-firmware intel-audio-firmware intel-gpu-firmware intel-vsc-firmware \
+    iwlegacy-firmware iwlwifi-dvm-firmware iwlwifi-mvm-firmware libertas-firmware linux-firmware \
+    linux-firmware-whence liquidio-firmware mlxsw_spectrum-firmware mrvlprestera-firmware mt7xxx-firmware \
+    netronome-firmware nvidia-gpu-firmware nxpwireless-firmware qcom-firmware qed-firmware \
+    realtek-firmware tiwilink-firmware
+
 RUN dnf install -y --allowerasing fedora-release xorg-x11-server-Xwayland xdg-desktop-portal xdg-desktop-portal-gtk \
     polkit-gnome fedora-release-common fedora-release-identity-workstation
+
+RUN dnf5 copr enable -y chenxiaolong/sbctl && \
+    dnf5 install -y sbctl && \
+    dnf5 copr disable -y chenxiaolong/sbctl
 
 RUN dnf install -y podman distrobox langpacks-en add-determinism fuse-overlayfs crun
 
@@ -115,6 +132,9 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     readarray support_pkgs < /scripts/support.pkgs && \
     dnf5 install -y --allowerasing "${support_pkgs[@]}"
+
+RUN systemctl disable sys-up.timer && \
+    systemctl --global disable user-up.timer
 
 RUN chmod 4755 /usr/bin/newgidmap && \
     chmod 4755 /usr/bin/newuidmap
