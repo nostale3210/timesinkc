@@ -13,6 +13,7 @@ if [[ -f $VER_FILE && $VER = "$VER_RAN" ]]; then
     exit 0
 fi
 
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak remote-modify --no-filter --enable flathub
 
 if grep -q "fedora" <<< "$(flatpak remotes)"; then

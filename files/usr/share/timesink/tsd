@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+print_help() {
+    printf "AAAAAHHHHHHHHHHHH\n"
+}
+
+fail_ex(){
+    printf "ERROR;PANIC;APOCALYPSE\n"
+    exit 1
+}
+
+prepare_deployment() {
+    current_id="$(cat /deploy/current)"
+    max_id="$(find /deploy -maxdepth 1 -type d -not -path "*og*" | sort | tail -n1 | rev | cut -d/ -f1 | rev)"
+    ID="$((max_id+1))"
+    echo "$ID" > /deploy/next
+    mkdir -p "/boot/$ID"
+    mkdir -p "/deploy/$ID/{dev,proc,run,sys,boot,deploy,home,var,mnt}"
+}
+
+install_deployment() {
+    current_id="$(cat /deploy/current)"
+    ID="$(cat /deploy/next)"
+
+    podman create --name tsd-tmp ghcr.io/nostale3210/timesinkc-container-only-main:latest
+    podman cp tsd-tmp:/usr "/deploy/$ID"
+    podman cp tsd-tmp:/etc "/deploy/$ID"
+
+    rsync -aclHhx /etc "/deploy/$ID"
+
+    podman cp tsd-tmp:/etc/passwd /deploy/passwd.tmp &&
+        sort /etc/passwd /deploy/passwd.tmp | awk -F':' '!a[$1]++' > "/deploy/$ID/etc/passwd" &&
+        rm /deploy/passwd.tmp
+    podman cp tsd-tmp:/etc/shadow /deploy/shadow.tmp &&
+        sort /etc/shadow /deploy/shadow.tmp | awk -F':' '!a[$1]++' > "/deploy/$ID/etc/shadow" &&
+        rm /deploy/shadow.tmp
+
+    podman rm tsd-tmp
+
+    new_kernel="$(find "/deploy/$ID/usr/lib/modules" -name vmlinuz | sort | tail -n1)"
+    new_init="$(find "/deploy/$ID/usr/lib/modules" -name initramfs.img | sort | tail -n1)"
+    cp -rfa "$new_kernel" "/boot/$ID"
+    cp -rfa "$new_init" "/boot/$ID"
+
+    cp -rfa /deploy/tsd "/deploy/$ID/usr/bin/"
+    cp -rfa /deploy/mount-dep.sh "/deploy/$ID/usr/sbin/"
+    cp -rfa /deploy/boot.conf "/boot/loader/entries/$ID.conf"
+    cp -rfa /{lib,lib64,bin,sbin} "/deploy/$ID/"
+
+    sed -i "s/INSERT_DEPLOYMENT/$ID/g" "/deploy/$ID/usr/sbin/mount-dep.sh"
+    sed -i "s/INSERT_DEPLOYMENT/$ID/g" "/boot/loader/entries/$ID.conf"
+}
+
+if [[ "$(id -u)" != "0" ]]; then
+    case "$1" in
+        help)
+            print_help
+            ;;
+        *)
+            printf "Needs to be ran as root.\nMore info:\n\n"
+            print_help
+            ;;
+    esac
+else
+    case "$1" in
+        prep)
+            prepare_deployment
+            ;;
+        install)
+            install_deployment
+            ;;
+        *)
+            print_help
+            ;;
+    esac
+fi
