@@ -1,76 +1,145 @@
 #!/usr/bin/env bash
 
+CONTAINER_IMAGE="ghcr.io/nostale3210/timesinkc-container-only-nvidia:latest"
+LOCAL_TAG="localhost/tsd-base"
+
+pprint() {
+	printf "\e[1F\e[2K$1\r\e[1E"
+}
+
 print_help() {
-    printf "AAAAAHHHHHHHHHHHH\n"
+	printf "AAAAAHHHHHHHHHHHH\n"
 }
 
 fail_ex(){
-    printf "ERROR;PANIC;APOCALYPSE\n"
-    exit 1
+	printf "\nCritical failure!\n$1\nAborting!\n"
+	printf "\n"
+	remove_deployment "$(cat /deploy/next)"
+	exit 1
 }
 
 prepare_deployment() {
-    current_id="$(cat /deploy/current)"
-    max_id="$(find /deploy -maxdepth 1 -type d -not -path "*og*" | sort | tail -n1 | rev | cut -d/ -f1 | rev)"
-    ID="$((max_id+1))"
-    echo "$ID" > /deploy/next
-    mkdir -p "/boot/$ID"
-    mkdir -p "/deploy/$ID/{dev,proc,run,sys,boot,deploy,home,var,mnt}"
+	if [[ "$1" == *"u"* ]]; then update_image; fi
+	if [[ "$1" == *"b"* ]]; then build_image; fi
+
+	current_id="$(cat /deploy/current)"
+	max_id="$(find /deploy -maxdepth 1 -type d -not -path "*og*" -not -path "*.*" | sort | tail -n1 | rev | cut -d/ -f1 | rev)"
+	ID="$((max_id+1))"
+	pprint "Preparing filesystem for deployment $ID..."
+	echo "$ID" > /deploy/next || fail_ex "Saving ID $ID failed."
+	mkdir -p "/boot/$ID" || fail_ex "Creating boot dir for deployment $ID failed."
+	mkdir -p "/deploy/$ID"/{dev,proc,root,run,srv,sys,tmp,boot,deploy,home,var,mnt} || fail_ex "Creating needed directories on deployment $ID failed."
+
+	if [[ "$1" == *"i"* ]]; then install_deployment "$1"; fi
 }
 
 install_deployment() {
-    current_id="$(cat /deploy/current)"
-    ID="$(cat /deploy/next)"
+	if [[ "$1" == *"l"* ]]; then CONTAINER_IMAGE="$LOCAL_TAG"; fi
+	current_id="$(cat /deploy/current)"
+	ID="$(cat /deploy/next)"
 
-    podman create --name tsd-tmp ghcr.io/nostale3210/timesinkc-container-only-main:latest
-    podman cp tsd-tmp:/usr "/deploy/$ID"
-    podman cp tsd-tmp:/etc "/deploy/$ID"
+	pprint "Retrieving files from container image $CONTAINER_IMAGE..."
+	podman create --name tsd-tmp "$CONTAINER_IMAGE" &>/dev/null || fail_ex "Couldn't create container from image $CONTAINER_IMAGE to copy files from."
+	pprint "Retrieving /usr from $CONTAINER_IMAGE..."
+	podman cp tsd-tmp:/usr "/deploy/$ID" || fail_ex "Couldn't retrieve /usr from $CONTAINER_IMAGE"
+	pprint "Retrieving /etc from $CONTAINER_IMAGE..."
+	podman cp tsd-tmp:/etc "/deploy/$ID" || fail_ex "Couldn't retrieve /var from $CONTAINER_IMAGE"
+	pprint "Retrieving /var from $CONTAINER_IMAGE..."
+	podman cp tsd-tmp:/var "/deploy/var.$ID" || fail_ex "Couldn't retrieve /etc from $CONTAINER_IMAGE"
 
-    rsync -aclHhx /etc "/deploy/$ID"
+	pprint "Syncing system configuration..."
+	rsync -aclHhrx /etc "/deploy/$ID" || fail_ex "Couldn't sync system configuration."
 
-    podman cp tsd-tmp:/etc/passwd /deploy/passwd.tmp &&
-        sort /etc/passwd /deploy/passwd.tmp | awk -F':' '!a[$1]++' > "/deploy/$ID/etc/passwd" &&
-        rm /deploy/passwd.tmp
-    podman cp tsd-tmp:/etc/shadow /deploy/shadow.tmp &&
-        sort /etc/shadow /deploy/shadow.tmp | awk -F':' '!a[$1]++' > "/deploy/$ID/etc/shadow" &&
-        rm /deploy/shadow.tmp
+	pprint "Syncing user and group configuration..."
+	(podman cp tsd-tmp:/etc/passwd /deploy/passwd.tmp &&
+		sort /etc/passwd /deploy/passwd.tmp | awk -F':' '!a[$1]++' > "/deploy/$ID/etc/passwd" &&
+		rm /deploy/passwd.tmp) || fail_ex "Couldn't sync user and group configuration."
+	(podman cp tsd-tmp:/etc/shadow /deploy/shadow.tmp &&
+		sort /etc/shadow /deploy/shadow.tmp | awk -F':' '!a[$1]++' > "/deploy/$ID/etc/shadow" &&
+		rm /deploy/shadow.tmp) || fail_ex "Couldn't sync user and group configuration."
 
-    podman rm tsd-tmp
+	(podman cp tsd-tmp:/etc/passwd- /deploy/passwd-.tmp &&
+		sort /etc/passwd- /deploy/passwd-.tmp | awk -F':' '!a[$1]++' > "/deploy/$ID/etc/passwd-" &&
+		rm /deploy/passwd-.tmp) || fail_ex "Couldn't sync user and group configuration."
+	(podman cp tsd-tmp:/etc/shadow- /deploy/shadow-.tmp &&
+		sort /etc/shadow- /deploy/shadow-.tmp | awk -F':' '!a[$1]++' > "/deploy/$ID/etc/shadow-" &&
+		rm /deploy/shadow-.tmp) || fail_ex "Couldn't sync user and group configuration."
 
-    new_kernel="$(find "/deploy/$ID/usr/lib/modules" -name vmlinuz | sort | tail -n1)"
-    new_init="$(find "/deploy/$ID/usr/lib/modules" -name initramfs.img | sort | tail -n1)"
-    cp -rfa "$new_kernel" "/boot/$ID"
-    cp -rfa "$new_init" "/boot/$ID"
+	podman rm tsd-tmp &>/dev/null || fail_ex "Cleaning up container failed."
 
-    cp -rfa /deploy/tsd "/deploy/$ID/usr/bin/"
-    cp -rfa /deploy/mount-dep.sh "/deploy/$ID/usr/sbin/"
-    cp -rfa /deploy/boot.conf "/boot/loader/entries/$ID.conf"
-    cp -rfa /{lib,lib64,bin,sbin} "/deploy/$ID/"
+	pprint "Placing kernel and initramfs on boot..."
+	new_kernel="$(find "/deploy/$ID/usr/lib/modules" -name vmlinuz | sort | tail -n1)"
+	new_init="$(find "/deploy/$ID/usr/lib/modules" -name initramfs.img | sort | tail -n1)"
+	cp -rfa "$new_kernel" "/boot/$ID" || fail_ex "Couldn't place new kernel."
+	cp -rfa "$new_init" "/boot/$ID" || fail_ex "Couldn't place new initramfs."
 
-    sed -i "s/INSERT_DEPLOYMENT/$ID/g" "/deploy/$ID/usr/sbin/mount-dep.sh"
-    sed -i "s/INSERT_DEPLOYMENT/$ID/g" "/boot/loader/entries/$ID.conf"
+	pprint "Syncing tsd utilities..."
+	cp -rfa /deploy/tsd "/deploy/$ID/usr/bin/" || fail_ex "Couldn't place tsd on $ID."
+	cp -rfa /deploy/mount-dep.sh "/deploy/$ID/usr/sbin/" || fail_ex "Couldn't place init script for $ID."
+	cp -rfa /deploy/boot.conf "/boot/loader/entries/$ID.conf" || fail_ex "Couldn't place boot entry for $ID."
+	cp -rfa /{lib,lib64,bin,sbin} "/deploy/$ID/" || fail_ex "Couldn't create needed symlinks on $ID."
+
+	sed -i "s/INSERT_DEPLOYMENT/$ID/g" "/deploy/$ID/usr/sbin/mount-dep.sh" || fail_ex "Placing template files for $ID failed."
+	sed -i "s/INSERT_DEPLOYMENT/$ID/g" "/boot/loader/entries/$ID.conf" || fail_ex "Placing template files for $ID failed."
+
+	pprint "Atomically updating actual root..."
+	cp -rfa "/deploy/$current_id/usr" /deploy/usr.tmp
+	mount -o remount,rw /deploy/og
+	exch /deploy/og/deploy/usr.tmp /deploy/og/usr
+	mount -o remount,ro /deploy/og
+	rm -rf /deploy/usr.tmp
+
+	pprint "Deployment $ID installed!"
 }
 
+remove_deployment() {
+	pprint "Attempting to delete deployment $1..."
+	if [[ "$(cat /deploy/current)" == "$1" ]]; then fail_ex "Can't remove booted deployment!"; fi
+	chattr -i /deploy/"$1"
+	rm -rf /deploy/*"$1"
+	rm -rf /boot/"$1"
+	rm -rf /boot/loader/entries/"$1".conf
+	pprint "Deployment $1 removed!"
+}
+
+update_image() {
+	pprint "Pulling latest image version..."
+	podman pull $CONTAINER_IMAGE
+}
+
+build_image() {
+	pprint "Building local image..."
+	podman build --build-arg=SOURCE_IMAGE="$CONTAINER_IMAGE" -t "$LOCAL_TAG" /deploy
+}
+
+printf "\n"
+
 if [[ "$(id -u)" != "0" ]]; then
-    case "$1" in
-        help)
-            print_help
-            ;;
-        *)
-            printf "Needs to be ran as root.\nMore info:\n\n"
-            print_help
-            ;;
-    esac
+	case "$1" in
+		help)
+			print_help
+			;;
+		*)
+			printf "Needs to be ran as root.\nMore info:\n\n"
+			print_help
+			;;
+	esac
 else
-    case "$1" in
-        prep)
-            prepare_deployment
-            ;;
-        install)
-            install_deployment
-            ;;
-        *)
-            print_help
-            ;;
-    esac
+	case "$1" in
+		prep)
+			prepare_deployment
+			;;
+		install)
+			install_deployment
+			;;
+		rm)
+			remove_deployment "$2"
+			;;
+		dep)
+			prepare_deployment "${2-}"
+			;;
+		*)
+			print_help
+			;;
+	esac
 fi
