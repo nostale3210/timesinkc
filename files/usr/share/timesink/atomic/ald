@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+
+SOURCE_IMAGE="ghcr.io/nostale3210/timesinkc-container-only-main:latest"
+LOCAL_TAG="localhost/ald-root"
+
+pprint() {
+    printf "\e[1F\e[2K$1\r\e[1E"
+}
+
+print_help() {
+    printf "AAAAAAAAAHHHHHHHHH\n"
+}
+
+fail_ex() {
+    printf "\nCritical Failure!\n$2\nAborting!\n"
+    pprint "Attempting cleanup..."
+    podman rm ald-tmp $>/dev/null
+    rm -rf "/var/deployments/$1"
+    rm -rf "/boot/$1"
+    rm -rf "/boot/loader/entries/$1.conf"
+    exit 1
+}
+
+pull_image() {
+    pprint "Pulling $SOURCE_IMAGE..."
+    if [[ "$tput_support" == "y" ]]; then tput smcup; fi
+    podman pull "$SOURCE_IMAGE"
+    if [[ "$tput_support" == "y" ]]; then tput rmcup; fi
+}
+
+build_image() {
+    pprint "Building local image..."
+    if [[ "$tput_support" == "y" ]]; then tput smcup; fi
+    podman build --build-arg=SOURCE_IMAGE="$SOURCE_IMAGE" -t "$LOCAL_TAG" /var/deployments
+    if [[ "$tput_support" == "y" ]]; then tput rmcup; fi
+}
+
+setup_dep() {
+    if [[ "$@" == "-"*"u"* ]]; then pull_image; fi
+    if [[ "$@" == "-"*"b"* ]]; then build_image && SOURCE_IMAGE="$LOCAL_TAG"; fi
+
+    pprint "Retrieving vars..."
+    current_id="$(cat /var/deployments/current)"
+    max_id="$(find /var/deployments -maxdepth 1 -type d -not -path *init | tail -n+2 | sort | tail -n1 | awk -F'/' '{print $NF}')"
+    next_id="$((max_id+1))"
+
+    pprint "Creating directories..."
+    mkdir -p "/var/deployments/$next_id" || fail_ex "$next_id" "Couldn't create deployment root."
+    mkdir -p "/var/deployments/init" || fail_ex "$next_id" "Couldn't create init directory."
+    mkdir -p "/boot/$next_id" || fail_ex "$next_id" "Couldn't create deployment boot directory."
+
+    pprint "Syncing image root to fs..."
+    podman create --name ald-tmp "$SOURCE_IMAGE" $>/dev/null || fail_ex "$next_id" "Couldn't sync files."
+    podman cp ald-tmp:/usr "/var/deployments/$next_id" || fail_ex "$next_id" "Couldn't sync files."
+    podman cp ald-tmp:/etc "/var/deployments/$next_id" || fail_ex "$next_id" "Couldn't sync files."
+
+    pprint "Syncing system configuration..."
+    rsync -aclHhx /etc "/var/deployments/$next_id" || fail_ex "$next_id" "Couldn't place system config."
+    podman cp ald-tmp:/etc/passwd /var/deployments || fail_ex "$next_id" "Couldn't place system config."
+    podman cp ald-tmp:/etc/shadow /var/deployments || fail_ex "$next_id" "Couldn't place system config."
+    podman cp ald-tmp:/etc/passwd- /var/deployments || fail_ex "$next_id" "Couldn't place system config."
+    podman cp ald-tmp:/etc/shadow- /var/deployments || fail_ex "$next_id" "Couldn't place system config."
+
+    sort /etc/passwd /var/deployments/passwd | awk -F':' '!a[$1]++' > "/var/deployments/$next_id/etc/passwd" || fail_ex "$next_id" "Couldn't place system config."
+    sort /etc/shadow /var/deployments/shadow | awk -F':' '!a[$1]++' > "/var/deployments/$next_id/etc/shadow" || fail_ex "$next_id" "Couldn't place system config."
+    sort /etc/passwd- /var/deployments/passwd- | awk -F':' '!a[$1]++' > "/var/deployments/$next_id/etc/passwd-" || fail_ex "$next_id" "Couldn't place system config."
+    sort /etc/shadow- /var/deployments/shadow- | awk -F':' '!a[$1]++' > "/var/deployments/$next_id/etc/shadow-" || fail_ex "$next_id" "Couldn't place system config."
+    rm /var/deployments/{passwd,shadow,passwd-,shadow-} || fail_ex "$next_id" "Couldn't place system config."
+
+    podman rm ald-tmp $>/dev/null || fail_ex "$next_id" "Couldn't remove temporary container."
+
+    pprint "Preparing boot entry..."
+    new_kernel="$(find "/var/deployments/$next_id/usr/lib/modules" -name vmlinuz | sort | tail -n1)" || fail_ex "$next_id" "Couldn't place new kernel."
+	new_init="$(find "/var/deployments/$next_id/usr/lib/modules" -name initramfs.img | sort | tail -n1)" || fail_ex "$next_id" "Couldn't place new initramfs."
+    cp -rfa "$new_kernel" "/boot/$next_id" || fail_ex "$next_id" "Couldn't place new kernel."
+	cp -rfa "$new_init" "/boot/$next_id" || fail_ex "$next_id" "Couldn't place new initramfs."
+    cp -rfa /var/deployments/boot.conf "/boot/loader/entries/$next_id.conf" || fail_ex "$next_id" "Couldn't place boot config."
+    cp -rfa /var/deployments/init/init.sh "/var/deployments/init/$next_id.sh" || fail_ex "$next_id" "Couldn't place init script."
+    chmod +x "/var/deployments/init/$next_id.sh" || fail_ex "$next_id" "Couldn't place init script."
+
+    sed -i "s/INSERT_DEPLOYMENT/$next_id/g" "/var/deployments/init/$next_id.sh" || fail_ex "$next_id" "Placing template files for $ID failed."
+    sed -i "s/INSERT_DEPLOYMENT/$next_id/g" "/boot/loader/entries/$next_id.conf" || fail_ex "$next_id" "Placing template files for $ID failed."
+
+    pprint "Deployment $next_id installed!"
+
+    if [[ "$@" == "-"*"s"* ]]; then swap_deployment "next_id"; fi
+}
+
+swap_deployment() {
+    pprint "Replacing deployment $(cat /var/deployments/current) with $1"
+    umount -l /usr || fail_ex "$next_id" "Couldn't temporarily remove /usr bind mount."
+    exch /usr "/var/deployments/$1/usr" || fail_ex "$next_id" "Couldn't atomically switch deployments."  
+    exch /etc "/var/deployments/$1/etc" || printf "Couldn't atomically switch system config, system might be instable."
+    mount -o bind,ro /usr /usr || printf "Restoring /usr bind mount failed, fs is rw."
+    mv "/var/deployments/$1" "/var/deployments/$(cat /var/deployments/current)" || printf "Renaming old deployment failed, naming out of sync."
+    echo "$1" > /var/deployments/current || printf "Saving new deployment failed, naming out of sync."
+    systemctl daemon-reexec || printf "Couldn't reexec systemd, system might behave weird."
+    for user in "$(users | awk '{ print $1 }')"; do
+        sudo -u "$user" env DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/"$(id -u $user)"/bus systemctl --user daemon-reexec || printf "Couldn't reexec systemd, system might behave weird."
+    done
+}
+
+printf "\n"
+if (infocmp | grep -q smcup) &&
+    (infocmp | grep -q rmcup);
+then tput_support="y";
+else tput_support="n"; fi
+
+if [[ "$(id -u)" != "0" ]]; then
+    case $1 in
+        help)
+            print_help
+            ;;
+        *)
+            printf "This program needs to be ran as root.\nMore info:\n"
+            print_help
+            ;;
+    esac
+else
+    case $1 in
+        build)
+            build_image
+            ;;
+        pull)
+            pull_image
+            ;;
+        swap)
+            swap_deployment $2
+            ;;
+        dep)
+            setup_dep $@
+            ;;
+        *)
+            print_help
+            ;;
+    esac
+fi
