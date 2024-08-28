@@ -1,13 +1,14 @@
-#!/var/deployments/init/safe/busybox ash
+#!ALD_PATH/init/safe/busybox ash
 
-if [[ "$(/var/deployments/init/safe/busybox cat /var/deployments/current)" != "INSERT_DEPLOYMENT" ]]; then
-    /var/deployments/init/safe/busybox mount -o remount,rw /
-    /var/deployments/init/safe/jexch -e /usr /var/deployments/INSERT_DEPLOYMENT/usr || break
-    /var/deployments/init/safe/jexch -e /etc /var/deployments/INSERT_DEPLOYMENT/etc
-    /var/deployments/init/safe/busybox mv /var/deployments/INSERT_DEPLOYMENT /var/deployments/"$(/var/deployments/init/safe/busybox cat /var/deployments/current)"
-    /var/deployments/init/safe/busybox echo "INSERT_DEPLOYMENT" > /var/deployments/current
+if [[ "$(ALD_PATH/init/safe/busybox cat ALD_PATH/current)" != "INSERT_DEPLOYMENT" ]]; then
+    ALD_PATH/init/safe/busybox mount -o remount,rw /
+    ALD_PATH/init/safe/jexch -e /usr ALD_PATH/INSERT_DEPLOYMENT/usr || break
+    ALD_PATH/init/safe/jexch -e /etc ALD_PATH/INSERT_DEPLOYMENT/etc
+    ALD_PATH/init/safe/busybox mv ALD_PATH/INSERT_DEPLOYMENT ALD_PATH/"$(ALD_PATH/init/safe/busybox cat ALD_PATH/current)"
+    ALD_PATH/init/safe/busybox echo "INSERT_DEPLOYMENT" > ALD_PATH/current
 fi
 
 mount -o bind,ro /usr /usr
+mount -o bind,rw /usr/local /usr/local
 
-exec /usr/bin/init
+exec /usr/sbin/init
