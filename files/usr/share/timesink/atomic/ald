@@ -74,7 +74,7 @@ fail_ex() {
         rm -rf "${BOOT_PATH:?}/$1"
         rm -rf "${BOOT_PATH:?}/loader/entries/$1.conf"
     fi
-    if ! mountpoint /usr &>/dev/null; then mount -o bind,ro /usr /usr; fi
+    mountpoint /usr &>/dev/null || mount -o bind,ro /usr /usr
     exit 1
 }
 
@@ -163,7 +163,7 @@ setup_dep() {
 
 swap_deployment() {
     pprint "Replacing deployment $(cat "${ALD_PATH:?}/current") with $1"
-    if mountpoint /usr &>/dev/null; then umount -l /usr; fi || fail_ex "-1" "Couldn't temporarily remove /usr bind mount."
+    (mountpoint /usr &>/dev/null && umount -l /usr) || fail_ex "-1" "Couldn't temporarily remove /usr bind mount."
     exch /usr "${ALD_PATH:?}/$1/usr" || fail_ex "-1" "Couldn't atomically switch deployments."  
     exch /etc "${ALD_PATH:?}/$1/etc" || printf "Couldn't atomically switch system config, system might be instable."
     mount -o bind,ro /usr /usr || printf "Restoring /usr bind mount failed, fs is rw."
@@ -193,7 +193,7 @@ rm_dep() {
     rm -rf "${ALD_PATH:?}/init/$1.sh" || printf "Removing %s failed, manual intervention might be necessary.\n" "$ALD_PATH/init/$1.sh" 
     rm -rf "${BOOT_PATH:?}/$1" || printf "Removing %s failed, manual intervention might be necessary.\n" "$BOOT_PATH/$1"
     rm -rf "${BOOT_PATH:?}/loader/entries/$1.conf" || printf "Removing %s failed, manual intervention might be necessary.\n" "$BOOT_PATH/loader/entries/$1.conf"
-    if ! mountpoint /usr &>/dev/null; then mount -o bind,ro /usr /usr; fi
+    mountpoint /usr &>/dev/null || mount -o bind,ro /usr /usr
 }
 
 init_ald() {
@@ -214,47 +214,74 @@ init_ald() {
 printf "\n"
 if (infocmp 2>/dev/null | grep -q smcup) &&
     (infocmp 2>/dev/null | grep -q rmcup);
-    then tput_support="y";
-    else tput_support="n"; fi
+then tput_support="y";
+else tput_support="n"; fi
+
+declare -A -r RUN_CMD=(
+    ["build"]="lwPOgI3J0zn6q"
+    ["pull"]="SPRjLFOXJvXt7"
+    ["swap"]="NJsoQnUMHEfpe"
+    ["dep"]="nQ8tKSuA0SJoy"
+    ["rm"]="ONK3quF6NgVfC"
+    ["init"]="YhOp7NCvu2blO"
+)
 
 if [[ "$(id -u)" != "0" ]]; then
-    case $1 in
+    case "$1" in
         help)
             print_help
             ;;
-	status)
-	    print_status
-	    ;;
+        status)
+            print_status
+            ;;
         *)
             printf "\033[31;1mThis program needs to be ran as root.\nMore info:\033[0m\n\n"
             print_help
             ;;
     esac
-else
-    case $1 in
-        build)
+elif [[ "$(id -u)" = "0" && "${!RUN_CMD[*]}" != *"$1"* ]]; then
+    case "$1" in
+        lwPOgI3J0zn6q)
             build_image
             ;;
-        pull)
+        SPRjLFOXJvXt7)
             pull_image
             ;;
-        swap)
+        NJsoQnUMHEfpe)
             swap_deployment "$2"
             ;;
-        dep)
+        nQ8tKSuA0SJoy)
             setup_dep "$@"
             ;;
-        rm)
+        ONK3quF6NgVfC)
             rm_dep "$2"
             ;;
-	status)
-	    print_status
-	    ;;
-        init)
+        YhOp7NCvu2blO)
             init_ald "$@"
             ;;
+        status)
+            print_status
+            ;;
+        help)
+            print_help
+            ;;
         *)
+            printf "\033[31;1mUnrecognized command.\nMore info:\033[0m\n\n"
             print_help
             ;;
     esac
 fi
+
+if [[ "${!RUN_CMD[*]}" != *"$1"* ]]; then exit 0; fi
+
+(systemd-inhibit --list | grep -q ALD) && fail_ex "-1" "ALD is already running."
+
+for possible_cmd in "${!RUN_CMD[@]}"; do
+    if [[ "$1" == "$possible_cmd" ]]; then
+        shift
+        set -e
+        systemd-inhibit --what="idle:sleep:shutdown" --who="ALD" --why="Modifying/Creating deployments..." \
+            ald "${RUN_CMD[$possible_cmd]}" "$@"
+        exit 0
+    fi
+done
