@@ -161,6 +161,22 @@ setup_dep() {
     if [[ "$*" == "-"*"s"* ]]; then swap_deployment "$next_id"; fi
 }
 
+show_updates() {
+    rpm --version &>/dev/null || fail_ex "-1" "Currently only rpm-based systems are supported."
+    if [[ "$(find "${ALD_PATH:?}" -maxdepth 1 -type d -printf "%P ")" != *"$1"* && "$1" != "$(cat "${ALD_PATH:?}"/current)" ]]; then
+        fail_ex "-1" "No such deployment: $1."
+    elif [[ "$(find "${ALD_PATH:?}" -maxdepth 1 -type d -printf "%P ")" != *"$2"* && "$2" != "$(cat "${ALD_PATH:?}"/current)" ]]; then
+        fail_ex "-1" "No such deployment: $2."
+    fi
+    if [[ -n "$1" && "$1" != "$(cat "${ALD_PATH:?}/current")" ]]; then OLD_DEP="${ALD_PATH:?}/$1"; else OLD_DEP="/"; fi
+    if [[ -n "$2" && "$2" != "$(cat "${ALD_PATH:?}/current")" ]]; then NEW_DEP="${ALD_PATH:?}/$2"; else NEW_DEP="/"; fi
+    printf "Comparing %s and %s:\n" "$OLD_DEP" "$NEW_DEP"
+    rpm -qa --root="$OLD_DEP" | sort > "$HOME/.old" || fail_ex "-1" "Couldn't retrieve packages from $OLD_DEP."
+    rpm -qa --root="$NEW_DEP" | sort > "$HOME/.new" || fail_ex "-1" "Couldn't retrieve packages from $NEW_DEP."
+    diff -y "$HOME/.old" "$HOME/.new" | grep "|" || printf "Couldn't compare $OLD_DEP and $NEW_DEP.\n"
+    rm "$HOME/"{.old,.new} || printf "Failed to delete temporary files.\n"
+}
+
 swap_deployment() {
     pprint "Replacing deployment $(cat "${ALD_PATH:?}/current") with $1"
     (mountpoint /usr &>/dev/null && umount -l /usr) || fail_ex "-1" "Couldn't temporarily remove /usr bind mount."
@@ -234,6 +250,9 @@ if [[ "$(id -u)" != "0" ]]; then
         status)
             print_status
             ;;
+        diff)
+            show_updates "${2-}" "${3-}"
+            ;;
         *)
             printf "\033[31;1mThis program needs to be ran as root.\nMore info:\033[0m\n\n"
             print_help
@@ -258,6 +277,9 @@ elif [[ "$(id -u)" = "0" && "${!RUN_CMD[*]}" != *"$1"* ]]; then
             ;;
         YhOp7NCvu2blO)
             init_ald "$@"
+            ;;
+        diff)
+            show_updates "${2-}" "${3-}"
             ;;
         status)
             print_status
