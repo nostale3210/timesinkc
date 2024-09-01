@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-SOURCE_IMAGE="${SOURCE_IMAGE:-ghcr.io/nostale3210/timesinkc-cosmic-main:latest}"
-LOCAL_TAG="${LOCAL_TAG:-localhost/ald-root}"
-ALD_PATH="${ALD_PATH:-/var/deployments}"
-BOOT_PATH="${BOOT_PATH:-/boot}"
-STATE="${ALD_STATE:-keep}"
-KEEP_DEPS="${KEEP_DEPS:-4}"
-
 pprint() {
     printf "\e[1F\e[2K%s\r\e[1E" "$1"
 }
@@ -103,7 +96,7 @@ build_image() {
 setup_dep() {
     shift
     if [[ "$*" == "-"*"u"* ]]; then pull_image; fi
-    if [[ "$*" == "-"*"b"* ]]; then build_image && SOURCE_IMAGE="$LOCAL_TAG"; fi
+    if [[ "$*" == "-"*"b"* || -f "${ALD_PATH:?}/Containerfile" ]]; then build_image && sleep 1 && SOURCE_IMAGE="$LOCAL_TAG"; fi
 
     pprint "Retrieving vars..."
     current_id="$(cat "${ALD_PATH:?}/current")"
@@ -168,26 +161,27 @@ show_updates() {
     elif [[ "$(find "${ALD_PATH:?}" -maxdepth 1 -type d -printf "%P ")" != *"$2"* && "$2" != "$(cat "${ALD_PATH:?}"/current)" ]]; then
         fail_ex "-1" "No such deployment: $2."
     fi
-    if [[ -n "$1" && "$1" != "$(cat "${ALD_PATH:?}/current")" ]]; then OLD_DEP="${ALD_PATH:?}/$1"; else OLD_DEP="/"; fi
+    FALLBACK="$(find "${ALD_PATH:?}" -maxdepth 1 -type d -not -path '*init*' | tail -n+2 | awk -F'/' '{print $NF}' | sort -n | tail -n1)"
+    if [[ -n "$1" && "$1" != "$(cat "${ALD_PATH:?}/current")" ]]; then OLD_DEP="${ALD_PATH:?}/$1"; else OLD_DEP="${ALD_PATH:?}/$FALLBACK"; fi
     if [[ -n "$2" && "$2" != "$(cat "${ALD_PATH:?}/current")" ]]; then NEW_DEP="${ALD_PATH:?}/$2"; else NEW_DEP="/"; fi
     printf "Comparing %s and %s:\n" "$OLD_DEP" "$NEW_DEP"
-    rpm -qa --root="$OLD_DEP" | sort > "$HOME/.old" || fail_ex "-1" "Couldn't retrieve packages from $OLD_DEP."
-    rpm -qa --root="$NEW_DEP" | sort > "$HOME/.new" || fail_ex "-1" "Couldn't retrieve packages from $NEW_DEP."
-    diff -y "$HOME/.old" "$HOME/.new" | grep "|" || printf "Couldn't compare $OLD_DEP and $NEW_DEP.\n"
+    rpm -qa --root="$OLD_DEP" | sort > "$HOME/.old" || (rm "$HOME/.old" && fail_ex "-1" "Couldn't retrieve packages from $OLD_DEP.")
+    rpm -qa --root="$NEW_DEP" | sort > "$HOME/.new" || (rm "$HOME/"{.old,.new} && fail_ex "-1" "Couldn't retrieve packages from $NEW_DEP.")
+    diff -y "$HOME/.old" "$HOME/.new" | grep "|" || pprint "There doesn't seem to be a difference bewteen $OLD_DEP and $NEW_DEP.\n"
     rm "$HOME/"{.old,.new} || printf "Failed to delete temporary files.\n"
 }
 
 swap_deployment() {
-    pprint "Replacing deployment $(cat "${ALD_PATH:?}/current") with $1"
+    printf "Replacing deployment %s with %s.\n" "$(cat "${ALD_PATH:?}/current")" "$1"
     (mountpoint /usr &>/dev/null && umount -l /usr) || fail_ex "-1" "Couldn't temporarily remove /usr bind mount."
     exch /usr "${ALD_PATH:?}/$1/usr" || fail_ex "-1" "Couldn't atomically switch deployments."  
     exch /etc "${ALD_PATH:?}/$1/etc" || printf "Couldn't atomically switch system config, system might be instable."
     mount -o bind,ro /usr /usr || printf "Restoring /usr bind mount failed, fs is rw."
     mv "${ALD_PATH:?}/$1" "$ALD_PATH/$(cat "$ALD_PATH/current")" || printf "Renaming old deployment failed, naming out of sync."
     echo "$1" > "${ALD_PATH:?}/current" || printf "Saving new deployment failed, naming out of sync."
-    systemctl daemon-reexec || printf "Couldn't reexec systemd, system might behave weird."
+    systemctl daemon-reexec || printf "Couldn't reexec systemd, system might behave weirdly."
     for user in $(users | awk '{ print $1 }'); do
-        sudo -u "$user" env DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/"$(id -u "$user")"/bus systemctl --user daemon-reexec || printf "Couldn't reexec systemd, system might behave weird."
+        sudo -u "$user" env DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/"$(id -u "$user")"/bus systemctl --user daemon-reexec || printf "Couldn't reexec systemd, system might behave weirdly."
     done
 }
 
@@ -227,7 +221,15 @@ init_ald() {
     pprint "ALD initialised. Rebooting once is needed after initializing/switching image."
 }
 
-printf "\n"
+source "$(dirname "$(readlink "$0")")/ald-config.sh" || pprint "No config found, using defaults..."
+
+SOURCE_IMAGE="${SOURCE_IMAGE:-ghcr.io/nostale3210/timesinkc-cosmic-main:latest}"
+LOCAL_TAG="${LOCAL_TAG:-localhost/ald-root}"
+ALD_PATH="${ALD_PATH:-/var/deployments}"
+BOOT_PATH="${BOOT_PATH:-/boot}"
+STATE="${ALD_STATE:-keep}"
+KEEP_DEPS="${KEEP_DEPS:-4}"
+
 if (infocmp 2>/dev/null | grep -q smcup) &&
     (infocmp 2>/dev/null | grep -q rmcup);
 then tput_support="y";
@@ -297,6 +299,8 @@ fi
 if [[ "${!RUN_CMD[*]}" != *"$1"* ]]; then exit 0; fi
 
 (systemd-inhibit --list | grep -q ALD) && fail_ex "-1" "ALD is already running."
+
+printf "\n"
 
 for possible_cmd in "${!RUN_CMD[@]}"; do
     if [[ "$1" == "$possible_cmd" ]]; then
