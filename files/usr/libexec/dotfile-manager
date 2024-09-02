@@ -16,6 +16,8 @@ if [[ $VER = "$VER_RAN" ]]; then
     exit 0
 fi
 
+mkdir -p ~/.local/bin
+
 echo "Placing config files"
 cp -rf /usr/share/timesink/zshrc ~/.zshrc
 cp -rf /usr/share/timesink/config/* ~/.config/

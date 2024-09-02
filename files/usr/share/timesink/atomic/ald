@@ -152,6 +152,7 @@ setup_dep() {
     pprint "Deployment $next_id installed!"
 
     if [[ "$*" == "-"*"s"* ]]; then swap_deployment "$next_id"; fi
+    if [[ "$*" == "-"*"g"* ]]; then rm_deps; fi
 }
 
 show_updates() {
@@ -167,7 +168,7 @@ show_updates() {
     printf "Comparing %s and %s:\n" "$OLD_DEP" "$NEW_DEP"
     rpm -qa --root="$OLD_DEP" | sort > "$HOME/.old" || (rm "$HOME/.old" && fail_ex "-1" "Couldn't retrieve packages from $OLD_DEP.")
     rpm -qa --root="$NEW_DEP" | sort > "$HOME/.new" || (rm "$HOME/"{.old,.new} && fail_ex "-1" "Couldn't retrieve packages from $NEW_DEP.")
-    diff -y "$HOME/.old" "$HOME/.new" | grep "|" || pprint "There doesn't seem to be a difference bewteen $OLD_DEP and $NEW_DEP.\n"
+    diff -y "$HOME/.old" "$HOME/.new" | grep "|" || pprint "There doesn't seem to be a difference bewteen $OLD_DEP and $NEW_DEP."
     rm "$HOME/"{.old,.new} || printf "Failed to delete temporary files.\n"
 }
 
@@ -206,6 +207,12 @@ rm_dep() {
     mountpoint /usr &>/dev/null || mount -o bind,ro /usr /usr
 }
 
+rm_deps() {
+    while [[ "$(find /var/deployments -maxdepth 1 -type d -not -path '*init*' | tail -n+2 | awk -F'/' '{print $NF}' | sort -nr | wc -l)" -gt "$((KEEP_DEPS-1))" ]]; do
+        rm_dep "$(find /var/deployments -maxdepth 1 -type d -not -path '*init*' | tail -n+2 | awk -F'/' '{print $NF}' | sort -n | head -n1)"
+    done
+}
+
 init_ald() {
     shift
 
@@ -223,7 +230,7 @@ init_ald() {
 
 source "$(dirname "$(readlink "$0")")/ald-config.sh" || pprint "No config found, using defaults..."
 
-SOURCE_IMAGE="${SOURCE_IMAGE:-ghcr.io/nostale3210/timesinkc-cosmic-main:latest}"
+SOURCE_IMAGE="${SOURCE_IMAGE:-ghcr.io/nostale3210/timesinkc-main:latest}"
 LOCAL_TAG="${LOCAL_TAG:-localhost/ald-root}"
 ALD_PATH="${ALD_PATH:-/var/deployments}"
 BOOT_PATH="${BOOT_PATH:-/boot}"
@@ -241,6 +248,7 @@ declare -A -r RUN_CMD=(
     ["swap"]="NJsoQnUMHEfpe"
     ["dep"]="nQ8tKSuA0SJoy"
     ["rm"]="ONK3quF6NgVfC"
+    ["gc"]="fM2KhAo1Ko0Pk"
     ["init"]="YhOp7NCvu2blO"
 )
 
@@ -279,6 +287,9 @@ elif [[ "$(id -u)" = "0" && "${!RUN_CMD[*]}" != *"$1"* ]]; then
             ;;
         YhOp7NCvu2blO)
             init_ald "$@"
+            ;;
+        fM2KhAo1Ko0Pk)
+            rm_deps
             ;;
         diff)
             show_updates "${2-}" "${3-}"
