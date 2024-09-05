@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+print_help() {
+    printf "\033[1m\033[4mtsd\033[24m\tPrimitive bootc wrapper to enable automic management of more deployments\033[0m\n\n"
+    printf "\033[1mUsage:\033[0m\ttsd SUBCOMMAND\n\n"
+    printf "\033[1mSubcommands:\033[0m\n"
+    printf "\thelp\t\tPrint this menu\n"
+    printf "\tupgrade\t\tRun \`bootc upgrade\` and keep %s deployments\n" "$keep_deps"
+}
+
+fail_ex() {
+    printf "beeb boop\n%s\nPanicking...\n" "$1"
+}
+
+update_system() {
+    printf "Initiating system upgrade...\n"
+    ostree admin pin 0 &>/dev/null || fail_ex "Couldn't pin current deployment."
+    bootc upgrade || fail_ex "\`bootc upgrade\` failed."
+    (ostree admin pin -u "$keep_deps" &>/dev/null && printf "Released deployment %s.\n" "$keep_deps") ||
+        printf "Unable to release deployment %s. Nonexistant?\n" "$keep_deps"
+}
+
+source "/etc/timesink/tsd.conf" &>/dev/null ||
+    printf "No config file found at %s/.config/tsd.conf.\nUsing defaults.\n" "$HOME"
+
+keep_deps=${keep_deps:-3}
+
+declare -A -r RUN_CMD=(
+["upgrade"]="tQrZGIIjpg49l"
+["up"]="tQrZGIIjpg49l"
+)
+
+if [[ "$(id -u)" != "0" ]]; then
+    case "$1" in
+        help)
+            print_help
+            ;;
+        *)
+            printf "This program needs elevated privileges to run!\n\n"
+            print_help
+            exit 1
+    esac
+elif [[ "$(id -u)" == "0" && "${!RUN_CMD[*]}" != *"$1"* ]]; then
+    case "$1" in
+        tQrZGIIjpg49l)
+            update_system
+            ;;
+        *)
+            printf "No known command %s.\n\n" "$1"
+            print_help
+            exit 1
+    esac
+fi
+
+if [[ "${!RUN_CMD[*]}" != *"$1"* ]]; then exit 0; fi
+
+(systemd-inhibit --list | grep -q tsd) && fail_ex "\`bootc\` seems to be running already."
+
+for possible_cmd in "${!RUN_CMD[@]}"; do
+    if [[ "$1" == "$possible_cmd" ]]; then
+        shift
+        set -e
+        systemd-inhibit --what="idle:sleep:shutdown" --who="tsd" --why="Running system updates." \
+            tsd "${RUN_CMD[$possible_cmd]}" "$@"
+        exit 0
+    fi
+done

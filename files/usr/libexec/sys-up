@@ -18,7 +18,7 @@ draw_sep () {
 
 COMPONENT="bootc"
 draw_sep
-bootc upgrade ||
+tsd upgrade ||
     log_failure
 
 COMPONENT="flatpak"
