@@ -17,6 +17,7 @@ sandbox () {
         --proc /proc \
         --dev /dev \
         --tmpfs /tmp \
+        --bind /mnt /mnt \
         --bind /var /var \
         --bind "$HOME" "$HOME" \
         --bind "$HOME/.nix" /nix \

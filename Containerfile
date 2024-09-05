@@ -30,7 +30,7 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
     ostree container commit
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
-    bash /scripts/non-repo.sh && \
+    bash /scripts/non-repo.sh "bootc" && \
     ostree container commit
 
 

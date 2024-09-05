@@ -58,10 +58,10 @@ alias diff='diff --color=auto'
 if [[ -z "$CONTAINER_ID" ]]; then
     alias clir='distrobox enter cli --'
     xbcli () {
-        distrobox enter cli -- distrobox-export --bin /usr/bin/$1 --export-path ~/.bin
+        distrobox enter cli -- distrobox-export --bin /usr/bin/$1 --export-path ~/.local/bin
     }
     xacli () {
-        distrobox enter cli -- distrobox-export --app $1 --export-path ~/.bin
+        distrobox enter cli -- distrobox-export --app $1 --export-path ~/.local/bin
     }
 
     eval "$(atuin init zsh)"
