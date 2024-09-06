@@ -29,6 +29,15 @@
                 }
             }
         ],
+        "ghcr.io/nostale3210/ald-utils": [
+            {
+                "type": "sigstoreSigned",
+                "keyPath": "/etc/pki/containers/nostale3210-ald.pub",
+                "signedIdentity": {
+                    "type": "matchRepository"
+                }
+            }
+        ],
         "": [
             {
                 "type": "insecureAcceptAnything"
