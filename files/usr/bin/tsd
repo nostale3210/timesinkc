@@ -42,7 +42,6 @@ build_image() {
 }
 
 use_local() {
-    pull_image
     build_image
     if [[ "$(bootc status --format json | jq .status.booted.image.image.image | cut -d'"' -f2)" != "$local_tag" ]]; then
         bootc switch --transport containers-storage "$local_tag" || fail_ex "Switching to local image failed."
@@ -51,7 +50,7 @@ use_local() {
 
 use_remote() {
     if [[ "$(bootc status --format json | jq .status.booted.image.image.image | cut -d'"' -f2)" != "$source_image" ]]; then
-        bootc switch "$source_image" || fail_ex "Switching to remote image failed."
+        bootc switch --transport containers-storage "$source_image" || fail_ex "Switching to remote image failed."
     fi
 }
 

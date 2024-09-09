@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-    IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
   build-and-push:
@@ -39,8 +39,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Enable sigstore
+        shell: bash
+        run: |
+          sudo mkdir -p /etc/containers/registries.d
+          sudo touch /etc/containers/registries.d/"${{ github.repository_owner }}".yaml
+          echo "docker:" | sudo tee /etc/containers/registries.d/"${{ github.repository_owner }}".yaml
+          echo "  ${{ env.IMAGE_REGISTRY }}:" | sudo tee -a /etc/containers/registries.d/"${{ github.repository_owner }}".yaml
+          echo "    use-sigstore-attachments: true" | sudo tee -a /etc/containers/registries.d/"${{ github.repository_owner }}".yaml
 
       - name: Gather environment variables
         shell: bash
@@ -59,76 +65,101 @@ jobs:
             echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}" >> $GITHUB_ENV
           fi
 
-      - name: Image Metadata
-        uses: docker/metadata-action@v5
-        id: meta
-        with:
-          images: |
-            ${{ env.IMAGE_NAME }}
-          labels: |
-            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.description=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.version=${{ matrix.build_target }}
-
       - name: Generate tags
         id: generate-tags
         shell: bash
         run: |
           FVER="${{ matrix.major_version }}"
           SRC="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}"
-          TAGS=""
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-          TAGS+="${SRC}:pr-${{ github.event.number }}"
+            echo "PR_TAG=${SRC}:pr-${{ github.event.number }}" >> $GITHUB_ENV
           else
-            TAGS+="${SRC}:${FVER}"
-            TAGS+=",${SRC}:${FVER}-$(date +%Y%m%d)"
+            echo "VER_TAG=${SRC}:${FVER}" >> $GITHUB_ENV
+            echo "DATE_TAG=${SRC}:${FVER}-$(date +%Y%m%d)" >> $GITHUB_ENV
             if [[ "${{ matrix.is_latest_version }}" == "true" ]]; then
-              TAGS+=",${SRC}:latest"
+              echo "LATEST_TAG=${SRC}:latest" >> $GITHUB_ENV
             fi
             if [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              TAGS+=",${SRC}:stable"
+              echo "STABLE_TAG=${SRC}:stable" >> $GITHUB_ENV
             fi
           fi
-          echo "Publishing with the following tags: "
-          echo "${TAGS}"
-          
-          echo "TAGS=${TAGS}" >> $GITHUB_OUTPUT
 
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        if: github.event_name != 'pull_request'
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build Image
-        id: build_image
-        uses: docker/build-push-action@v6
-        with:
-          file: ./Containerfile
-          push: true
-          tags: ${{ steps.generate-tags.outputs.TAGS }}
-          labels: ${{ steps.meta.outputs.labels }}
-          target: ${{ matrix.desktop }}-${{ matrix.build_target }}
-          outputs: type=image,compression=zstd,compression-level=19,force-compression=true
-          build-args: |
-            SOURCE_ORG=${{ env.SOURCE_ORG }}
-            SOURCE_IMAGE=${{ env.SOURCE_IMAGE }}
-            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
-            IMAGE_FLAVOR=${{ matrix.build_target }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          secrets: |
-            "AKMOD_PRIVKEY=${{ secrets.AKMOD_PRIVKEY }}"
-
-      - uses: sigstore/cosign-installer@v3.6.0
-        if: github.event_name != 'pull_request'
-
-      - name: Sign container image
-        if: github.event_name != 'pull_request'
-        env:
-          COSIGN_EXPERIMENTAL: false
-          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+      - name: Retrieve keys
         run: |
-          cosign sign -y --recursive --key env://COSIGN_PRIVATE_KEY ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build_image.outputs.digest }}
+          mkdir -p /tmp/certs || echo "dir exists"
+          echo "${{ secrets.AKMOD_PRIVKEY }}" > /tmp/certs/AKMOD_PRIVKEY
+          echo "${{ secrets.SIGNING_SECRET }}" > /tmp/certs/SIGNING_SECRET.key
+
+      - name: Build image
+        shell: bash
+        run: |
+          SRC="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}"
+          PR="${{ env.PR_TAG }}"
+          VER="${{ env.VER_TAG }}"
+          DATE="${{ env.DATE_TAG }}"
+          LATEST="${{ env.LATEST_TAG }}"
+          STABLE="${{ env.STABLE_TAG }}"
+          podman build --build-arg=SOURCE_ORG="${{ env.SOURCE_ORG }}" \
+            --build-arg=SOURCE_IMAGE="${{ env.SOURCE_IMAGE }}" \
+            --build-arg=FEDORA_MAJOR_VERSION="${{ matrix.major_version }}" \
+            --build-arg=IMAGE_FLAVOR="${{ matrix.build_target }}" \
+            --label=org.opencontainers.image.title="${{ env.IMAGE_NAME }}" \
+            --label=org.opencontainers.image.description="${{ env.IMAGE_NAME }}" \
+            --label=org.opencontainers.image.version="${{ matrix.build_target }}" \
+            --pull=newer --secret=id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY \
+            --target="${{ matrix.desktop }}-${{ matrix.build_target }}" \
+            --tag="${PR:-"${SRC}:$(date +%N)"}" \
+            --tag="${VER:-${SRC}:"$(date +%N)"}" \
+            --tag="${DATE:-"${SRC}:$(date +%N)"}" \
+            --tag="${LATEST:-"${SRC}:$(date +%N)"}" \
+            --tag="${STABLE:-"${SRC}:$(date +%N)"}" \
+            -f ./Containerfile
+
+      - name: Push image
+        shell: bash
+        run: |
+          podman login --username="${{ github.actor }}" --password="${{ secrets.GITHUB_TOKEN }}" ghcr.io
+          FAILED=()
+          push_pr() {
+            podman push "${{ env.PR_TAG }}" "${{ env.PR_TAG }}" \
+              --compression-format=zstd:chunked --tls-verify=true ||
+              FAILED+=("PR")
+            if [[ "${{ github.event_name }}" == "pull_request" && "${FAILED[*]}" == *"PR"* ]]; then
+              echo "PR failed!" && exit 1
+            else
+              exit 0
+            fi
+          }
+
+          push_tag() {
+            TAG="$1"
+            podman push "${TAGS[$TAG]}" "${TAGS[$TAG]}" \
+              --compression-format=zstd:chunked --tls-verify=true \
+              --sign-by-sigstore-private-key=/tmp/certs/SIGNING_SECRET.key ||
+              FAILED+=("$TAG")
+            if [[ "$TAG" == "VER" && "${FAILED[*]}" == *"VER"* && "${{ github.event_name }}" != "pull_request" ]]; then
+              echo "Version failed." && exit 1
+            elif [[ "$TAG" == "DATE" && "${FAILED[*]}" == *"DATE"* && "${{ github.event_name }}" != "pull_request" ]]; then
+              echo "Date failed." && exit 1
+            elif [[ "$TAG" == "LATEST" && -n "${{ env.LATEST_TAG }}" && "${FAILED[*]}" == *"LATEST"* ]]; then
+              echo "Latest failed!" && exit 1
+            elif [[ "$TAG" == "STABLE" && -n "${{ env.STABLE_TAG }}" && "${FAILED[*]}" == *"STABLE"* ]]; then
+              echo "Stable failed!" && exit 1
+            else
+              echo "$TAG pushed successfully!" && exit 0
+            fi
+          }
+
+          declare -A -r TAGS=(
+            ["VER"]="${{ env.VER_TAG }}"
+            ["DATE"]="${{ env.DATE_TAG }}"
+            ["LATEST"]="${{ env.LATEST_TAG }}"
+            ["STABLE"]="${{ env.STABLE_TAG }}"
+          )
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            push_pr
+          else
+            for TAG in "${!TAGS[@]}"; do
+              (push_tag "$TAG" || (sleep 15 && push_tag "$TAG")) || (sleep 15 && push_tag "$TAG")
+            done
+          fi
