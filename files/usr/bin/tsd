@@ -24,8 +24,8 @@ fail_ex() {
 
 pull_image() {
     printf "Checking for updates...\n"
-    installed_image="$(podman inspect --format '{{.Created}}' "$source_image" 2>/dev/null)"
-    remote_image="$(skopeo inspect --format '{{.Created}}' "docker://$source_image" 2>/dev/null)"
+    installed_image="$(podman inspect --format '{{.Digest}}' "$source_image" 2>/dev/null)"
+    remote_image="$(skopeo inspect --format '{{.Digest}}' "docker://$source_image" 2>/dev/null)"
     if [[ "$installed_image" != "$remote_image" ]]; then
         printf "Pulling %s...\n" "$source_image"
         podman pull "$source_image" || fail_ex "Pulling remote image failed."
@@ -42,6 +42,7 @@ build_image() {
 }
 
 use_local() {
+    pull_image
     build_image
     if [[ "$(bootc status --format json | jq .status.booted.image.image.image | cut -d'"' -f2)" != "$local_tag" ]]; then
         bootc switch --transport containers-storage "$local_tag" || fail_ex "Switching to local image failed."
@@ -50,7 +51,7 @@ use_local() {
 
 use_remote() {
     if [[ "$(bootc status --format json | jq .status.booted.image.image.image | cut -d'"' -f2)" != "$source_image" ]]; then
-        bootc switch --transport containers-storage "$source_image" || fail_ex "Switching to remote image failed."
+        bootc switch --enforce-container-sigpolicy "$source_image" || fail_ex "Switching to remote image failed."
     fi
 }
 

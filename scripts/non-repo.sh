@@ -57,4 +57,7 @@ glib-compile-schemas /usr/share/glib-2.0/schemas
 
 if [[ "$1" == "bootc" ]]; then
     bootupctl backend generate-update-metadata
+
+    echo "[composefs]" > /usr/lib/ostree/prepare-root.conf
+    echo "enabled = true" >> /usr/lib/ostree/prepare-root.conf
 fi
