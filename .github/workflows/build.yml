@@ -93,26 +93,38 @@ jobs:
       - name: Build image
         shell: bash
         run: |
-          podman build --build-arg=SOURCE_ORG="${{ env.SOURCE_ORG }}" \
+          sudo podman build --build-arg=SOURCE_ORG="${{ env.SOURCE_ORG }}" \
             --build-arg=SOURCE_IMAGE="${{ env.SOURCE_IMAGE }}" \
             --build-arg=FEDORA_MAJOR_VERSION="${{ matrix.major_version }}" \
             --build-arg=IMAGE_FLAVOR="${{ matrix.build_target }}" \
-            --label=org.opencontainers.image.title="${{ env.IMAGE_NAME }}" \
-            --label=org.opencontainers.image.description="${{ env.IMAGE_NAME }}" \
-            --label=org.opencontainers.image.version="${{ matrix.build_target }}" \
             --pull=newer --secret=id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY \
             --target="${{ matrix.desktop }}-${{ matrix.build_target }}" \
             --tag="localhost/timesink" \
             -f ./Containerfile
 
+      - name: Rechunk image
+        id: rechunk-image
+        uses: hhd-dev/rechunk@v0.8.6
+        with:
+          ref: localhost/timesink
+          prev-ref: "${{ env.LATEST_TAG }}"
+          skip_compression: true
+          labels: |
+            org.opencontainers.image.title="${{ env.IMAGE_NAME }}"
+            org.opencontainers.image.description="${{ env.IMAGE_NAME }}"
+            org.opencontainers.image.version="$(date +%Y%m%d)"
+
       - name: Push image
         shell: bash
         run: |
+          IMAGE="$(podman pull "${{ steps.rechunk-image.outputs.ref }}")"
+          sudo rm -rf "${{ steps.rechunk-image.outputs.ref }}"
+
           podman login --username="${{ github.actor }}" --password="${{ secrets.GITHUB_TOKEN }}" ghcr.io
 
           push_pr() {
             FAILED=()
-            podman push "localhost/timesink" "${{ env.PR_TAG }}" \
+            podman push "$IMAGE" "${{ env.PR_TAG }}" \
               --compression-format=zstd:chunked --tls-verify=true || FAILED+=("PR")
             if [[ "${{ github.event_name }}" == "pull_request" && "${FAILED[*]}" == *"PR"* ]]; then
               echo "PR failed!" && return 1
@@ -122,7 +134,7 @@ jobs:
           push_tag() {
             TAG="$1"
             FAILED=()
-            podman push "localhost/timesink" "${TAGS[$TAG]}" \
+            podman push "$IMAGE" "${TAGS[$TAG]}" \
               --compression-format=zstd:chunked --tls-verify=true \
               --sign-by-sigstore-private-key=/tmp/certs/SIGNING_SECRET.key || FAILED+=("$TAG")
             if [[ "${FAILED[*]}" == *"VER"* && "${{ github.event_name }}" != "pull_request" ]]; then
