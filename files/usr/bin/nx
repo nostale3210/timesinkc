@@ -10,12 +10,13 @@ sandbox () {
     bwrap --unshare-user --uid "$(id -u)" --gid "$(id -g)" \
         --ro-bind /etc /etc \
         --ro-bind /run /run \
+        --ro-bind /sys /sys \
         --ro-bind /usr /usr \
         --symlink usr/bin /bin \
         --symlink usr/lib /lib \
         --symlink usr/lib64 /lib64 \
         --proc /proc \
-        --dev /dev \
+        --dev-bind /dev /dev \
         --tmpfs /tmp \
         --bind /mnt /mnt \
         --bind /var /var \
