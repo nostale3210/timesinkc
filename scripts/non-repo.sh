@@ -60,4 +60,7 @@ if [[ "$1" == "bootc" ]]; then
 
     echo "[composefs]" > /usr/lib/ostree/prepare-root.conf
     echo "enabled = true" >> /usr/lib/ostree/prepare-root.conf
+
+    mkdir -p /usr/lib/bootc/kargs.d
+    echo 'kargs = ["rd.luks.options=tpm2-device=auto,discard"]' > /usr/lib/bootc/kargs.d/11-luks.toml
 fi
