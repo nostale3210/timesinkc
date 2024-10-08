@@ -9,11 +9,6 @@ ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
 COPY files/ /
 
-RUN KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
-    dracut --no-hostonly --kver "$KVER" --reproducible -v --add "ostree tpm2-tss systemd-pcrphase" -f "/lib/modules/$KVER/initramfs.img" && \
-    chmod 0600 "/lib/modules/$KVER/initramfs.img" && \
-    ostree container commit
-
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     mkdir -p /var/lib/alternatives &&\
     readarray basic_pkgs < /scripts/basics.pkgs && \
@@ -31,6 +26,11 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/non-repo.sh "bootc" && \
+    ostree container commit
+
+RUN KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
+    dracut --no-hostonly --kver "$KVER" --reproducible -v --add "ostree tpm2-tss systemd-pcrphase" -f "/lib/modules/$KVER/initramfs.img" && \
+    chmod 0600 "/lib/modules/$KVER/initramfs.img" && \
     ostree container commit
 
 
