@@ -25,7 +25,7 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
     ostree container commit
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
-    bash /scripts/non-repo.sh "bootc" && \
+    bash /scripts/non-repo.sh && \
     ostree container commit
 
 RUN KVER="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \

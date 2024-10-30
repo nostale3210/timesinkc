@@ -55,12 +55,12 @@ fc-cache -f -v
 
 glib-compile-schemas /usr/share/glib-2.0/schemas
 
-if [[ "$1" == "bootc" ]]; then
-    bootupctl backend generate-update-metadata
+# bootupctl backend generate-update-metadata
 
-    echo "[composefs]" > /usr/lib/ostree/prepare-root.conf
-    echo "enabled = true" >> /usr/lib/ostree/prepare-root.conf
+echo "[composefs]" > /usr/lib/ostree/prepare-root.conf
+echo "enabled = true" >> /usr/lib/ostree/prepare-root.conf
 
-    mkdir -p /usr/lib/bootc/kargs.d
-    echo 'kargs = ["rd.luks.options=tpm2-device=auto,discard"]' > /usr/lib/bootc/kargs.d/11-luks.toml
-fi
+mkdir -p /usr/lib/bootc/kargs.d
+echo 'kargs = ["rd.luks.options=tpm2-device=auto,discard"]' > /usr/lib/bootc/kargs.d/11-luks.toml
+
+bootc container lint

@@ -47,12 +47,10 @@ xdg-user-dirs-gtk
 xorg-x11-drv-amdgpu
 xorg-x11-drv-ati
 xorg-x11-drv-evdev
-xorg-x11-drv-fbdev
 xorg-x11-drv-intel
 xorg-x11-drv-nouveau
 xorg-x11-drv-openchrome
 xorg-x11-drv-qxl
-xorg-x11-drv-vesa
 xorg-x11-drv-vmware
 xorg-x11-drv-wacom
 xorg-x11-drv-wacom-serial-support
