@@ -55,10 +55,10 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/cosmic.sh && \
     ostree container commit
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
-    readarray support_pkgs < /scripts/support.pkgs && \
-    dnf5 install -y "${support_pkgs[@]}" && \
-    ostree container commit
+# RUN --mount=type=bind,src=/scripts,target=/scripts \
+#     readarray support_pkgs < /scripts/support.pkgs && \
+#     dnf5 install -y "${support_pkgs[@]}" && \
+#     ostree container commit
 
 
 FROM cosmic-main AS cosmic-nvidia
