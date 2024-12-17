@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -oue pipefail
 
-dnf5 copr enable -y kylegospo/system76-scheduler
-dnf5 install -y gnome-shell-extension-system76-scheduler kitty nautilus-python\
+dnf copr enable -y kylegospo/system76-scheduler
+dnf install -y gnome-shell-extension-system76-scheduler kitty nautilus-python\
     papirus-icon-theme gnome-tweaks
-dnf5 copr disable -y kylegospo/system76-scheduler
+dnf copr disable -y kylegospo/system76-scheduler
 
-dnf5 remove -y gnome-terminal-nautilus
+dnf remove -y gnome-terminal-nautilus
 
 pip install --prefix=/usr nautilus-open-any-terminal
 
