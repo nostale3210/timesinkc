@@ -13,6 +13,9 @@ dnf install -y mesa-filesystem-"${MESAVER}" \
     mesa-libgbm-"${MESAVER}" mesa-libglapi-"${MESAVER}" \
     mesa-vulkan-drivers-"${MESAVER}"
 
+KVER="$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}')"
+dnf install -y kernel-modules-extra-"${KVER}"
+
 dnf install -y intel-media-driver libva-intel-driver
 dnf config-manager -y setopt updates-testing.enabled=1 &&
     dnf config-manager -y setopt rpmfusion-free-updates-testing.enabled=1 &&
