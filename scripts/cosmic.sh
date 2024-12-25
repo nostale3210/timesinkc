@@ -14,3 +14,5 @@ systemctl enable cosmic-greeter.service
 
 chmod +x /usr/libexec/fix-greetd
 systemctl enable fix-greetd.service
+
+dnf autoremove -y

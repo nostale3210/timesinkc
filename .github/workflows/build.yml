@@ -2,7 +2,7 @@ name: build-bootc-image
 on:
   pull_request:
   schedule:
-    - cron: '00 09 * * *'
+    - cron: '00 15 * * *'
   push:
       branches:
         - "main"

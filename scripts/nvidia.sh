@@ -45,3 +45,5 @@ dnf config-manager -y setopt rpmfusion-free.enabled=0 rpmfusion-free-updates.ena
     rpmfusion-nonfree.enabled=0 rpmfusion-nonfree-updates.enabled=0
 
 echo 'kargs = ["rd.drivers.blacklist=nouveau", "modprobe.blacklist=nouveau", "nvidia-drm.modeset=1", "nvidia-drm.fbdev=1"]' > /usr/lib/bootc/kargs.d/12-nvidia.toml
+
+dnf autoremove -y

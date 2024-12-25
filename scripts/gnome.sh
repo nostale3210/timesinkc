@@ -18,3 +18,5 @@ wget -cO- https://github.com/phisch/phinger-cursors/releases/latest/download/phi
     tar xfj - -C /usr/share/icons
 
 glib-compile-schemas /usr/share/glib-2.0/schemas
+
+dnf autoremove -y
