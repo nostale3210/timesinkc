@@ -46,6 +46,9 @@ FROM shared AS cosmic-main
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/cosmic.sh
 
+COPY files/usr/share/plymouth /usr/share/
+COPY files/usr/share/pixmaps /usr/share/
+
 
 FROM cosmic-main AS cosmic-nvidia
 
