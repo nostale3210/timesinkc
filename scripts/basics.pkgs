@@ -19,6 +19,8 @@ neovim
 osinfo-db
 pipewire-jack-audio-connection-kit
 pipewire-plugin-libcamera
+plymouth
+plymouth-system-theme
 python3-pip
 sane-airscan
 sane-backends
