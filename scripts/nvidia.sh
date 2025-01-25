@@ -5,7 +5,6 @@ set -oue pipefail
 mkdir -p /var/lib/alternatives
 
 install -Dm644 /tmp/certs/private_key.priv /etc/pki/akmods/private/private_key.priv
-install -Dm644 /usr/etc/pki/akmods/certs/public_key.der /etc/pki/akmods/certs/public_key.der
 
 dnf config-manager -y setopt rpmfusion-free.enabled=1 rpmfusion-free-updates.enabled=1 \
     rpmfusion-nonfree.enabled=1 rpmfusion-nonfree-updates.enabled=1

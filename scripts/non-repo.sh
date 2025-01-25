@@ -10,11 +10,11 @@ chmod +x /usr/bin/nx
 pip install --prefix=/usr pynvim
 
 #flathub remote
-mkdir -p /usr/etc/flatpak/remotes.d
-wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d
+mkdir -p /etc/flatpak/remotes.d
+wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /etc/flatpak/remotes.d
 
 #android-udev
-chmod a+r /usr/etc/udev/rules.d/51-android.rules
+chmod a+r /etc/udev/rules.d/51-android.rules
 
 #binaries for services
 chmod +x /usr/libexec/assembler
