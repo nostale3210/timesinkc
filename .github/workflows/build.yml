@@ -53,7 +53,7 @@ jobs:
         run: |
           if [[ "${{ matrix.desktop }}" == "silverblue" ]]; then
             echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
-            echo "SOURCE_IMAGE=fedora-${{ matrix.desktop }}" >> $GITHUB_ENV
+            echo "SOURCE_IMAGE=fedora-bootc" >> $GITHUB_ENV
 
             export IMAGE_FLAVOR="${{ matrix.build_target }}"
             echo "IMAGE_NAME=timesinkc-${IMAGE_FLAVOR}" >> $GITHUB_ENV
