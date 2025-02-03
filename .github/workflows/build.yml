@@ -104,7 +104,7 @@ jobs:
 
       - name: Rechunk image
         id: rechunk-image
-        uses: hhd-dev/rechunk@v1.1.2
+        uses: hhd-dev/rechunk@v1.1.3
         with:
           ref: localhost/timesink
           prev-ref: "${{ env.VER_TAG }}"
