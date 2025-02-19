@@ -33,6 +33,8 @@ wget
 wl-clipboard
 xdg-desktop-portal
 xdg-desktop-portal-gtk
+xdg-user-dirs
+xdg-user-dirs-gtk
 xfsdump
 xfsprogs-xfs_scrub
 zathura
