@@ -4,6 +4,7 @@ curl
 distrobox
 dnf5-plugins
 duperemove
+erofs-utils
 fedora-workstation-backgrounds
 firefox
 firefox-langpacks
