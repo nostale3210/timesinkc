@@ -10,7 +10,7 @@ dnf install -y --best mesa-dri-drivers
 MESAVER="$(rpm -q mesa-dri-drivers --queryformat '%{VERSION}-%{RELEASE}')"
 dnf install -y mesa-filesystem-"${MESAVER}" \
     mesa-libEGL-"${MESAVER}" mesa-libGL-"${MESAVER}" \
-    mesa-libgbm-"${MESAVER}" mesa-libglapi-"${MESAVER}" \
+    mesa-libgbm-"${MESAVER}" \
     mesa-vulkan-drivers-"${MESAVER}"
 
 KVER="$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}')"
