@@ -4,9 +4,10 @@ set -oue pipefail
 dnf copr enable -y che/nerd-fonts
 dnf copr enable -y kylegospo/system76-scheduler
 dnf config-manager -y addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+dnf config-manager -y addrepo --from-repofile=https://repo.librewolf.net/librewolf.repo
 
 dnf install -y nerd-fonts system76-scheduler \
-    tailscale
+    tailscale librewolf
 
 systemctl enable com.system76.Scheduler.service
 systemctl enable tailscaled.service
