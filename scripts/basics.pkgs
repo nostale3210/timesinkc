@@ -6,9 +6,12 @@ distrobox
 dnf5-plugins
 dracut
 duperemove
+fedora-release
+fedora-release-identity-basic
 fedora-workstation-backgrounds
 flatpak
 fuse
+fwupd-efi
 gcc
 git-core
 kernel
@@ -16,6 +19,7 @@ langpacks-core-en
 langpacks-en
 langpacks-fonts-en
 langtable
+mokutil
 neovim
 osinfo-db
 pipewire-jack-audio-connection-kit
