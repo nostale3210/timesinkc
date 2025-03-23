@@ -23,13 +23,13 @@ cp -rf /usr/share/timesink/zshrc ~/.zshrc
 cp -rf /usr/share/timesink/config/* ~/.config/
 
 echo "Installing shell enhancements"
-nx profile install nixpkgs#atuin
-nx profile install nixpkgs#bat
-nx profile install nixpkgs#fzf
-nx profile install nixpkgs#fd
-nx profile install nixpkgs#lsd
-nx profile install nixpkgs#ripgrep
-nx profile install nixpkgs#starship
-nx profile install nixpkgs#zoxide
+nx profile install github:nixos/nixpkgs/nixpkgs-unstable#atuin
+nx profile install github:nixos/nixpkgs/nixpkgs-unstable#bat
+nx profile install github:nixos/nixpkgs/nixpkgs-unstable#fzf
+nx profile install github:nixos/nixpkgs/nixpkgs-unstable#fd
+nx profile install github:nixos/nixpkgs/nixpkgs-unstable#lsd
+nx profile install github:nixos/nixpkgs/nixpkgs-unstable#ripgrep
+nx profile install github:nixos/nixpkgs/nixpkgs-unstable#starship
+nx profile install github:nixos/nixpkgs/nixpkgs-unstable#zoxide
 
 echo $VER > $VER_FILE
