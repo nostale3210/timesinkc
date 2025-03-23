@@ -1,4 +1,4 @@
-name: build-bootc-image
+name: build-standalone-image
 on:
   pull_request:
   schedule:
