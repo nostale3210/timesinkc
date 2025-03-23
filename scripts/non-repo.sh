@@ -3,7 +3,7 @@
 set -oue pipefail
 
 #nix
-curl -L https://hydra.nixos.org/job/nix/master/buildStatic.nix.x86_64-linux/latest/download-by-type/file/binary-dist > /usr/bin/nix
+curl -vL https://hydra.nixos.org/job/nixos/trunk-combined/nixpkgs.nixStatic.x86_64-linux/latest/download-by-type/file/binary-dist > /usr/bin/nix
 chmod +x /usr/bin/nix
 chmod +x /usr/bin/nx
 
@@ -32,18 +32,12 @@ systemctl enable flatpak-manager.service
 systemctl enable prefix-dedupe.timer
 systemctl enable sys-up.timer
 
-systemctl disable bootc-fetch-apply-updates.timer
-systemctl mask bootc-fetch-apply-updates.timer
-
 systemctl --global enable assemble.service
 systemctl --global enable dotfile-manager.service
 systemctl --global enable user-up.timer
 
 #hide applications
 sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/nvim.desktop
-sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.pwmt.zathura.desktop
-
-#themes
 
 #fonts
 mkdir -p /usr/share/fonts/Lilex
@@ -54,13 +48,3 @@ rm -rf Lilex.zip
 fc-cache -f -v
 
 glib-compile-schemas /usr/share/glib-2.0/schemas
-
-# bootupctl backend generate-update-metadata
-
-echo "[composefs]" > /usr/lib/ostree/prepare-root.conf
-echo "enabled = true" >> /usr/lib/ostree/prepare-root.conf
-
-mkdir -p /usr/lib/bootc/kargs.d
-echo 'kargs = ["rd.luks.options=tpm2-device=auto,discard"]' > /usr/lib/bootc/kargs.d/11-luks.toml
-
-bootc container lint

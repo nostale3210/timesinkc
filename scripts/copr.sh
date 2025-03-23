@@ -2,7 +2,6 @@
 set -oue pipefail
 
 dnf copr enable -y che/nerd-fonts
-dnf copr enable -y kylegospo/system76-scheduler
 dnf config-manager -y addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo
 dnf config-manager -y addrepo --from-repofile=https://repo.librewolf.net/librewolf.repo
 
@@ -19,13 +18,7 @@ mkdir "$DNF_LIBREWOLF/pubring"
 
 gpg --export gpg@librewolf.net > "$DNF_LIBREWOLF/pubring/40339DD82B12EF16.pub"
 
-dnf install -y nerd-fonts system76-scheduler tailscale librewolf
-
-systemctl enable com.system76.Scheduler.service
-systemctl enable tailscaled.service
+dnf install -y nerd-fonts tailscale librewolf
 
 dnf copr disable -y che/nerd-fonts
-dnf copr disable -y kylegospo/system76-scheduler
 dnf config-manager -y setopt tailscale-stable.enabled=0 librewolf.enabled=0
-
-dnf remove -y toolbox
