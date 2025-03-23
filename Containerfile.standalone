@@ -7,9 +7,9 @@ FROM "quay.io/${BASE_IMAGE}:${FEDORA_MAJOR_VERSION}" AS shared
 
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
-RUN dnf upgrade -y && \
-    dnf swap -y --allowerasing fedora-release-container fedora-release && \
-    dnf swap -y --allowerasing fedora-release-identity-container fedora-release-identity-basic
+RUN dnf swap -y --allowerasing fedora-release-container fedora-release && \
+    dnf swap -y --allowerasing fedora-release-identity-container fedora-release-identity-basic && \
+    dnf distro-sync -y
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     mkdir -p /var/lib/alternatives &&\

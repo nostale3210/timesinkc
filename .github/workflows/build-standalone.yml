@@ -124,7 +124,7 @@ jobs:
 
           push_pr() {
             FAILED=()
-            podman push "$IMAGE" "${{ env.PR_TAG }}" \
+            podman push "$IMAGE" "${{ env.PR_TAG }}" --force-compression \
               --compression-format="$COMPRESSION_FORMAT" --tls-verify=true || FAILED+=("PR")
             if [[ "${{ github.event_name }}" == "pull_request" && "${FAILED[*]}" == *"PR"* ]]; then
               echo "PR failed!" && return 1
@@ -135,7 +135,7 @@ jobs:
             TAG="$1"
             FAILED=()
             podman push "$IMAGE" "${TAGS[$TAG]}" \
-              --compression-format="$COMPRESSION_FORMAT" --tls-verify=true \
+              --compression-format="$COMPRESSION_FORMAT" --tls-verify=true --force-compression \
               --sign-by-sigstore-private-key=/tmp/certs/SIGNING_SECRET.key || FAILED+=("$TAG")
             if [[ "${FAILED[*]}" == *"VER"* && "${{ github.event_name }}" != "pull_request" ]]; then
               echo "Pushing "${TAGS[$TAG]}" failed!" && return 1
