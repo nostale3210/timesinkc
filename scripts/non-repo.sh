@@ -3,8 +3,8 @@
 set -oue pipefail
 
 #nix
-curl -vL https://hydra.nixos.org/job/nixos/trunk-combined/nixpkgs.nixStatic.x86_64-linux/latest/download-by-type/file/binary-dist > /usr/bin/nix
-chmod +x /usr/bin/nix
+curl -L https://hydra.nixos.org/job/nixpkgs/trunk/lixStatic.x86_64-linux/latest/download-by-type/file/binary-dist > /usr/bin/lix
+chmod +x /usr/bin/lix
 chmod +x /usr/bin/nx
 
 pip install --prefix=/usr pynvim
