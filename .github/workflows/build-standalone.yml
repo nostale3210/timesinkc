@@ -24,6 +24,7 @@ jobs:
       matrix:
         major_version:
           - 41
+          - 42
         desktop:
           - silverblue
           - cosmic
@@ -34,6 +35,9 @@ jobs:
           - major_version: 41
             is_latest_version: true
             is_stable_version: true
+          - major_version: 42
+            is_latest_version: false
+            is_stable_version: false
 
     steps: 
       - name: Checkout repo
