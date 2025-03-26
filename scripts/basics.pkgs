@@ -6,6 +6,7 @@ distrobox
 dnf5-plugins
 dracut
 duperemove
+e2fsprogs
 fedora-release
 fedora-release-identity-basic
 fedora-workstation-backgrounds
@@ -20,6 +21,8 @@ langpacks-core-en
 langpacks-en
 langpacks-fonts-en
 langtable
+man-db
+man-pages
 mokutil
 neovim
 osinfo-db
@@ -28,6 +31,7 @@ pipewire-plugin-libcamera
 plymouth
 plymouth-system-theme
 podman
+policycoreutils
 python3-pip
 rsync
 sane-airscan

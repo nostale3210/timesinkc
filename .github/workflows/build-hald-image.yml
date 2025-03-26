@@ -1,4 +1,4 @@
-name: build-standalone-image
+name: build-hald-image
 on:
   pull_request:
   schedule:
@@ -35,9 +35,11 @@ jobs:
           - major_version: 41
             is_latest_version: true
             is_stable_version: true
+            is_next_version: false
           - major_version: 42
             is_latest_version: false
             is_stable_version: false
+            is_next_version: true
 
     steps: 
       - name: Checkout repo
@@ -60,13 +62,13 @@ jobs:
             echo "SOURCE_IMAGE=fedora" >> $GITHUB_ENV
 
             export IMAGE_FLAVOR="${{ matrix.build_target }}"
-            echo "IMAGE_NAME=timesinkc-${IMAGE_FLAVOR}-standalone" >> $GITHUB_ENV
+            echo "IMAGE_NAME=timesinkc-${IMAGE_FLAVOR}-hald" >> $GITHUB_ENV
           else
             echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
             echo "SOURCE_IMAGE=fedora" >> $GITHUB_ENV
 
             export IMAGE_FLAVOR="${{ matrix.build_target }}"
-            echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}-standalone" >> $GITHUB_ENV
+            echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}-hald" >> $GITHUB_ENV
           fi
 
       - name: Generate tags
@@ -86,6 +88,9 @@ jobs:
             if [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
               echo "STABLE_TAG=${SRC}:stable" >> $GITHUB_ENV
             fi
+            if [[ "${{ matrix.is_next_version }}" == "true" ]]; then
+              echo "NEXT_TAG=${SRC}:next" >> $GITHUB_ENV
+            fi
           fi
 
       - name: Retrieve keys
@@ -104,25 +109,13 @@ jobs:
             --pull=newer --secret=id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY \
             --target="${{ matrix.desktop }}-${{ matrix.build_target }}" \
             --tag="localhost/timesink" \
-            -f ./Containerfile.standalone
-
-#      - name: Rechunk image
-#        id: rechunk-image
-#        uses: hhd-dev/rechunk@v1.2.1
-#        with:
-#          ref: localhost/timesink
-#          prev-ref: "${{ env.VER_TAG }}"
-#          skip_compression: true
-#          labels: |
-#            org.opencontainers.image.title="${{ env.IMAGE_NAME }}"
-#            org.opencontainers.image.description="${{ env.IMAGE_NAME }}"
-#            org.opencontainers.image.version="$(date +%Y%m%d)"
+            -f ./Containerfile
 
       - name: Push image
         shell: bash
         run: |
           IMAGE="localhost/timesink"
-          COMPRESSION_FORMAT="zstd"
+          COMPRESSION_FORMAT="zstd:chunked"
 
           podman login --username="${{ github.actor }}" --password="${{ secrets.GITHUB_TOKEN }}" ghcr.io
 
@@ -149,6 +142,8 @@ jobs:
               echo "Pushing "${TAGS[$TAG]}" failed!" && return 1
             elif [[ -n "${{ env.STABLE_TAG }}" && "${FAILED[*]}" == *"STABLE"* ]]; then
               echo "Pushing "${TAGS[$TAG]}" failed!" && return 1
+            elif [[ -n "${{ env.NEXT_TAG }}" && "${FAILED[*]}" == *"NEXT"* ]]; then
+              echo "Pushing "${TAGS[$TAG]}" failed!" && return 1
             else echo ""${TAGS[$TAG]}" pushed successfully!" && return 0; fi
           }
 
@@ -157,6 +152,7 @@ jobs:
             ["DATE"]="${{ env.DATE_TAG }}"
             ["LATEST"]="${{ env.LATEST_TAG }}"
             ["STABLE"]="${{ env.STABLE_TAG }}"
+            ["NEXT"]="${{ env.NEXT_TAG }}"
           )
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then push_pr;
           else
