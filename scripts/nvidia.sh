@@ -9,12 +9,12 @@ install -Dm644 /tmp/certs/private_key.priv /etc/pki/akmods/private/private_key.p
 dnf config-manager -y setopt rpmfusion-free.enabled=1 rpmfusion-free-updates.enabled=1 \
     rpmfusion-nonfree.enabled=1 rpmfusion-nonfree-updates.enabled=1
 
-dnf install -y akmod-nvidia kernel-devel-matched
+dnf install -y akmod-nvidia
 dnf install -y --allowerasing xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-libs \
     xorg-x11-drv-nvidia-power nvidia-vaapi-driver libva-utils vdpauinfo
 
 # KVER="$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}')"
-KVER_LONG="$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
+KVER_LONG="$(rpm -q kernel-cachyos --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 NVIDIA_AKMOD_VERSION="$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEASE}')"
 
 akmods --force \

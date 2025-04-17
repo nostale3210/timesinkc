@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VER=20
+VER=21
 VER_FILE=/etc/timesink/ver
 if [[ -f $VER_FILE ]]; then
     VER_RAN=$(cat $VER_FILE)
@@ -52,5 +52,8 @@ done
 
 # fix logrotate.service failure (because service runs privileged)
 restorecon -r -v /var/log
+
+# set se boolean for kernel-cachyos
+setsebool -P domain_kernel_load_modules on
 
 echo $VER > $VER_FILE

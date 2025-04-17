@@ -7,7 +7,6 @@ dnf install -y \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
 
 dnf install -y --best mesa-dri-drivers
-dnf install -y kernel-modules-extra
 
 dnf install -y intel-media-driver libva-intel-driver
 { dnf swap -y mesa-va-drivers mesa-va-drivers-freeworld &&

@@ -2,6 +2,8 @@
 set -oue pipefail
 
 dnf copr enable -y che/nerd-fonts
+dnf copr enable -y bieszczaders/kernel-cachyos
+dnf copr enable -y bieszczaders/kernel-cachyos-addons
 dnf config-manager -y addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo
 dnf config-manager -y addrepo --from-repofile=https://repo.librewolf.net/librewolf.repo
 
@@ -20,5 +22,11 @@ gpg --export gpg@librewolf.net > "$DNF_LIBREWOLF/pubring/40339DD82B12EF16.pub"
 
 dnf install -y nerd-fonts tailscale librewolf
 
+dnf install -y libcap-ng libcap-ng-devel procps-ng procps-ng-devel
+
+dnf install -y kernel-cachyos kernel-cachyos-devel-matched scx-scheds cachyos-ksm-settings
+
 dnf copr disable -y che/nerd-fonts
+dnf copr disable -y bieszczaders/kernel-cachyos
+dnf copr disable -y bieszczaders/kernel-cachyos-addons
 dnf config-manager -y setopt tailscale-stable.enabled=0 librewolf.enabled=0
