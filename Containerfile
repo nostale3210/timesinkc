@@ -44,7 +44,7 @@ RUN mandb && bash librarizer && \
 RUN bash dep_check && \
     rm -f dep_check
 
-RUN sed -i "s/tsd upgrade/hald dep -uzag/g" /usr/libexec/sys-up && \
+RUN sed -i "s/tsd upgrade/hald dep -uzsag/g" /usr/libexec/sys-up && \
     sed -i "s/\"bootc\"/\"hald\"/g" /usr/libexec/sys-up
 
 RUN chmod 4755 /usr/bin/newgidmap && \

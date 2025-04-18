@@ -5,7 +5,7 @@ set -oue pipefail
 FAILED_COMPONENTS=()
 
 log_failure () {
-    echo "$COMPONENT upgrade failed" 
+    echo "$COMPONENT upgrade failed"
     FAILED_COMPONENTS+=( "$COMPONENT" )
 }
 
@@ -44,7 +44,7 @@ if [[ "${FAILED_COMPONENTS[*]}" = "fwupd" ]]; then
     exit 0
 elif [[ -n ${FAILED_COMPONENTS[*]} ]]; then
     echo "Service has failed upgrading the components: ${FAILED_COMPONENTS[*]}"
-    exit 1   
+    exit 1
 else
     echo "All upgrades applied successfully"
     exit 0

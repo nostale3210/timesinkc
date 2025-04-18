@@ -15,7 +15,7 @@ jobs:
   build-and-push:
     name: Build and push image
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       contents: read
       packages: write
       id-token: write
@@ -33,15 +33,15 @@ jobs:
           - nvidia
         include:
           - major_version: 41
-            is_latest_version: true
+            is_latest_version: false
             is_stable_version: true
             is_next_version: false
           - major_version: 42
-            is_latest_version: false
+            is_latest_version: true
             is_stable_version: false
             is_next_version: true
 
-    steps: 
+    steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
