@@ -17,7 +17,9 @@ dnf install -y --allowerasing xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-
 KVER_LONG="$(rpm -q kernel-cachyos --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 NVIDIA_AKMOD_VERSION="$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEASE}')"
 
-sh -c 'echo "%_with_kmod_nvidia_open 0" > /etc/rpm/macros.nvidia-kmod'
+rm -f /etc/nvidia/kernel.conf &&
+    mkdir -p /etc/nvidia &&
+    echo "MODULE_VARIANT=kernel" > /etc/nvidia/kernel.conf
 
 akmods --force \
     --kernels "${KVER_LONG}" \
