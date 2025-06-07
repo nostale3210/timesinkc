@@ -17,12 +17,16 @@ dnf install -y --allowerasing xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-cuda-
 KVER_LONG="$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 NVIDIA_AKMOD_VERSION="$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEASE}')"
 
+sh -c 'echo "%_with_kmod_nvidia_open 0" > /etc/rpm/macros.nvidia-kmod'
+
 akmods --force \
     --kernels "${KVER_LONG}" \
     --kmod "nvidia"
 
 modinfo /usr/lib/modules/"${KVER_LONG}"/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko > /dev/null || \
 (cat /var/cache/akmods/nvidia/"${NVIDIA_AKMOD_VERSION::-5}"-for-"${KVER_LONG}".failed.log && exit 1)
+
+modinfo /usr/lib/modules/"${KVER_LONG}"/extra/nvidia/nvidia.ko
 
 systemctl enable nvidia-{suspend,resume,hibernate}
 
