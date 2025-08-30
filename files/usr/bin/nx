@@ -47,7 +47,7 @@ nindex () {
 }
 
 nx () {
-    sandbox lix "$@"
+    sandbox nix "$@"
     nindex
 }
 
