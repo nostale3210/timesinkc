@@ -104,6 +104,7 @@ jobs:
             --pull=newer --secret=id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY \
             --target="${{ matrix.desktop }}-${{ matrix.build_target }}" \
             --tag="localhost/timesink" \
+            --annotation=io.github.containers.compression.zstd=true \
             -f ./Containerfile
 
       - name: Push image
