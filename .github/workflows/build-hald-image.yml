@@ -105,6 +105,8 @@ jobs:
             --target="${{ matrix.desktop }}-${{ matrix.build_target }}" \
             --tag="localhost/timesink" \
             --annotation=io.github.containers.compression.zstd=true \
+            --label=io.github.containers.compression.zstd=true \
+            --squash-all \
             -f ./Containerfile
 
       - name: Push image
