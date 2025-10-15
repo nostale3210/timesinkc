@@ -11,7 +11,7 @@ dnf config-manager -y addrepo --from-repofile=https://negativo17.org/repos/fedor
 dnf install -y nvidia-driver akmod-nvidia libva-nvidia-driver nvidia-driver-cuda
 
 # KVER="$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}')"
-KVER_LONG="$(rpm -q kernel-cachyos --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
+KVER_LONG="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 NVIDIA_AKMOD_VERSION="$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEASE}')"
 
 sed -i -e 's/kernel-open$/kernel/g' /etc/nvidia/kernel.conf
