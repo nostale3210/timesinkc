@@ -24,8 +24,9 @@ jobs:
       matrix:
         major_version:
           - 42
+          - 43
         desktop:
-          - silverblue
+          # - gnome
           - cosmic
         build_target:
           - main
@@ -34,6 +35,10 @@ jobs:
           - major_version: 42
             is_latest_version: true
             is_stable_version: true
+            is_next_version: false
+          - major_version: 43
+            is_latest_version: false
+            is_stable_version: false
             is_next_version: true
 
     steps:
@@ -52,19 +57,10 @@ jobs:
       - name: Gather environment variables
         shell: bash
         run: |
-          if [[ "${{ matrix.desktop }}" == "silverblue" ]]; then
-            echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
-            echo "SOURCE_IMAGE=fedora" >> $GITHUB_ENV
-
-            export IMAGE_FLAVOR="${{ matrix.build_target }}"
-            echo "IMAGE_NAME=timesinkc-${IMAGE_FLAVOR}-hald" >> $GITHUB_ENV
-          else
-            echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
-            echo "SOURCE_IMAGE=fedora" >> $GITHUB_ENV
-
-            export IMAGE_FLAVOR="${{ matrix.build_target }}"
-            echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}-hald" >> $GITHUB_ENV
-          fi
+          echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
+          echo "SOURCE_IMAGE=fedora" >> $GITHUB_ENV
+          export IMAGE_FLAVOR="${{ matrix.build_target }}"
+          echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}-hald" >> $GITHUB_ENV
 
       - name: Generate tags
         id: generate-tags

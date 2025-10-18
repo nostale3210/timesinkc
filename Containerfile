@@ -50,19 +50,19 @@ RUN sed -i "s/tsd upgrade/hald dep -uzsag/g" /usr/libexec/sys-up && \
 RUN chmod 4755 /usr/bin/newgidmap && \
     chmod 4755 /usr/bin/newuidmap
 
-RUN KVER="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
+RUN KVER="$(rpm -q kernel-cachyos --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
     dracut --no-hostonly --kver "$KVER" --reproducible -v \
     --add "ald tpm2-tss systemd-pcrphase plymouth" -f "/lib/modules/$KVER/initramfs.img" && \
     chmod 0600 "/lib/modules/$KVER/initramfs.img"
 
 
-FROM shared AS silverblue-main
+FROM shared AS gnome-main
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/gnome.sh
 
 
-FROM silverblue-main AS silverblue-nvidia
+FROM gnome-main AS gnome-nvidia
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
