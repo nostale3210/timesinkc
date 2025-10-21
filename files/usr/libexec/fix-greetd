@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-cp -f /usr/bin/greetd /usr/local/bin/greetd
-mount -o bind,rw /usr/local/bin/greetd /usr/bin/greetd
-semanage fcontext -a -t xdm_exec_t "/usr/bin/greetd"
-restorecon /usr/bin/greetd
-umount /usr/bin/greetd
-rm /usr/local/bin/greetd

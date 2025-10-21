@@ -18,9 +18,6 @@ dnf copr disable -y ryanabx/cosmic-epoch
 rm -rf /etc/systemd/system/display-manager.service
 systemctl enable cosmic-greeter.service
 
-chmod +x /usr/libexec/fix-greetd
-systemctl enable fix-greetd.service
-
 sed -i "s/Inherits=Adwaita/Inherits=Pop,Adwaita/" /usr/share/icons/default/index.theme
 
 dnf autoremove -y
