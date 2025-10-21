@@ -28,6 +28,7 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/non-repo.sh
 
 COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/hald /usr/bin/hald
+COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/move-mount /usr/bin/move-mount
 COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/90ald /usr/lib/dracut/modules.d/90ald
 COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/ald-boot.service /usr/lib/systemd/system/ald-boot.service
 COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/ald-boot.sh /usr/libexec/ald-boot.sh
