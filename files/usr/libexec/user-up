@@ -22,12 +22,6 @@ draw_sep
 nx profile upgrade '.*' ||
     log_failure
 
-COMPONENT="flatpak"
-draw_sep
-(flatpak update -y &&
-    flatpak uninstall --unused -y) ||
-    log_failure
-
 COMPONENT="flatpak(user)"
 draw_sep
 (flatpak --user update -y &&
