@@ -3,7 +3,7 @@
 set -oue pipefail
 
 #nix
-curl -L https://hydra.nixos.org/job/nixpkgs/trunk/lixStatic.x86_64-linux/latest/download-by-type/file/binary-dist > /usr/bin/nix
+curl -L https://hydra.nixos.org/job/nixpkgs/unstable/lixStatic.x86_64-linux/latest/download-by-type/file/binary-dist > /usr/bin/nix
 chmod +x /usr/bin/nix
 chmod +x /usr/bin/nx
 
