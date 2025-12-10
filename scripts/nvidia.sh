@@ -34,5 +34,3 @@ rm -rf /etc/pki/akmods/private/private_key.priv
 
 dnf copr disable -y bieszczaders/kernel-cachyos-lto
 dnf config-manager -y setopt fedora-nvidia-580.enabled=0 nvidia-container-toolkit.enabled=0
-
-dnf autoremove -y

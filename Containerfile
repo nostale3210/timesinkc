@@ -9,7 +9,9 @@ ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
 RUN dnf swap -y --allowerasing fedora-release-container fedora-release && \
     dnf swap -y --allowerasing fedora-release-identity-container fedora-release-identity-basic && \
-    dnf distro-sync -y
+    dnf distro-sync -y && \
+    dnf install -y dnf5-plugins && \
+    dnf config-manager -y setopt install_weak_deps=0
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     mkdir -p /var/lib/alternatives &&\

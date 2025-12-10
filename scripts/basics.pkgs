@@ -3,7 +3,6 @@ bluez
 btrfsmaintenance
 curl
 distrobox
-dnf5-plugins
 dracut
 duperemove
 e2fsprogs
@@ -41,6 +40,7 @@ sane-backends-drivers-scanners
 skopeo
 systemd
 thermald
+tpm2-tools
 unzip
 upower
 wget

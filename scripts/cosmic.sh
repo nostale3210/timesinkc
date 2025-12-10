@@ -19,5 +19,3 @@ rm -rf /etc/systemd/system/display-manager.service
 systemctl enable cosmic-greeter.service
 
 sed -i "s/Inherits=Adwaita/Inherits=Pop,Adwaita/" /usr/share/icons/default/index.theme
-
-dnf autoremove -y
