@@ -11,7 +11,18 @@ RUN dnf swap -y --allowerasing fedora-release-container fedora-release && \
     dnf swap -y --allowerasing fedora-release-identity-container fedora-release-identity-basic && \
     dnf distro-sync -y && \
     dnf install -y dnf5-plugins && \
-    dnf config-manager -y setopt install_weak_deps=0
+    dnf config-manager -y setopt install_weak_deps=0 && \
+    dnf config-manager -y addrepo --from-repofile=https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo && \
+    dnf install -y terra-release-mesa terra-release-multimedia && \
+    dnf install -y \
+        https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm \
+        https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm && \
+    dnf config-manager -y setopt rpmfusion-free.enabled=0 rpmfusion-free-updates.enabled=0 \
+        rpmfusion-nonfree.enabled=0 rpmfusion-nonfree-updates.enabled=0 && \
+    dnf config-manager -y setopt "*terra*".priority=1 "*terra*".exclude="nerd-fonts scx-tools scx-scheds python3-protobuf gnome*" && \
+    dnf config-manager -y setopt "*rpmfusion*".priority=5 && \
+    dnf config-manager -y setopt "*fedora*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
+
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     mkdir -p /var/lib/alternatives &&\

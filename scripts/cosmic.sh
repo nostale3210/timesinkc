@@ -12,7 +12,8 @@ dnf install -y @cosmic-desktop-environment --skip-broken \
 dnf install -y wiremix gnome-tweaks
 
 dnf config-manager -y setopt rpmfusion-free.enabled=0 rpmfusion-free-updates.enabled=0 \
-    rpmfusion-nonfree.enabled=0 rpmfusion-nonfree-updates.enabled=0
+    rpmfusion-nonfree.enabled=0 rpmfusion-nonfree-updates.enabled=0 \
+    terra.enabled=0 terra-mesa.enabled=0 terra-multimedia.enabled=0
 dnf copr disable -y ryanabx/cosmic-epoch
 
 rm -rf /etc/systemd/system/display-manager.service

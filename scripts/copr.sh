@@ -5,7 +5,6 @@ dnf copr enable -y che/nerd-fonts
 dnf copr enable -y bieszczaders/kernel-cachyos-lto
 dnf copr enable -y bieszczaders/kernel-cachyos-addons
 dnf config-manager -y addrepo --from-repofile=https://repo.librewolf.net/librewolf.repo
-dnf config-manager -y addrepo --from-repofile=https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
 
 sed -i "s/\[repository\]/\[librewolf\]/" /etc/yum.repos.d/librewolf.repo
 
@@ -19,4 +18,4 @@ dnf install -y kernel-cachyos-lto kernel-cachyos-lto-devel-matched scx-scheds sc
 dnf copr disable -y che/nerd-fonts
 dnf copr disable -y bieszczaders/kernel-cachyos-lto
 dnf copr disable -y bieszczaders/kernel-cachyos-addons
-dnf config-manager -y setopt librewolf.enabled=0 terra.enabled=0
+dnf config-manager -y setopt librewolf.enabled=0
