@@ -15,6 +15,7 @@ fwupd-efi
 gawk
 gcc
 git-core
+inotify-tools
 langpacks-core-en
 langpacks-en
 langpacks-fonts-en
