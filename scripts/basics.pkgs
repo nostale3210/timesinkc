@@ -1,4 +1,5 @@
 adw-gtk3-theme
+adwaita-fonts-all
 bluez
 btrfsmaintenance
 curl
@@ -9,6 +10,7 @@ e2fsprogs
 fedora-release
 fedora-release-identity-basic
 fedora-workstation-backgrounds
+fira-code-fonts
 flatpak
 fuse
 fwupd-efi

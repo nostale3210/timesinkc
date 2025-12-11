@@ -42,12 +42,4 @@ sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/appl
 #modify os-release
 sed -i "s/^\(VERSION=\"[0-9]*\)\(.*\)/\1.`date "+%Y-%m-%d"`\2/" /usr/lib/os-release
 
-#fonts
-mkdir -p /usr/share/fonts/Lilex
-curl -OL https://github.com/mishamyrt/Lilex/releases/latest/download/Lilex.zip
-unzip -j Lilex.zip ttf/* -d /usr/share/fonts/Lilex/
-rm -rf Lilex.zip
-
-fc-cache -f -v
-
 glib-compile-schemas /usr/share/glib-2.0/schemas
