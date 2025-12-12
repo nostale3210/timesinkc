@@ -11,7 +11,6 @@ RUN dnf swap -y --allowerasing fedora-release-container fedora-release && \
     dnf swap -y --allowerasing fedora-release-identity-container fedora-release-identity-basic && \
     dnf distro-sync -y && \
     dnf install -y dnf5-plugins && \
-    dnf config-manager -y setopt install_weak_deps=0 && \
     dnf config-manager -y addrepo --from-repofile=https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo && \
     dnf install -y terra-release-mesa terra-release-multimedia && \
     dnf install -y \

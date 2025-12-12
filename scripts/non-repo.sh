@@ -24,7 +24,6 @@ chmod +x /usr/libexec/pod-up
 chmod +x /usr/libexec/prefix-dedupe
 chmod +x /usr/libexec/sys-up
 chmod +x /usr/libexec/user-up
-chmod +x /usr/bin/tsd
 
 #services
 systemctl enable dconf-update.service
