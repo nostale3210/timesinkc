@@ -35,10 +35,6 @@ systemctl --global enable assemble.service
 systemctl --global enable dotfile-manager.service
 systemctl --global enable user-up.timer
 
-#hide applications
-sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/nvim.desktop
-sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/micro.desktop
-
 #modify os-release
 sed -i "s/^\(VERSION=\"[0-9]*\)\(.*\)/\1.`date "+%Y-%m-%d"`\2/" /usr/lib/os-release
 
