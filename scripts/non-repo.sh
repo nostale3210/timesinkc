@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
-
 set -oue pipefail
 
 #nix
-curl -L https://hydra.nixos.org/job/nixpkgs/unstable/lixStatic.x86_64-linux/latest/download-by-type/file/binary-dist > /usr/bin/nix
+curl -L https://hydra.nixos.org/job/nixpkgs/unstable/lixStatic.x86_64-linux/latest/download-by-type/file/binary-dist -o /usr/bin/nix
 chmod +x /usr/bin/nix
 chmod +x /usr/bin/nx
 
-pip install --prefix=/usr pynvim
-
 #flathub remote
 mkdir -p /etc/flatpak/remotes.d
-wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /etc/flatpak/remotes.d
+curl -L https://dl.flathub.org/repo/flathub.flatpakrepo -o /etc/flatpak/remotes.d/flathub.flatpakrepo
 
 #android-udev
 chmod a+r /etc/udev/rules.d/51-android.rules

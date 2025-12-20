@@ -46,7 +46,6 @@ thermald
 tpm2-tools
 unzip
 upower
-wget
 wl-clipboard
 xdg-desktop-portal
 xdg-desktop-portal-gtk

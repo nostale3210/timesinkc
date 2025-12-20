@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -ouex pipefail
 
 mkdir -p /var/lib/alternatives
@@ -19,7 +18,7 @@ dnf install -y nvidia-container-toolkit nvidia-container-toolkit-base \
 
 # KVER="$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}')"
 KVER_LONG="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
-NVIDIA_AKMOD_VERSION="$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEASE}')"
+# NVIDIA_AKMOD_VERSION="$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEASE}')"
 
 akmods --force \
     --kernels "${KVER_LONG}" \
