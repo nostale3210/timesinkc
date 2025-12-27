@@ -46,6 +46,18 @@ nindex () {
     done
 }
 
+nlist () {
+    sandbox nix profile list |
+        grep "Store paths:" |
+        awk '{$1=$2=""; print substr($0,3)}' |
+        tr " " "\n" |
+        sed "s/\/nix\/store\/[a-zA-Z0-9]*-//" |
+        sed "s/\([a-zA-Z-]*\)-/\1 /" |
+        sort -u -t" " -k1,1 |
+        sed "s/-bin//; s/-doc//; s/-man//" |
+        column -t
+}
+
 nx () {
     sandbox nix "$@"
     nindex
@@ -56,16 +68,16 @@ case "$1" in
         shift
         sandbox "$@"
         ;;
-
     exe)
         shift
         nexec "$@"
         ;;
-
     appindex)
         nindex
         ;;
-
+    list-apps)
+        nlist
+        ;;
     *)
         nx "$@"
         ;;
