@@ -7,19 +7,19 @@ if [[ ! -d ~/.nix/var/nix ]] || [[ ! -d ~/.local/nix-bin ]]; then
 fi
 
 sandbox () {
-    bwrap --unshare-user --uid "$(id -u)" --gid "$(id -g)" \
-        --ro-bind /etc /etc \
-        --ro-bind /sys /sys \
+    bwrap \
         --ro-bind /usr /usr \
+        --ro-bind /etc /etc \
         --symlink usr/bin /bin \
         --symlink usr/lib /lib \
         --symlink usr/lib64 /lib64 \
-        --proc /proc \
         --dev-bind /dev /dev \
+        --proc /proc \
+        --ro-bind /sys /sys \
         --tmpfs /tmp \
         --bind /run /run \
-        --bind /mnt /mnt \
         --bind /var /var \
+        --bind /mnt /mnt \
         --bind "$HOME" "$HOME" \
         --bind "$HOME/.nix" /nix \
         "$@"
