@@ -19,7 +19,7 @@ draw_sep () {
 
 COMPONENT="nix"
 draw_sep
-nx profile upgrade '.*' ||
+nx profile upgrade '.*' --impure ||
     log_failure
 
 COMPONENT="flatpak(user)"
