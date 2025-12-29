@@ -23,7 +23,6 @@ jobs:
       fail-fast: false
       matrix:
         major_version:
-          - 42
           - 43
         desktop:
           # - gnome
@@ -32,13 +31,9 @@ jobs:
           - main
           - nvidia
         include:
-          - major_version: 42
-            is_latest_version: false
-            is_stable_version: true
-            is_next_version: false
           - major_version: 43
             is_latest_version: true
-            is_stable_version: false
+            is_stable_version: true
             is_next_version: true
 
     steps:
