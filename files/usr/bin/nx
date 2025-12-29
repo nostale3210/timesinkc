@@ -9,7 +9,6 @@ fi
 sandbox () {
     bwrap --unshare-user --uid "$(id -u)" --gid "$(id -g)" \
         --ro-bind /etc /etc \
-        --ro-bind /run /run \
         --ro-bind /sys /sys \
         --ro-bind /usr /usr \
         --symlink usr/bin /bin \
@@ -18,6 +17,7 @@ sandbox () {
         --proc /proc \
         --dev-bind /dev /dev \
         --tmpfs /tmp \
+        --bind /run /run \
         --bind /mnt /mnt \
         --bind /var /var \
         --bind "$HOME" "$HOME" \
