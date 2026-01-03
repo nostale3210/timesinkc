@@ -26,6 +26,7 @@ jobs:
           - 43
         desktop:
           # - gnome
+          - base
           - cosmic
         build_target:
           - main
@@ -115,7 +116,7 @@ jobs:
         shell: bash
         run: |
           IMAGE="localhost/timesink"
-          COMPRESSION_FORMAT="zstd:chunked"
+          COMPRESSION_FORMAT="zstd"
 
           podman login --username="${{ github.actor }}" --password="${{ secrets.GITHUB_TOKEN }}" ghcr.io
 

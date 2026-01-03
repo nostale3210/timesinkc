@@ -62,6 +62,18 @@ RUN KVER="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARC
     chmod 0600 "/lib/modules/$KVER/initramfs.img"
 
 
+
+FROM shared AS base-main
+
+
+FROM base-main AS base-nvidia
+
+RUN --mount=type=bind,src=/scripts,target=/scripts \
+    --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
+    bash /scripts/nvidia.sh
+
+
+
 FROM shared AS gnome-main
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
@@ -73,6 +85,7 @@ FROM gnome-main AS gnome-nvidia
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
     bash /scripts/nvidia.sh
+
 
 
 FROM shared AS cosmic-main
