@@ -26,7 +26,7 @@ jobs:
           - 43
         desktop:
           # - gnome
-          - base
+          - niri
           - cosmic
         build_target:
           - main

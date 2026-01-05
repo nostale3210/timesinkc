@@ -63,17 +63,6 @@ RUN KVER="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARC
 
 
 
-FROM shared AS base-main
-
-
-FROM base-main AS base-nvidia
-
-RUN --mount=type=bind,src=/scripts,target=/scripts \
-    --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
-    bash /scripts/nvidia.sh
-
-
-
 FROM shared AS gnome-main
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
@@ -95,6 +84,23 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 
 
 FROM cosmic-main AS cosmic-nvidia
+
+RUN --mount=type=bind,src=/scripts,target=/scripts \
+    --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
+    bash /scripts/nvidia.sh
+
+
+
+FROM shared AS niri-main
+
+RUN --mount=type=bind,src=/scripts,target=/scripts \
+    bash /scripts/niri/install_groups.sh
+
+RUN --mount=type=bind,src=/scripts,target=/scripts \
+    bash /scripts/niri/comp_shell.sh
+
+
+FROM niri-main AS niri-nvidia
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
