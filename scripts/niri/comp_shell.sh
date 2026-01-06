@@ -14,9 +14,10 @@ dnf install -y --setopt=install_weak_deps=True dms
 dnf install -y cava wl-clipboard adw-gtk3-theme
 dnf copr disable avengemedia/dms
 dnf install -y dbus-tools wiremix xorg-x11-server-Xwayland xwayland-satellite
-dnf install -y gnome-disk-utility nautilus papers-nautilus nautilus-open-any-terminal sushi \
+dnf install -y gnome-disk-utility nautilus \
     webp-pixbuf-loader gvfs gvfs-afc gvfs-afp gvfs-archive gvfs-client gvfs-fuse gvfs-goa \
     gvfs-gphoto2 gvfs-mtp gvfs-nfs gvfs-smb
+dnf install -y glycin-thumbnailer papers-thumbnailer gst-thumbnailers papers-nautilus
 dnf install -y helium-browser-bin
 dnf install -y kitty
 
