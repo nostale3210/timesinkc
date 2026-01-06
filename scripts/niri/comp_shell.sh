@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -oue pipefail
 
-dnf install -y NetworkManager iputils acl fwupd
+dnf install -y NetworkManager iputils acl fwupd nm-connection-editor
 dnf install -y selinux-policy-targeted \
     policycoreutils-python-utils setroubleshoot-server
 dnf install -y gnome-keyring libgnome-keyring gnome-keyring-pam qt6ct
