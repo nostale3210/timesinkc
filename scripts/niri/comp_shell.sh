@@ -7,6 +7,7 @@ dnf install -y selinux-policy-targeted \
 dnf install -y gnome-keyring libgnome-keyring gnome-keyring-pam qt6ct
 
 dnf install -y niri xdg-desktop-portal-gnome xdg-desktop-portal-gtk
+dnf install -y mangowc xdg-desktop-portal-wlr xdg-desktop-portal-gtk
 dnf copr -y enable avengemedia/dms
 dnf install -y --from-repo coprdep:copr.fedorainfracloud.org:avengemedia:danklinux \
     cliphist danksearch dgop dms-greeter matugen quickshell-git
