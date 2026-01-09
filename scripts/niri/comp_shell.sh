@@ -24,8 +24,14 @@ dnf install -y kitty
 
 dnf install -y wl-mirror tuned-ppd
 
+# Replace deprecated systemd --user import environment
 sed -i "s/\(systemctl --user import-environment\)$/\# \1/" /usr/bin/niri-session
 sed -i "s/\(dbus-update-activation-environment\) \(--all\)$/\1 --systemd \2/" /usr/bin/niri-session
 
+# Adjust helium icon name
+sed -i "s/^Icon=helium$/Icon=net.imput.helium/" /usr/share/applications/helium-browser-bin.desktop
+
+# Hide im-chooser
 sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/im-chooser.desktop
+
 dnf config-manager -y setopt terra.enabled=0 terra-mesa.enabled=0 terra-multimedia.enabled=0
