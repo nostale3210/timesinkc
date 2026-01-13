@@ -10,7 +10,7 @@ dnf install -y niri xdg-desktop-portal-gnome xdg-desktop-portal-gtk
 dnf install -y mangowc xdg-desktop-portal-wlr xdg-desktop-portal-gtk
 dnf copr -y enable avengemedia/dms
 dnf install -y --from-repo coprdep:copr.fedorainfracloud.org:avengemedia:danklinux \
-    cliphist danksearch dgop dms-greeter matugen quickshell-git
+    danksearch dgop dms-greeter matugen quickshell-git
 dnf install -y --setopt=install_weak_deps=True dms
 dnf install -y cava wl-clipboard adw-gtk3-theme
 dnf copr disable avengemedia/dms
