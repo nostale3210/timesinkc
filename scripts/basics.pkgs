@@ -40,8 +40,11 @@ sane-airscan
 sane-backends
 sane-backends-drivers-cameras
 sane-backends-drivers-scanners
+sdubby
 skopeo
 systemd
+systemd-boot-unsigned
+systemd-ukify
 thermald
 tpm2-tools
 unzip
