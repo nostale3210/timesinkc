@@ -25,6 +25,7 @@ langtable
 linux-firmware
 man-db
 man-pages
+microcode_ctl
 mokutil
 neovim
 osinfo-db
