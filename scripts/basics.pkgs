@@ -1,7 +1,6 @@
 adw-gtk3-theme
 adwaita-fonts-all
 bluez
-btrfsmaintenance
 curl
 distrobox
 dracut
@@ -17,9 +16,7 @@ gawk
 gcc
 git-core
 inotify-tools
-langpacks-core-en
 langpacks-en
-langpacks-fonts-en
 langtable
 linux-firmware
 man-db
@@ -34,7 +31,6 @@ plymouth
 plymouth-system-theme
 podman
 policycoreutils
-python3-pip
 rsync
 sane-airscan
 sane-backends

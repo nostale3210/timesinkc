@@ -29,7 +29,7 @@ sed -i "s/\(systemctl --user import-environment\)$/\# \1/" /usr/bin/niri-session
 sed -i "s/\(dbus-update-activation-environment\) \(--all\)$/\1 --systemd \2/" /usr/bin/niri-session
 
 # Adjust helium icon name
-sed -i "s/^Icon=helium$/Icon=net.imput.helium/" /usr/share/applications/helium-browser-bin.desktop
+sed -i "s/^Icon=net.input.helium$/Icon=net.imput.helium/" /usr/share/applications/helium-browser-bin.desktop
 
 # Hide im-chooser
 sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/im-chooser.desktop
