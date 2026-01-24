@@ -19,7 +19,6 @@ dnf install -y gnome-disk-utility nautilus \
     webp-pixbuf-loader gvfs gvfs-afc gvfs-afp gvfs-archive gvfs-client gvfs-fuse gvfs-goa \
     gvfs-gphoto2 gvfs-mtp gvfs-nfs gvfs-smb
 dnf install -y glycin-thumbnailer papers-thumbnailer gst-thumbnailers papers-nautilus
-dnf install -y helium-browser-bin
 dnf install -y kitty
 
 dnf install -y wl-mirror tuned-ppd
@@ -27,9 +26,6 @@ dnf install -y wl-mirror tuned-ppd
 # Replace deprecated systemd --user import environment
 sed -i "s/\(systemctl --user import-environment\)$/\# \1/" /usr/bin/niri-session
 sed -i "s/\(dbus-update-activation-environment\) \(--all\)$/\1 --systemd \2/" /usr/bin/niri-session
-
-# Adjust helium icon name
-sed -i "s/^Icon=net.input.helium$/Icon=net.imput.helium/" /usr/share/applications/helium-browser-bin.desktop
 
 # Hide im-chooser
 sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/im-chooser.desktop
