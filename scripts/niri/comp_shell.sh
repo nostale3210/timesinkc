@@ -8,6 +8,9 @@ dnf install -y gnome-keyring libgnome-keyring gnome-keyring-pam qt6ct
 
 dnf install -y niri xdg-desktop-portal-gnome xdg-desktop-portal-gtk
 dnf install -y mangowc xdg-desktop-portal-wlr xdg-desktop-portal-gtk
+dnf copr -y enable scrollwm/packages
+dnf install -y scroll
+dnf copr -y disable scrollwm/packages
 dnf copr -y enable avengemedia/dms
 dnf install -y --from-repo coprdep:copr.fedorainfracloud.org:avengemedia:danklinux \
     danksearch dgop dms-greeter matugen quickshell-git
