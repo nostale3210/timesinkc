@@ -35,8 +35,10 @@ nindex () {
     read -ra bins <<< "$(sandbox find ~/.nix-profile/bin/ ! -type d -printf "%f ")"
     for file in "${bins[@]}"; do
         local_bin="$HOME/.local/nix-bin/$file"
-        printf "#!/usr/bin/env bash\nnx exe %s "'"$@"' "$file" > "$local_bin"
-        chmod +x "$local_bin"
+        if [[ ! -f "$local_bin" ]]; then
+            printf "#!/usr/bin/env bash\nnx exe %s "'"$@"' "$file" > "$local_bin"
+            chmod +x "$local_bin"
+        fi
     done
 
     read -ra fcontent <<< "$(find ~/.local/nix-bin/ -type f -printf "%f ")"
