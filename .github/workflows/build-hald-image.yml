@@ -110,13 +110,14 @@ jobs:
             --tag="localhost/timesink" \
             --annotation=io.github.containers.compression.zstd=true \
             --label=io.github.containers.compression.zstd=true \
+            --squash-all \
             -f ./Containerfile
 
       - name: Push image
         shell: bash
         run: |
           IMAGE="localhost/timesink"
-          COMPRESSION_FORMAT="zstd"
+          COMPRESSION_FORMAT="zstd:chunked"
 
           podman login --username="${{ github.actor }}" --password="${{ secrets.GITHUB_TOKEN }}" ghcr.io
 
