@@ -27,7 +27,7 @@ jobs:
         desktop:
           # - gnome
           - niri
-          - cosmic
+          - niri-git
         build_target:
           - main
           - nvidia

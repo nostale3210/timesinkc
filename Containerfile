@@ -97,10 +97,27 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/niri/install_groups.sh
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
-    bash /scripts/niri/comp_shell.sh
+    bash /scripts/niri/comp_shell.sh "reg"
 
 
 FROM niri-main AS niri-nvidia
+
+RUN --mount=type=bind,src=/scripts,target=/scripts \
+    --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
+    bash /scripts/nvidia.sh
+
+
+
+FROM shared AS niri-git-main
+
+RUN --mount=type=bind,src=/scripts,target=/scripts \
+    bash /scripts/niri/install_groups.sh
+
+RUN --mount=type=bind,src=/scripts,target=/scripts \
+    bash /scripts/niri/comp_shell.sh "git"
+
+
+FROM niri-git-main AS niri-git-nvidia
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
