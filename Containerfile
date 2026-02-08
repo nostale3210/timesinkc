@@ -114,6 +114,9 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/niri/install_groups.sh
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
+    bash /scripts/niri/mango-git.sh
+
+RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/niri/comp_shell.sh "git"
 
 
