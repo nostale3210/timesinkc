@@ -8,6 +8,7 @@ dnf install -y @printing
 dnf install -y @networkmanager-submodules
 dnf install -y @multimedia
 dnf install -y @input-methods
+dnf install -y ibus ibus-panel ibus-setup ibus-wayland
 dnf install -y @hardware-support
 dnf install -y @guest-desktop-agents
 dnf install -y @fonts
