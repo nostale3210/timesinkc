@@ -7,13 +7,9 @@ FROM "quay.io/${BASE_IMAGE}:${FEDORA_MAJOR_VERSION}" AS shared
 
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
-RUN dnf remove -y kernel kernel-core kernel-modules kernel-modules-extra && \
-    dnf autoremove -y && \
-    dnf clean all -y && \
-    rm -rf /usr/lib/kernel/install.conf && \
-    rm -rf /usr/lib/kernel/install.conf.d
-
-RUN dnf distro-sync -y && \
+RUN dnf swap -y --allowerasing fedora-release-container fedora-release && \
+    dnf swap -y --allowerasing fedora-release-identity-container fedora-release-identity-basic && \
+    dnf distro-sync -y && \
     dnf install -y dnf5-plugins && \
     dnf install -y --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release && \
     dnf install -y terra-release-mesa terra-release-multimedia && \
