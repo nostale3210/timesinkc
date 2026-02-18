@@ -38,6 +38,15 @@
                 }
             }
         ],
+        "ghcr.io/nostale3210/hald-utils": [
+            {
+                "type": "sigstoreSigned",
+                "keyPath": "/etc/pki/containers/nostale3210-hald.pub",
+                "signedIdentity": {
+                    "type": "matchRepository"
+                }
+            }
+        ],
         "": [
             {
                 "type": "insecureAcceptAnything"
