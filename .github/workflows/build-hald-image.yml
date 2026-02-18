@@ -66,7 +66,7 @@ jobs:
         shell: bash
         run: |
           echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
-          echo "SOURCE_IMAGE=fedora" >> $GITHUB_ENV
+          echo "SOURCE_IMAGE=fedora-bootc" >> $GITHUB_ENV
           export IMAGE_FLAVOR="${{ matrix.build_target }}"
           echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}-hald" >> $GITHUB_ENV
 
@@ -101,28 +101,37 @@ jobs:
       - name: Build image
         shell: bash
         run: |
-          podman build --build-arg=SOURCE_ORG="${{ env.SOURCE_ORG }}" \
+          sudo podman build --build-arg=SOURCE_ORG="${{ env.SOURCE_ORG }}" \
             --build-arg=SOURCE_IMAGE="${{ env.SOURCE_IMAGE }}" \
             --build-arg=FEDORA_MAJOR_VERSION="${{ matrix.major_version }}" \
             --build-arg=IMAGE_FLAVOR="${{ matrix.build_target }}" \
             --pull=newer --secret=id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY \
             --target="${{ matrix.desktop }}-${{ matrix.build_target }}" \
-            --tag="localhost/timesink" \
+            --tag="localhost/timesink:latest" \
             --annotation=io.github.containers.compression.zstd=true \
             --label=io.github.containers.compression.zstd=true \
             -f ./Containerfile
 
+      - name: Rechunk image
+        shell: bash
+        run: |
+          sudo podman run --rm --privileged -v /var/lib/containers:/var/lib/containers \
+            localhost/timesink:latest \
+            /usr/libexec/bootc-base-imagectl rechunk --max-layers 40 \
+            localhost/timesink:latest \
+            localhost/timesink:chunked
+
       - name: Push image
         shell: bash
         run: |
-          IMAGE="localhost/timesink"
+          IMAGE="localhost/timesink:chunked"
           COMPRESSION_FORMAT="zstd:chunked"
 
-          podman login --username="${{ github.actor }}" --password="${{ secrets.GITHUB_TOKEN }}" ghcr.io
+          sudo podman login --username="${{ github.actor }}" --password="${{ secrets.GITHUB_TOKEN }}" ghcr.io
 
           push_pr() {
             FAILED=()
-            podman push "$IMAGE" "${{ env.PR_TAG }}" --force-compression \
+            sudo podman push "$IMAGE" "${{ env.PR_TAG }}" --force-compression \
               --compression-format="$COMPRESSION_FORMAT" --tls-verify=true || FAILED+=("PR")
             if [[ "${{ github.event_name }}" == "pull_request" && "${FAILED[*]}" == *"PR"* ]]; then
               echo "PR failed!" && return 1
@@ -132,7 +141,7 @@ jobs:
           push_tag() {
             TAG="$1"
             FAILED=()
-            podman push "$IMAGE" "${TAGS[$TAG]}" \
+            sudo podman push "$IMAGE" "${TAGS[$TAG]}" \
               --compression-format="$COMPRESSION_FORMAT" --tls-verify=true --force-compression \
               --sign-by-sigstore-private-key=/tmp/certs/SIGNING_SECRET.key || FAILED+=("$TAG")
             if [[ "${FAILED[*]}" == *"VER"* && "${{ github.event_name }}" != "pull_request" ]]; then
