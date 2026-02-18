@@ -110,6 +110,8 @@ jobs:
             --tag="localhost/timesink" \
             --annotation=io.github.containers.compression.zstd=true \
             --label=io.github.containers.compression.zstd=true \
+            --squash-all \
+            --timestamp=0 \
             -f ./Containerfile
 
       - name: Push image
