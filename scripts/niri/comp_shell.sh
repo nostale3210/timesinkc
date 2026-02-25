@@ -42,7 +42,4 @@ fi
 sed -i "s/\(systemctl --user import-environment\)$/\# \1/" /usr/bin/niri-session
 sed -i "s/\(dbus-update-activation-environment\) \(--all\)$/\1 --systemd \2/" /usr/bin/niri-session
 
-# Hide im-chooser
-sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/im-chooser.desktop
-
 dnf config-manager -y setopt terra.enabled=0 terra-mesa.enabled=0 terra-multimedia.enabled=0
