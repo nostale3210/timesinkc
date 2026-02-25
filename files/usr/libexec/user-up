@@ -17,11 +17,6 @@ draw_sep () {
         printf "\u2500%.0s" $(seq $start 80) && printf "\n"
 }
 
-COMPONENT="nix"
-draw_sep
-nx profile upgrade '.*' --impure ||
-    log_failure
-
 COMPONENT="flatpak(user)"
 draw_sep
 (flatpak --user update -y &&
