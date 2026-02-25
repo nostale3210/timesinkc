@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 set -oue pipefail
 
-#nix
-curl -L https://hydra.nixos.org/job/nixpkgs/unstable/lixStatic.x86_64-linux/latest/download-by-type/file/binary-dist -o /usr/bin/nix
-chmod +x /usr/bin/nix
-chmod +x /usr/bin/nx
-
 #flathub remote
 mkdir -p /etc/flatpak/remotes.d
 curl -L https://dl.flathub.org/repo/flathub.flatpakrepo -o /etc/flatpak/remotes.d/flathub.flatpakrepo
