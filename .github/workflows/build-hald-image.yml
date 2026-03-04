@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_REGISTRY: docker.io/${{ github.repository_owner }}
 
 jobs:
   build-and-push:
@@ -68,27 +68,27 @@ jobs:
           echo "SOURCE_ORG=fedora" >> $GITHUB_ENV
           echo "SOURCE_IMAGE=fedora" >> $GITHUB_ENV
           export IMAGE_FLAVOR="${{ matrix.build_target }}"
-          echo "IMAGE_NAME=timesinkc-${{ matrix.desktop }}-${IMAGE_FLAVOR}-hald" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${{ matrix.desktop }}-${IMAGE_FLAVOR}" >> $GITHUB_ENV
 
       - name: Generate tags
         id: generate-tags
         shell: bash
         run: |
           FVER="${{ matrix.major_version }}"
-          SRC="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}"
+          SRC="docker://${{ env.IMAGE_REGISTRY }}/timesinkc"
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "PR_TAG=${SRC}:pr-${{ github.event.number }}" >> $GITHUB_ENV
+            echo "PR_TAG=${SRC}:${{ env.IMAGE_NAME }}-pr-${{ github.event.number }}" >> $GITHUB_ENV
           else
-            echo "VER_TAG=${SRC}:${FVER}" >> $GITHUB_ENV
-            echo "DATE_TAG=${SRC}:${FVER}-$(date +%Y%m%d)" >> $GITHUB_ENV
+            echo "VER_TAG=${SRC}:${{ env.IMAGE_NAME }}-${FVER}" >> $GITHUB_ENV
+            echo "DATE_TAG=${SRC}:${{ env.IMAGE_NAME }}-${FVER}-$(date +%Y%m%d)" >> $GITHUB_ENV
             if [[ "${{ matrix.is_latest_version }}" == "true" ]]; then
-              echo "LATEST_TAG=${SRC}:latest" >> $GITHUB_ENV
+              echo "LATEST_TAG=${SRC}:${{ env.IMAGE_NAME }}-latest" >> $GITHUB_ENV
             fi
             if [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              echo "STABLE_TAG=${SRC}:stable" >> $GITHUB_ENV
+              echo "STABLE_TAG=${SRC}:${{ env.IMAGE_NAME }}-stable" >> $GITHUB_ENV
             fi
             if [[ "${{ matrix.is_next_version }}" == "true" ]]; then
-              echo "NEXT_TAG=${SRC}:next" >> $GITHUB_ENV
+              echo "NEXT_TAG=${SRC}:${{ env.IMAGE_NAME }}-next" >> $GITHUB_ENV
             fi
           fi
 
@@ -120,7 +120,7 @@ jobs:
           IMAGE="localhost/timesink"
           COMPRESSION_FORMAT="zstd:chunked"
 
-          podman login --username="${{ github.actor }}" --password="${{ secrets.GITHUB_TOKEN }}" ghcr.io
+          podman login --username="${{ github.actor }}" --password="${{ secrets.DOCKERHUB_TOKEN }}" docker.io
 
           push_pr() {
             FAILED=()

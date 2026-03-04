@@ -20,7 +20,7 @@
                 "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
             }
         ],
-        "ghcr.io/nostale3210": [
+        "docker.io/nostale3210": [
             {
                 "type": "sigstoreSigned",
                 "keyPath": "/etc/pki/containers/nostale3210.pub",
@@ -29,7 +29,7 @@
                 }
             }
         ],
-        "ghcr.io/nostale3210/ald-utils": [
+        "docker.io/nostale3210/ald-utils": [
             {
                 "type": "sigstoreSigned",
                 "keyPath": "/etc/pki/containers/nostale3210-ald.pub",
@@ -38,7 +38,7 @@
                 }
             }
         ],
-        "ghcr.io/nostale3210/hald-utils": [
+        "docker.io/nostale3210/hald-utils": [
             {
                 "type": "sigstoreSigned",
                 "keyPath": "/etc/pki/containers/nostale3210-hald.pub",
