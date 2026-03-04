@@ -92,6 +92,15 @@ jobs:
             fi
           fi
 
+      - name: Update podman
+        shell: bash
+        run: |
+          echo 'deb http://download.opensuse.org/repositories/home:/alvistack/xUbuntu_25.04/ /' | sudo tee /etc/apt/sources.list.d/home:alvistack.list
+          curl -fsSL https://download.opensuse.org/repositories/home:alvistack/xUbuntu_24.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_alvistack.gpg > /dev/null
+          sudo apt update
+          sudo apt install -o Dpkg::Options::="--force-overwrite" podman
+          podman system info
+
       - name: Retrieve keys
         run: |
           mkdir -p /tmp/certs || echo "dir exists"
