@@ -38,18 +38,6 @@ jobs:
             is_next_version: true
 
     steps:
-      - name: Free space
-        shell: bash
-        run: |
-          set -x
-          df -h /
-          sudo rm -rf /opt/hostedtoolcache
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/.ghcup
-          df -h /
-
       - name: Checkout repo
         uses: actions/checkout@v6
 
@@ -92,25 +80,41 @@ jobs:
             fi
           fi
 
-      - name: Update podman
-        shell: bash
-        run: |
-          echo 'deb http://download.opensuse.org/repositories/home:/alvistack/xUbuntu_25.04/ /' | sudo tee /etc/apt/sources.list.d/home:alvistack.list
-          curl -fsSL https://download.opensuse.org/repositories/home:alvistack/xUbuntu_24.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_alvistack.gpg > /dev/null
-          sudo apt update
-          sudo apt install -o Dpkg::Options::="--force-overwrite" podman
-          podman system info
-
       - name: Retrieve keys
         run: |
           mkdir -p /tmp/certs || echo "dir exists"
           echo "${{ secrets.AKMOD_PRIVKEY }}" > /tmp/certs/AKMOD_PRIVKEY
           echo "${{ secrets.SIGNING_SECRET }}" > /tmp/certs/SIGNING_SECRET.key
 
+      - name: Setup podman in podman
+        shell: bash
+        run: |
+          sudo podman create --privileged -ti --name build \
+            --mount type=bind,src=/tmp/certs,dst=/tmp/certs \
+            --mount type=bind,src=scripts,dst=/scripts \
+            --mount type=bind,src=files,dst=/files \
+            --mount type=bind,src=/etc/containers/registries.d,dst=/etc/containers/registries.d \
+            --mount type=bind,src=./Containerfile,dst=/Containerfile \
+            quay.io/podman/stable:latest
+          sudo podman start build
+
+      - name: Free space
+        shell: bash
+        run: |
+          set -x
+          df -h /
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/.ghcup
+          df -h /
+
       - name: Build image
         shell: bash
         run: |
-          podman build --build-arg=SOURCE_ORG="${{ env.SOURCE_ORG }}" \
+          sudo podman exec --privileged build \
+            podman build --build-arg=SOURCE_ORG="${{ env.SOURCE_ORG }}" \
             --build-arg=SOURCE_IMAGE="${{ env.SOURCE_IMAGE }}" \
             --build-arg=FEDORA_MAJOR_VERSION="${{ matrix.major_version }}" \
             --build-arg=IMAGE_FLAVOR="${{ matrix.build_target }}" \
@@ -129,11 +133,14 @@ jobs:
           IMAGE="localhost/timesink"
           COMPRESSION_FORMAT="zstd:chunked"
 
-          podman login --username="${{ github.actor }}" --password="${{ secrets.DOCKERHUB_TOKEN }}" docker.io
+          sudo podman exec --privileged build \
+            podman login --username="${{ github.actor }}" \
+            --password="${{ secrets.DOCKERHUB_TOKEN }}" docker.io
 
           push_pr() {
             FAILED=()
-            podman push "$IMAGE" "${{ env.PR_TAG }}" --force-compression \
+            sudo podman exec --privileged build \
+              podman push "$IMAGE" "${{ env.PR_TAG }}" --force-compression \
               --compression-format="$COMPRESSION_FORMAT" --tls-verify=true || FAILED+=("PR")
             if [[ "${{ github.event_name }}" == "pull_request" && "${FAILED[*]}" == *"PR"* ]]; then
               echo "PR failed!" && return 1
@@ -143,7 +150,8 @@ jobs:
           push_tag() {
             TAG="$1"
             FAILED=()
-            podman push "$IMAGE" "${TAGS[$TAG]}" \
+            sudo podman exec --privileged build \
+              podman push "$IMAGE" "${TAGS[$TAG]}" \
               --compression-format="$COMPRESSION_FORMAT" --tls-verify=true --force-compression \
               --sign-by-sigstore-private-key=/tmp/certs/SIGNING_SECRET.key || FAILED+=("$TAG")
             if [[ "${FAILED[*]}" == *"VER"* && "${{ github.event_name }}" != "pull_request" ]]; then
