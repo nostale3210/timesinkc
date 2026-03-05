@@ -9,22 +9,15 @@ curl -L https://dl.flathub.org/repo/flathub.flatpakrepo -o /etc/flatpak/remotes.
 chmod a+r /etc/udev/rules.d/51-android.rules
 
 #binaries for services
-chmod +x /usr/libexec/assembler
-chmod +x /usr/libexec/dotfile-manager
 chmod +x /usr/libexec/flatpak-manager
 chmod +x /usr/libexec/pod-up
-chmod +x /usr/libexec/prefix-dedupe
 chmod +x /usr/libexec/sys-up
 chmod +x /usr/libexec/user-up
 
 #services
 systemctl enable dconf-update.service
 systemctl enable flatpak-manager.service
-systemctl enable prefix-dedupe.timer
 systemctl enable sys-up.timer
-
-systemctl --global enable assemble.service
-systemctl --global enable dotfile-manager.service
 systemctl --global enable user-up.timer
 
 #modify os-release
