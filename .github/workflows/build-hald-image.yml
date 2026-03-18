@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_REGISTRY: docker.io/${{ github.repository_owner }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
   build-and-push:
@@ -63,20 +63,20 @@ jobs:
         shell: bash
         run: |
           FVER="${{ matrix.major_version }}"
-          SRC="docker://${{ env.IMAGE_REGISTRY }}/timesinkc"
+          SRC="docker://${{ env.IMAGE_REGISTRY }}/timesinkc-${{ env.IMAGE_NAME }}-hald"
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "PR_TAG=${SRC}:${{ env.IMAGE_NAME }}-pr-${{ github.event.number }}" >> $GITHUB_ENV
+            echo "PR_TAG=${SRC}:pr-${{ github.event.number }}" >> $GITHUB_ENV
           else
-            echo "VER_TAG=${SRC}:${{ env.IMAGE_NAME }}-${FVER}" >> $GITHUB_ENV
-            echo "DATE_TAG=${SRC}:${{ env.IMAGE_NAME }}-${FVER}-$(date +%Y%m%d)" >> $GITHUB_ENV
+            echo "VER_TAG=${SRC}:${FVER}" >> $GITHUB_ENV
+            echo "DATE_TAG=${SRC}:${FVER}-$(date +%Y%m%d)" >> $GITHUB_ENV
             if [[ "${{ matrix.is_latest_version }}" == "true" ]]; then
-              echo "LATEST_TAG=${SRC}:${{ env.IMAGE_NAME }}-latest" >> $GITHUB_ENV
+              echo "LATEST_TAG=${SRC}:latest" >> $GITHUB_ENV
             fi
             if [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              echo "STABLE_TAG=${SRC}:${{ env.IMAGE_NAME }}-stable" >> $GITHUB_ENV
+              echo "STABLE_TAG=${SRC}:stable" >> $GITHUB_ENV
             fi
             if [[ "${{ matrix.is_next_version }}" == "true" ]]; then
-              echo "NEXT_TAG=${SRC}:${{ env.IMAGE_NAME }}-next" >> $GITHUB_ENV
+              echo "NEXT_TAG=${SRC}:next" >> $GITHUB_ENV
             fi
           fi
 
@@ -89,14 +89,14 @@ jobs:
       - name: Setup podman in podman
         shell: bash
         run: |
-          sudo podman create --privileged -ti --name build \
+          podman create --privileged -ti --name build \
             --mount type=bind,src=/tmp/certs,dst=/tmp/certs \
             --mount type=bind,src=scripts,dst=/scripts \
             --mount type=bind,src=files,dst=/files \
             --mount type=bind,src=/etc/containers/registries.d,dst=/etc/containers/registries.d \
             --mount type=bind,src=./Containerfile,dst=/Containerfile \
             quay.io/podman/stable:latest
-          sudo podman start build
+          podman start build
 
       - name: Free space
         shell: bash
@@ -113,7 +113,7 @@ jobs:
       - name: Build image
         shell: bash
         run: |
-          sudo podman exec --privileged build \
+          podman exec --privileged build \
             podman build --build-arg=SOURCE_ORG="${{ env.SOURCE_ORG }}" \
             --build-arg=SOURCE_IMAGE="${{ env.SOURCE_IMAGE }}" \
             --build-arg=FEDORA_MAJOR_VERSION="${{ matrix.major_version }}" \
@@ -133,13 +133,13 @@ jobs:
           IMAGE="localhost/timesink"
           COMPRESSION_FORMAT="zstd:chunked"
 
-          sudo podman exec --privileged build \
+          podman exec --privileged build \
             podman login --username="${{ github.actor }}" \
-            --password="${{ secrets.DOCKERHUB_TOKEN }}" docker.io
+            --password="${{ secrets.GITHUB_TOKEN }}" ghcr.io
 
           push_pr() {
             FAILED=()
-            sudo podman exec --privileged build \
+            podman exec --privileged build \
               podman push "$IMAGE" "${{ env.PR_TAG }}" --force-compression \
               --compression-format="$COMPRESSION_FORMAT" --tls-verify=true || FAILED+=("PR")
             if [[ "${{ github.event_name }}" == "pull_request" && "${FAILED[*]}" == *"PR"* ]]; then
@@ -150,7 +150,7 @@ jobs:
           push_tag() {
             TAG="$1"
             FAILED=()
-            sudo podman exec --privileged build \
+            podman exec --privileged build \
               podman push "$IMAGE" "${TAGS[$TAG]}" \
               --compression-format="$COMPRESSION_FORMAT" --tls-verify=true --force-compression \
               --sign-by-sigstore-private-key=/tmp/certs/SIGNING_SECRET.key || FAILED+=("$TAG")
