@@ -120,15 +120,25 @@ jobs:
             --build-arg=IMAGE_FLAVOR="${{ matrix.build_target }}" \
             --pull=newer --secret=id=AKMOD_PRIVKEY,src=/tmp/certs/AKMOD_PRIVKEY \
             --target="${{ matrix.desktop }}-${{ matrix.build_target }}" \
-            --tag="localhost/timesink" \
+            --tag="localhost/timesink:latest" \
             --annotation=io.github.containers.compression.zstd=true \
             --label=io.github.containers.compression.zstd=true \
             -f ./Containerfile
 
+      - name: Chunk image
+        shell: bash
+        run: |
+          podman exec --privileged build bash -c '
+            export CHUNKAH_CONFIG_STR="$(podman inspect localhost/timesink:latest)"
+            podman run --rm --mount=type=image,src=localhost/timesink:latest,dest=/chunkah \
+            -e CHUNKAH_CONFIG_STR quay.io/coreos/chunkah build | podman load | \
+            tail -n1 | rev | cut -d" " -f1 | rev | cut -d":" -f2 | \
+            xargs -I{} podman tag {} localhost/chunked:latest'
+
       - name: Push image
         shell: bash
         run: |
-          IMAGE="localhost/timesink"
+          IMAGE="localhost/chunked:latest"
           COMPRESSION_FORMAT="zstd:chunked"
 
           podman exec --privileged build \
