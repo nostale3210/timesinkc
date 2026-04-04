@@ -14,7 +14,7 @@ dnf install -y akmods --from-repo copr:copr.fedorainfracloud.org:bieszczaders:ke
 dnf install -y nvidia-driver akmod-nvidia libva-nvidia-driver nvidia-driver-cuda
 
 dnf install -y nvidia-container-toolkit nvidia-container-toolkit-base \
-    libnvidia-container-tools libnvidia-container1
+    libnvidia-container-tools libnvidia-container1 || :
 
 # KVER="$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}')"
 KVER_LONG="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
