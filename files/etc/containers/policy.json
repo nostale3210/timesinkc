@@ -29,7 +29,7 @@
                 }
             }
         ],
-        "docker.io/nostale3210/ald-utils": [
+        "ghcr.io/nostale3210/ald-utils": [
             {
                 "type": "sigstoreSigned",
                 "keyPath": "/etc/pki/containers/nostale3210-ald.pub",
@@ -38,7 +38,7 @@
                 }
             }
         ],
-        "docker.io/nostale3210/hald-utils": [
+        "ghcr.io/nostale3210/hald-utils": [
             {
                 "type": "sigstoreSigned",
                 "keyPath": "/etc/pki/containers/nostale3210-hald.pub",

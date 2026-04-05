@@ -1,3 +1,5 @@
 docker:
   docker.io/nostale3210:
     use-sigstore-attachments: true
+  ghcr.io/nostale3210:
+    use-sigstore-attachments: true
