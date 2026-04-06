@@ -7,7 +7,7 @@ if [[ "$1" == "git" ]]; then
     dnf config-manager -y setopt "*niri-git*".priority=1
 else
     dnf copr -y enable avengemedia/dms
-    dnf install -y mangowc xdg-desktop-portal-wlr xdg-desktop-portal-gtk
+    dnf install -y mangowm xdg-desktop-portal-wlr xdg-desktop-portal-gtk
 fi
 
 dnf install -y NetworkManager iputils acl fwupd nm-connection-editor

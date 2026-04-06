@@ -9,9 +9,9 @@ dnf install -y libliftoff-devel hwdata-devel libseat-devel
 dnf install -y pcre2-devel xorg-x11-server-Xwayland xorg-x11-server-Xwayland-devel
 dnf install -y libxcb-devel xcb-util-wm-devel
 
-git clone https://github.com/DreamMaoMao/mangowc.git
-pushd mangowc
+git clone https://github.com/mangowm/mango.git
+pushd mango
 meson build -Dprefix=/usr
 ninja -C build install
 popd
-rm -rf mangowc
+rm -rf mango
