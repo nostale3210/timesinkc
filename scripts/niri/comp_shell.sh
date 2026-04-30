@@ -5,9 +5,15 @@ if [[ "$1" == "git" ]]; then
     dnf copr -y enable avengemedia/dms-git
     dnf copr -y enable yalter/niri-git
     dnf config-manager -y setopt "*niri-git*".priority=1
+    dnf install -y gcc gcc-c++ cmake glibc meson ninja-build \
+        wayland-devel wayland-protocols-devel libxkbcommon-devel \
+        libinput-devel libseat-devel libdisplay-info-devel \
+        libdrm-devel libliftoff-devel libxcb-devel \
+        wlroots0.19-devel wlroots-devel systemd-devel mesa-libgbm-devel \
+        pixman-devel hwdata-devel pcre2-devel xorg-x11-server-Xwayland-devel \
+        libxcb-devel scenefx-devel fontconfig-devel
 else
     dnf copr -y enable avengemedia/dms
-    dnf install -y mangowm xdg-desktop-portal-wlr xdg-desktop-portal-gtk
 fi
 
 dnf install -y NetworkManager iputils acl fwupd nm-connection-editor
@@ -15,7 +21,7 @@ dnf install -y selinux-policy-targeted \
     policycoreutils-python-utils setroubleshoot-server
 dnf install -y gnome-keyring libgnome-keyring gnome-keyring-pam qt6ct
 
-dnf install -y niri xdg-desktop-portal-gnome xdg-desktop-portal-gtk
+dnf install -y niri xdg-desktop-portal-gnome xdg-desktop-portal-gtk xdg-desktop-portal-wlr
 
 dnf install -y --from-repo coprdep:copr.fedorainfracloud.org:avengemedia:danklinux \
     danksearch dgop dms-greeter matugen quickshell-git
