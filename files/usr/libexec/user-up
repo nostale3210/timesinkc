@@ -17,10 +17,18 @@ draw_sep () {
         printf "\u2500%.0s" $(seq $start 80) && printf "\n"
 }
 
+COMPONENT="homebrew"
+draw_sep
+{ export PATH="${PATH+$PATH:}/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" &&
+    hash brew &&
+    brew update &&
+    brew upgrade ; } ||
+    log_failure
+
 COMPONENT="flatpak(user)"
 draw_sep
-(flatpak --user update -y &&
-    flatpak --user uninstall --unused -y) ||
+{ flatpak --user update -y &&
+    flatpak --user uninstall --unused -y ; } ||
     log_failure
 
 COMPONENT="podman"
