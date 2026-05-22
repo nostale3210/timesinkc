@@ -50,6 +50,9 @@ jobs:
           echo "  ${{ env.IMAGE_REGISTRY }}:" | sudo tee -a /etc/containers/registries.d/"${{ github.repository_owner }}".yaml
           echo "    use-sigstore-attachments: true" | sudo tee -a /etc/containers/registries.d/"${{ github.repository_owner }}".yaml
 
+      - name: Install cosign
+        uses: sigstore/cosign-installer@main
+
       - name: Gather environment variables
         shell: bash
         run: |
@@ -109,6 +112,17 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/.ghcup
           df -h /
+
+      - name: Verify hald container
+        shell: bash
+        run: |
+          HALD_CONTAINER="ghcr.io/nostale3210/hald-utils:latest"
+          if ! cosign verify --insecure-ignore-tlog --key hald.pub "$HALD_CONTAINER";
+          then
+            exit 1
+          fi
+          podman exec --privileged build \
+            podman pull "$HALD_CONTAINER"
 
       - name: Build image
         shell: bash
