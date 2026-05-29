@@ -34,17 +34,17 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 
 COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/hald /usr/bin/hald
 COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/move-mount /usr/bin/move-mount
-COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/90ald /usr/lib/dracut/modules.d/90ald
-COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/ald-boot.service /usr/lib/systemd/system/ald-boot.service
-COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/ald-boot.sh /usr/libexec/ald-boot.sh
+COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/90hald /usr/lib/dracut/modules.d/90hald
+COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/hald-boot.service /usr/lib/systemd/system/hald-boot.service
+COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/hald-boot.sh /usr/libexec/hald-boot.sh
 COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/tools/librarizer .
 COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/tools/dep_check .
 
-RUN chmod +x /usr/libexec/ald-boot.sh
+RUN chmod +x /usr/libexec/hald-boot.sh
 
 RUN mandb && bash librarizer && \
-    sed "/# Dependencies/r drc_libs" /usr/lib/dracut/modules.d/90ald/module-setup.sh && \
-    sed -i "/# Dependencies/r drc_libs" /usr/lib/dracut/modules.d/90ald/module-setup.sh && \
+    sed "/# Dependencies/r drc_libs" /usr/lib/dracut/modules.d/90hald/module-setup.sh && \
+    sed -i "/# Dependencies/r drc_libs" /usr/lib/dracut/modules.d/90hald/module-setup.sh && \
     rm -f librarizer drc_libs
 
 RUN bash dep_check && \
@@ -58,7 +58,7 @@ RUN chmod 4755 /usr/bin/newgidmap && \
 
 RUN KVER="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
     dracut --no-hostonly --kver "$KVER" --reproducible -v \
-    --add "ald tpm2-tss systemd-pcrphase plymouth" -f "/lib/modules/$KVER/initramfs.img" && \
+    --add "hald tpm2-tss systemd-pcrphase plymouth" -f "/lib/modules/$KVER/initramfs.img" && \
     chmod 0600 "/lib/modules/$KVER/initramfs.img"
 
 
