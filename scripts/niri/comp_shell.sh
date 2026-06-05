@@ -11,7 +11,7 @@ if [[ "$1" == "git" ]]; then
         libdrm-devel libliftoff-devel libxcb-devel \
         wlroots0.19-devel wlroots-devel systemd-devel mesa-libgbm-devel \
         pixman-devel hwdata-devel pcre2-devel xorg-x11-server-Xwayland-devel \
-        libxcb-devel scenefx-devel fontconfig-devel
+        libxcb-devel scenefx-devel fontconfig-devel cjson-devel
 else
     dnf copr -y enable avengemedia/dms
 fi
@@ -26,7 +26,7 @@ dnf install -y niri xdg-desktop-portal-gnome xdg-desktop-portal-gtk xdg-desktop-
 dnf install -y --from-repo coprdep:copr.fedorainfracloud.org:avengemedia:danklinux \
     danksearch dgop dms-greeter matugen quickshell-git
 dnf install -y --setopt=install_weak_deps=True dms
-dnf install -y cava wl-clipboard adw-gtk3-theme
+dnf install -y cava wl-clipboard adw-gtk3-theme fuzzel
 
 dnf install -y dbus-tools wiremix xorg-x11-server-Xwayland xwayland-satellite
 dnf install -y gnome-disk-utility nautilus \
