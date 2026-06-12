@@ -22,7 +22,7 @@ draw_sep
 { export PATH="${PATH+$PATH:}/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" &&
     hash brew &&
     brew update &&
-    brew upgrade ; } ||
+    brew upgrade -y ; } ||
     log_failure
 
 COMPONENT="flatpak(user)"
