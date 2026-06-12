@@ -11,7 +11,8 @@ if [[ "$1" == "git" ]]; then
         libdrm-devel libliftoff-devel libxcb-devel \
         wlroots0.19-devel wlroots-devel systemd-devel mesa-libgbm-devel \
         pixman-devel hwdata-devel pcre2-devel xorg-x11-server-Xwayland-devel \
-        libxcb-devel scenefx-devel fontconfig-devel cjson-devel
+        libxcb-devel scenefx-devel fontconfig-devel cjson-devel pipewire-devel \
+        pango-devel cairo-gobject-devel
 else
     dnf copr -y enable avengemedia/dms
 fi
