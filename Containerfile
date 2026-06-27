@@ -32,13 +32,13 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/non-repo.sh
 
-COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/hald /usr/bin/hald
-COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/move-mount /usr/bin/move-mount
-COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/90hald /usr/lib/dracut/modules.d/90hald
-COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/hald-boot.service /usr/lib/systemd/system/hald-boot.service
-COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/boot/hald-boot.sh /usr/libexec/hald-boot.sh
-COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/tools/librarizer .
-COPY --from=ghcr.io/nostale3210/hald-utils:latest /app/tools/dep_check .
+COPY --from=docker.io/nostale3210/hald-utils:latest /app/hald /usr/bin/hald
+COPY --from=docker.io/nostale3210/hald-utils:latest /app/move-mount /usr/bin/move-mount
+COPY --from=docker.io/nostale3210/hald-utils:latest /app/boot/90hald /usr/lib/dracut/modules.d/90hald
+COPY --from=docker.io/nostale3210/hald-utils:latest /app/boot/hald-boot.service /usr/lib/systemd/system/hald-boot.service
+COPY --from=docker.io/nostale3210/hald-utils:latest /app/boot/hald-boot.sh /usr/libexec/hald-boot.sh
+COPY --from=docker.io/nostale3210/hald-utils:latest /app/tools/librarizer .
+COPY --from=docker.io/nostale3210/hald-utils:latest /app/tools/dep_check .
 
 RUN chmod +x /usr/libexec/hald-boot.sh
 

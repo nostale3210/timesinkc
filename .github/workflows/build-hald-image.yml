@@ -116,7 +116,7 @@ jobs:
       - name: Verify hald container
         shell: bash
         run: |
-          HALD_CONTAINER="ghcr.io/nostale3210/hald-utils:latest"
+          HALD_CONTAINER="docker.io/nostale3210/hald-utils:latest"
           if ! cosign verify --insecure-ignore-tlog --key hald.pub "$HALD_CONTAINER";
           then
             exit 1
