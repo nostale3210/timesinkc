@@ -25,6 +25,13 @@ draw_sep
     brew upgrade -y ; } ||
     log_failure
 
+COMPONENT="nix"
+draw_sep
+{ export PATH="${PATH+$PATH:}$HOME/.local/bin:$HOME/.local/nix-bin" &&
+    hash nix &&
+    nix profile upgrade --all --impure ; } ||
+    log_failure
+
 COMPONENT="flatpak(user)"
 draw_sep
 { flatpak --user update -y &&
