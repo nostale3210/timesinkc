@@ -16,6 +16,9 @@ gawk
 gcc
 git-core
 inotify-tools
+kernel
+kernel-devel-matched
+kernel-modules-extra
 langpacks-en
 langtable
 linux-firmware
