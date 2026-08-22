@@ -18,18 +18,20 @@ dnf install -y nvidia-container-toolkit nvidia-container-toolkit-base \
 
 # KVER="$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}')"
 KVER_LONG="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
-# NVIDIA_AKMOD_VERSION="$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEASE}')"
+NVIDIA_AKMOD_VERSION="$(rpm -q "akmod-nvidia" --queryformat '%{VERSION}-%{RELEASE}')"
 
 akmods --force \
     --kernels "${KVER_LONG}" \
     --kmod "nvidia"
 
+rm -rf /etc/pki/akmods/private/private_key.priv
+
 # modinfo /usr/lib/modules/"${KVER_LONG}"/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko > /dev/null || \
 # (cat /var/cache/akmods/nvidia/"${NVIDIA_AKMOD_VERSION::-5}"-for-"${KVER_LONG}".failed.log && exit 1)
 
-modinfo -l /usr/lib/modules/"${KVER_LONG}"/extra/nvidia/nvidia.ko.xz
-
-rm -rf /etc/pki/akmods/private/private_key.priv
+modinfo -l /usr/lib/modules/"${KVER_LONG}"/extra/nvidia/nvidia.ko.xz ||
+    (cat /var/cache/akmods/nvidia/"${NVIDIA_AKMOD_VERSION::-5}"-for-"${KVER_LONG}".failed.log &&
+    exit 1)
 
 dnf copr disable -y bieszczaders/kernel-cachyos-lto
 dnf config-manager -y setopt fedora-nvidia-580.enabled=0 nvidia-container-toolkit.enabled=0
