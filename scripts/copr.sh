@@ -13,8 +13,8 @@ dnf install -y nerd-fonts --from-repo=copr:copr.fedorainfracloud.org:che:nerd-fo
 
 dnf install -y libcap-ng libcap-ng-devel procps-ng procps-ng-devel
 
-dnf install -y kernel-cachyos-lto-7.1.8-cachyos1.lto.fc44 \
-    kernel-cachyos-lto-devel-matched-7.1.8-cachyos1.lto.fc44 \
+dnf install -y kernel-cachyos-lto \
+    kernel-cachyos-lto-devel-matched \
     scx-scheds scx-tools
 
 dnf copr disable -y che/nerd-fonts
