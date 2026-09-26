@@ -13,6 +13,7 @@ if [[ "$1" == "git" ]]; then
         pixman-devel hwdata-devel pcre2-devel xorg-x11-server-Xwayland-devel \
         libxcb-devel scenefx-devel fontconfig-devel cjson-devel pipewire-devel \
         pango-devel cairo-gobject-devel
+    dnf install -y umbriel-nightly xdg-desktop-portal-umbriel-nightly
 else
     dnf copr -y enable avengemedia/dms
 fi
