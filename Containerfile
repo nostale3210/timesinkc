@@ -2,10 +2,9 @@ ARG SOURCE_IMAGE="${SOURCE_IMAGE:-fedora}"
 ARG SOURCE_ORG="${SOURCE_ORG:-fedora}"
 ARG BASE_IMAGE="${SOURCE_ORG}/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-41}"
+ARG SHARED_IMAGE="${SHARED_IMAGE:-shared}"
 
 FROM "quay.io/${BASE_IMAGE}:${FEDORA_MAJOR_VERSION}" AS shared
-
-ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 
 RUN dnf swap -y --allowerasing fedora-release-container fedora-release && \
     dnf swap -y --allowerasing fedora-release-identity-container fedora-release-identity-basic && \
@@ -63,7 +62,7 @@ RUN KVER="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARC
 
 
 
-FROM shared AS gnome-main
+FROM "${SHARED_IMAGE}" AS gnome-main
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/gnome.sh
@@ -77,7 +76,7 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 
 
 
-FROM shared AS cosmic-main
+FROM "${SHARED_IMAGE}" AS cosmic-main
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/cosmic.sh
@@ -91,7 +90,7 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 
 
 
-FROM shared AS niri-main
+FROM "${SHARED_IMAGE}" AS niri-main
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/niri/install_groups.sh
@@ -108,7 +107,7 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 
 
 
-FROM shared AS niri-git-main
+FROM "${SHARED_IMAGE}" AS niri-git-main
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/niri/install_groups.sh
