@@ -11,7 +11,8 @@ dnf install -y terra-release-nvidia
 
 dnf install -y akmods --from-repo copr:copr.fedorainfracloud.org:bieszczaders:kernel-cachyos-lto
 
-dnf install -y nvidia-driver-580xx nvidia-driver-580xx-cuda nvidia-driver-580xx-cuda-libs
+dnf install -y nvidia-driver-580xx nvidia-driver-580xx-cuda nvidia-driver-580xx-cuda-libs \
+    libva-nvidia-driver
 
 dnf install -y nvidia-container-toolkit \
     libnvidia-container-tools libnvidia-container1 || :
