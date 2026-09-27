@@ -19,6 +19,8 @@ jobs:
       contents: read
       packages: write
       id-token: write
+    outputs:
+      skip: ${{ steps.check-age.outputs.skip }}
     strategy:
       fail-fast: false
       matrix:
@@ -65,12 +67,31 @@ jobs:
             echo "DATE_TAG=${SRC}:shared-${FVER}-$(date +%Y%m%d)" >> $GITHUB_ENV
           fi
 
+      - name: Check shared image age
+        id: check-age
+        shell: bash
+        run: |
+          FVER="${{ matrix.major_version }}"
+          IMAGE="docker.io/nostale3210/timesinkc:shared-${FVER}"
+          CREATED=$(skopeo inspect docker://${IMAGE} --format '{{.Created}}' 2>/dev/null)
+          if [ -n "$CREATED" ]; then
+            CREATED_TS=$(date -d "${CREATED::-10}" +%s)
+            NOW_TS=$(date +%s)
+            AGE=$((NOW_TS - CREATED_TS))
+            echo "Image age: "$(bc -l <<< "$AGE / 60 / 60")"h"
+            if [ $AGE -lt 72000 ]; then
+              echo "skip=true" >> $GITHUB_OUTPUT
+            fi
+          fi
+
       - name: Retrieve keys
+        if: ${{ !steps.check-age.outputs.skip }}
         run: |
           mkdir -p /tmp/certs || echo "dir exists"
           echo "${{ secrets.SIGNING_SECRET }}" > /tmp/certs/SIGNING_SECRET.key
 
       - name: Setup podman in podman
+        if: ${{ !steps.check-age.outputs.skip }}
         shell: bash
         run: |
           podman create --privileged -ti --name build \
@@ -83,6 +104,7 @@ jobs:
           podman start build
 
       - name: Verify hald container
+        if: ${{ !steps.check-age.outputs.skip }}
         shell: bash
         run: |
           HALD_CONTAINER="docker.io/nostale3210/hald-utils:latest"
@@ -94,6 +116,7 @@ jobs:
             podman pull "$HALD_CONTAINER"
 
       - name: Build image
+        if: ${{ !steps.check-age.outputs.skip }}
         shell: bash
         run: |
           podman exec --privileged build \
@@ -108,6 +131,7 @@ jobs:
             -f ./Containerfile
 
       - name: Push image
+        if: ${{ !steps.check-age.outputs.skip }}
         shell: bash
         run: |
           IMAGE="localhost/shared:latest"
