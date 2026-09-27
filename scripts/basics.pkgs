@@ -24,6 +24,8 @@ man-pages
 microcode_ctl
 mokutil
 neovim
+nspr
+nss
 osinfo-db
 pipewire-jack-audio-connection-kit
 pipewire-plugin-libcamera
