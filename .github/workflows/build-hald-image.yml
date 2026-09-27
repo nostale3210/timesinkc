@@ -270,6 +270,17 @@ jobs:
             quay.io/podman/stable:latest
           podman start build
 
+      - name: Verify shared container
+        shell: bash
+        run: |
+          SHARED_CONTAINER="docker.io/nostale3210/timesinkc:shared-${{ matrix.major_version }}"
+          if ! cosign verify --insecure-ignore-tlog --key cosign.pub "$SHARED_CONTAINER";
+          then
+            exit 1
+          fi
+          podman exec --privileged build \
+            podman pull "$SHARED_CONTAINER"
+
       - name: Free space
         shell: bash
         run: |

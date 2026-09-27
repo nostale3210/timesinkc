@@ -13,7 +13,7 @@ if [[ "$1" == "git" ]]; then
         pixman-devel hwdata-devel pcre2-devel xorg-x11-server-Xwayland-devel \
         libxcb-devel scenefx-devel fontconfig-devel cjson-devel pipewire-devel \
         pango-devel cairo-gobject-devel json-devel tomlplusplus-devel \
-        jemalloc-devel gtk4-devel
+        jemalloc-devel gtk4-devel sdbus-cpp-devel
 else
     dnf copr -y enable avengemedia/dms
 fi
