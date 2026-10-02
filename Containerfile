@@ -12,7 +12,7 @@ RUN dnf swap -y --allowerasing fedora-release-container fedora-release && \
     dnf install -y dnf5-plugins && \
     dnf install -y --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release && \
     dnf install -y terra-release-mesa terra-release-multimedia && \
-    dnf config-manager -y setopt "*terra*".priority=1 "*terra*".exclude="nerd-fonts scx-tools scx-scheds python3-protobuf gnome*" && \
+    dnf config-manager -y setopt "*terra*".priority=1 "*terra*".exclude="nerd-fonts scx-tools scx-scheds python3-protobuf zotero gnome*" && \
     dnf config-manager -y setopt "*fedora*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
