@@ -6,6 +6,8 @@ ARG SHARED_IMAGE="${SHARED_IMAGE:-shared}"
 
 FROM "quay.io/${BASE_IMAGE}:${FEDORA_MAJOR_VERSION}" AS shared
 
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-41}"
+
 RUN dnf swap -y --allowerasing fedora-release-container fedora-release && \
     dnf swap -y --allowerasing fedora-release-identity-container fedora-release-identity-basic && \
     dnf distro-sync -y && \
@@ -55,9 +57,10 @@ RUN sed -i "s/tsd upgrade/hald dep -uzsag/g" /usr/libexec/sys-up && \
 RUN chmod 4755 /usr/bin/newgidmap && \
     chmod 4755 /usr/bin/newuidmap
 
-RUN KVER="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
+RUN if [[ "$FEDORA_MAJOR_VERSION" -ge "45" ]]; then PCR_MOD="pcrextend"; else PCR_MOD="pcrphase"; fi && \
+    KVER="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" && \
     dracut --no-hostonly --kver "$KVER" --reproducible -v \
-    --add "hald tpm2-tss systemd-pcrphase plymouth" -f "/lib/modules/$KVER/initramfs.img" && \
+    --add "hald tpm2-tss systemd-$PCR_MOD plymouth" -f "/lib/modules/$KVER/initramfs.img" && \
     chmod 0600 "/lib/modules/$KVER/initramfs.img"
 
 

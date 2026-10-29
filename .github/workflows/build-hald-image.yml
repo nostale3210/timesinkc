@@ -26,10 +26,15 @@ jobs:
       matrix:
         major_version:
           - 44
+          - 45
         include:
           - major_version: 44
             is_latest_version: true
             is_stable_version: true
+            is_next_version: false
+          - major_version: 45
+            is_latest_version: false
+            is_stable_version: false
             is_next_version: true
 
     steps:
@@ -73,13 +78,13 @@ jobs:
         run: |
           FVER="${{ matrix.major_version }}"
           IMAGE="docker.io/nostale3210/timesinkc:shared-${FVER}"
-          CREATED=$(skopeo inspect docker://${IMAGE} --format '{{.Created}}' 2>/dev/null)
+          CREATED="$(skopeo inspect docker://${IMAGE} --format '{{.Created}}' 2>/dev/null || echo "@00000000000")"
           if [ -n "$CREATED" ]; then
-            CREATED_TS=$(date -d "${CREATED::-10}" +%s)
-            NOW_TS=$(date +%s)
-            AGE=$((NOW_TS - CREATED_TS))
+            CREATED_TS="$(date -d "${CREATED::-10}" +%s)"
+            NOW_TS="$(date +%s)"
+            AGE="$((NOW_TS - CREATED_TS))"
             echo "Image age: "$(bc -l <<< "$AGE / 60 / 60")"h"
-            if [ $AGE -lt 72000 ]; then
+            if [ "$AGE" -lt 72000 ]; then
               echo "skip=true" >> $GITHUB_OUTPUT
             fi
           fi
@@ -193,6 +198,7 @@ jobs:
       matrix:
         major_version:
           - 44
+          - 45
         desktop:
           # - gnome
           - niri
