@@ -2,6 +2,7 @@
 set -oue pipefail
 
 if [[ "$1" == "git" ]]; then
+    GIT=1
     dnf copr -y enable avengemedia/dms-git
     dnf copr -y enable yalter/niri-git
     dnf config-manager -y setopt "*niri-git*".priority=1
@@ -26,7 +27,7 @@ dnf install -y gnome-keyring libgnome-keyring gnome-keyring-pam qt6ct
 dnf install -y niri xdg-desktop-portal-gnome xdg-desktop-portal-gtk xdg-desktop-portal-wlr
 
 dnf install -y --from-repo coprdep:copr.fedorainfracloud.org:avengemedia:danklinux \
-    danksearch dgop dms-greeter matugen quickshell-git
+    danksearch dgop dms-greeter matugen quickshell-git dux-files"${GIT:+-git}"
 dnf install -y --setopt=install_weak_deps=True dms
 dnf install -y cava wl-clipboard adw-gtk3-theme fuzzel
 
