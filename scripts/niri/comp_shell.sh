@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -oue pipefail
 
-if [[ "$1" == "git" ]]; then
+BUILD_TYPE="$1"
+FEDORA_VERSION="$2"
+
+if [[ "$BUILD_TYPE" == "git" ]]; then
     GIT=1
     dnf copr -y enable avengemedia/dms-git
     dnf copr -y enable yalter/niri-git
@@ -19,10 +22,16 @@ else
     dnf copr -y enable avengemedia/dms
 fi
 
+if [[ "$FEDORA_VERSION" -ge "45" ]]; then
+    KEYRING=("oo7-daemon" "oo7-portal" "oo7-cli" "pam_oo7")
+else
+    KEYRING=("gnome-keyring" "libgnome-keyring" "gnome-keyring-pam")
+fi
+
 dnf install -y NetworkManager iputils acl fwupd nm-connection-editor
 dnf install -y selinux-policy-targeted \
     policycoreutils-python-utils setroubleshoot-server
-dnf install -y gnome-keyring libgnome-keyring gnome-keyring-pam qt6ct
+dnf install -y "${KEYRING[@]}" qt6ct
 
 dnf install -y niri xdg-desktop-portal-gnome xdg-desktop-portal-gtk xdg-desktop-portal-wlr
 
@@ -40,7 +49,7 @@ dnf install -y kitty
 
 dnf install -y wl-mirror tuned-ppd
 
-if [[ "$1" == "git" ]]; then
+if [[ "$BUILD_TYPE" == "git" ]]; then
     dnf copr -y disable avengemedia/dms-git
     dnf copr -y disable yalter/niri-git
 else

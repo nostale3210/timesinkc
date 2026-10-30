@@ -95,11 +95,13 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 
 FROM "${SHARED_IMAGE}" AS niri-main
 
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-41}"
+
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/niri/install_groups.sh
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
-    bash /scripts/niri/comp_shell.sh "reg"
+    bash /scripts/niri/comp_shell.sh "reg" "$FEDORA_MAJOR_VERSION"
 
 
 FROM niri-main AS niri-nvidia
@@ -112,11 +114,13 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 
 FROM "${SHARED_IMAGE}" AS niri-git-main
 
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-41}"
+
 RUN --mount=type=bind,src=/scripts,target=/scripts \
     bash /scripts/niri/install_groups.sh
 
 RUN --mount=type=bind,src=/scripts,target=/scripts \
-    bash /scripts/niri/comp_shell.sh "git"
+    bash /scripts/niri/comp_shell.sh "git" "$FEDORA_MAJOR_VERSION"
 
 
 FROM niri-git-main AS niri-git-nvidia
