@@ -15,3 +15,5 @@ dnf install -y @fonts
 dnf install -y @desktop-accessibility
 dnf install -y @core
 dnf install -y @base-graphical
+
+dnf install -y steam

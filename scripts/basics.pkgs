@@ -12,6 +12,7 @@ fedora-release-identity-basic
 fedora-workstation-backgrounds
 fira-code-fonts
 flatpak
+flatpak-spawn
 fwupd-efi
 gawk
 gcc

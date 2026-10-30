@@ -6,4 +6,4 @@ dnf swap -y ffmpeg-free ffmpeg --allowerasing --from-repo=terra-multimedia || :
 
 dnf install -y libva-intel-media-driver libva-utils
 
-dnf install -y steam-device-rules || :
+dnf install -y steam-devices || :
