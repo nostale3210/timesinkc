@@ -6,7 +6,7 @@ FEDORA_VERSION="$2"
 
 if [[ "$BUILD_TYPE" == "git" ]]; then
     GIT=1
-    dnf copr -y enable avengemedia/dms-git
+    dnf copr -y enable duxlabs/dms-git
     dnf copr -y enable yalter/niri-git
     dnf config-manager -y setopt "*niri-git*".priority=1
     dnf install -y gcc gcc-c++ cmake glibc meson ninja-build \
@@ -19,7 +19,7 @@ if [[ "$BUILD_TYPE" == "git" ]]; then
         pango-devel cairo-gobject-devel json-devel tomlplusplus-devel \
         jemalloc-devel gtk4-devel sdbus-cpp-devel libei-devel libeis-devel
 else
-    dnf copr -y enable avengemedia/dms
+    dnf copr -y enable duxlabs/dms
 fi
 
 if [[ "$FEDORA_VERSION" -ge "45" ]]; then
@@ -35,8 +35,9 @@ dnf install -y "${KEYRING[@]}" qt6ct
 
 dnf install -y niri xdg-desktop-portal-gnome xdg-desktop-portal-gtk xdg-desktop-portal-wlr
 
-dnf install -y --from-repo coprdep:copr.fedorainfracloud.org:avengemedia:danklinux \
-    danksearch dgop dms-greeter matugen quickshell-git dux-files"${GIT:+-git}"
+dnf install -y --from-repo coprdep:copr.fedorainfracloud.org:duxlabs:dux-repo \
+    dux-search dux-gop dux-greeter"${GIT:+-git}" matugen quickshell-git dux-files"${GIT:+-git}" \
+    dux-calendar"${GIT:+-git}"
 dnf install -y --setopt=install_weak_deps=True dms
 dnf install -y cava wl-clipboard adw-gtk3-theme fuzzel
 
@@ -50,10 +51,10 @@ dnf install -y kitty
 dnf install -y wl-mirror tuned-ppd
 
 if [[ "$BUILD_TYPE" == "git" ]]; then
-    dnf copr -y disable avengemedia/dms-git
+    dnf copr -y disable duxlabs/dms-git
     dnf copr -y disable yalter/niri-git
 else
-    dnf copr -y disable avengemedia/dms
+    dnf copr -y disable duxlabs/dms
 fi
 
 # Replace deprecated systemd --user import environment
