@@ -15,7 +15,7 @@ dnf install -y libcap-ng libcap-ng-devel procps-ng procps-ng-devel
 
 dnf install -y kernel-cachyos-lto \
     kernel-cachyos-lto-devel-matched \
-    scx-scheds-git scx-tools-git
+    scx-scheds-nightly scx-tools-nightly
 
 dnf copr disable -y che/nerd-fonts
 dnf copr disable -y bieszczaders/kernel-cachyos-lto
