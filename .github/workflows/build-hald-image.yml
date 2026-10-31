@@ -67,6 +67,9 @@ jobs:
         id: check-age
         shell: bash
         run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            exit 0
+          fi
           FVER="${{ matrix.major_version }}"
           IMAGE="docker.io/nostale3210/timesinkc:shared-${FVER}"
           CREATED="$(skopeo inspect docker://${IMAGE} --format '{{.Created}}' 2>/dev/null || echo "@00000000000")"
