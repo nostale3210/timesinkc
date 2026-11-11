@@ -95,10 +95,9 @@ jobs:
         run: |
           podman create --privileged -ti --name build \
             --mount type=bind,src=/tmp/certs,dst=/tmp/certs \
-            --mount type=bind,src=scripts,dst=/scripts \
-            --mount type=bind,src=files,dst=/files \
+            --mount type=bind,src=.,dst=/ctx \
             --mount type=bind,src=/etc/containers/registries.d,dst=/etc/containers/registries.d \
-            --mount type=bind,src=./Containerfile,dst=/Containerfile \
+            --workdir /ctx \
             quay.io/podman/stable:latest
           podman start build
 
@@ -127,7 +126,7 @@ jobs:
             --tag="localhost/shared:latest" \
             --annotation=io.github.containers.compression.zstd=true \
             --label=io.github.containers.compression.zstd=true \
-            -f ./Containerfile
+            -f Containerfile .
 
       - name: Push image
         if: ${{ !steps.check-age.outputs.skip }}
@@ -267,10 +266,9 @@ jobs:
         run: |
           podman create --privileged -ti --name build \
             --mount type=bind,src=/tmp/certs,dst=/tmp/certs \
-            --mount type=bind,src=scripts,dst=/scripts \
-            --mount type=bind,src=files,dst=/files \
+            --mount type=bind,src=.,dst=/ctx \
             --mount type=bind,src=/etc/containers/registries.d,dst=/etc/containers/registries.d \
-            --mount type=bind,src=./Containerfile,dst=/Containerfile \
+            --workdir /ctx \
             quay.io/podman/stable:latest
           podman start build
 
@@ -311,7 +309,7 @@ jobs:
             --tag="localhost/timesink:latest" \
             --annotation=io.github.containers.compression.zstd=true \
             --label=io.github.containers.compression.zstd=true \
-            -f ./Containerfile
+            -f Containerfile .
 
       - name: Chunk image
         shell: bash
@@ -320,7 +318,7 @@ jobs:
             export CHUNKAH_CONFIG_STR="$(podman inspect localhost/timesink:latest)"
             podman run --rm --mount=type=image,src=localhost/timesink:latest,dest=/chunkah \
             -e CHUNKAH_CONFIG_STR quay.io/coreos/chunkah build | podman load | \
-            tail -n1 | rev | cut -d" " -f1 | rev | cut -d":" -f2 | \
+            tail -n1 | awk "{print \$NF}" | awk -F: "{print \$2}" | \
             xargs -I{} podman tag {} localhost/chunked:latest'
 
       - name: Push image

@@ -17,20 +17,20 @@ RUN dnf swap -y --allowerasing fedora-release-container fedora-release && \
     dnf config-manager -y setopt "*terra*".priority=1 "*terra*".exclude="nerd-fonts python3-protobuf zotero gnome*" && \
     dnf config-manager -y setopt "*fedora*".exclude="kernel-core-* kernel-modules-* kernel-uki-virt-*"
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     mkdir -p /var/lib/alternatives &&\
     readarray basic_pkgs < /scripts/basics.pkgs && \
     dnf install -y --setopt='tsflags=' "${basic_pkgs[@]}"
 
 COPY files/ /
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     bash /scripts/copr.sh
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     bash /scripts/drivers.sh
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     bash /scripts/non-repo.sh
 
 COPY --from=docker.io/nostale3210/hald-utils:latest /app/hald /usr/bin/hald
@@ -67,13 +67,13 @@ RUN if [[ "$FEDORA_MAJOR_VERSION" -ge "45" ]]; then PCR_MOD="pcrextend"; else PC
 
 FROM "${SHARED_IMAGE}" AS gnome-main
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     bash /scripts/gnome.sh
 
 
 FROM gnome-main AS gnome-nvidia
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
     bash /scripts/nvidia.sh
 
@@ -81,13 +81,13 @@ RUN --mount=type=bind,src=/scripts,target=/scripts \
 
 FROM "${SHARED_IMAGE}" AS cosmic-main
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     bash /scripts/cosmic.sh
 
 
 FROM cosmic-main AS cosmic-nvidia
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
     bash /scripts/nvidia.sh
 
@@ -97,16 +97,16 @@ FROM "${SHARED_IMAGE}" AS niri-main
 
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-41}"
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     bash /scripts/niri/install_groups.sh
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     bash /scripts/niri/comp_shell.sh "reg" "$FEDORA_MAJOR_VERSION"
 
 
 FROM niri-main AS niri-nvidia
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
     bash /scripts/nvidia.sh
 
@@ -116,15 +116,15 @@ FROM "${SHARED_IMAGE}" AS niri-git-main
 
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-41}"
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     bash /scripts/niri/install_groups.sh
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     bash /scripts/niri/comp_shell.sh "git" "$FEDORA_MAJOR_VERSION"
 
 
 FROM niri-git-main AS niri-git-nvidia
 
-RUN --mount=type=bind,src=/scripts,target=/scripts \
+RUN --mount=type=bind,src=scripts,target=/scripts \
     --mount=type=secret,id=AKMOD_PRIVKEY,target=/tmp/certs/private_key.priv \
     bash /scripts/nvidia.sh
