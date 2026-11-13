@@ -45,6 +45,7 @@ sdubby
 skopeo
 systemd
 systemd-boot-unsigned
+systemd-oomd-defaults
 systemd-ukify
 thermald
 tpm2-tools
